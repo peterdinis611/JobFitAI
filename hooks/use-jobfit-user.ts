@@ -1,29 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useMutation } from "convex/react"
+import { useConvexAuth } from "@convex-dev/auth/react"
+import { useQuery } from "convex/react"
 import { api } from "@/convex/_generated/api"
-import { getClientUserId } from "@/lib/user-id"
 import type { Id } from "@/convex/_generated/dataModel"
 
 export function useJobFitUser() {
-  const externalId = getClientUserId()
-  const getOrCreate = useMutation(api.users.getOrCreate)
-  const [userId, setUserId] = useState<Id<"users"> | null>(null)
-  const [ready, setReady] = useState(false)
+  const { isAuthenticated, isLoading } = useConvexAuth()
+  const viewer = useQuery(api.users.viewer, isAuthenticated ? {} : "skip")
 
-  useEffect(() => {
-    let cancelled = false
-    void getOrCreate({ externalId }).then((id) => {
-      if (!cancelled) {
-        setUserId(id)
-        setReady(true)
-      }
-    })
-    return () => {
-      cancelled = true
-    }
-  }, [externalId, getOrCreate])
-
-  return { userId, ready, externalId }
+  return {
+    userId: (viewer?._id ?? null) as Id<"users"> | null,
+    email: viewer?.email ?? null,
+    ready: !isLoading && (isAuthenticated ? viewer !== undefined : true),
+    isAuthenticated,
+    isLoading,
+  }
 }

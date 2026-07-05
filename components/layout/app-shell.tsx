@@ -2,10 +2,14 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Briefcase, FileText, History, Moon, Sparkles, Sun } from "lucide-react"
+import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react"
+import { Briefcase, FileText, History, LogOut } from "lucide-react"
 import { motion } from "motion/react"
-import { useTheme } from "next-themes"
+import { AuthScreen } from "@/components/auth/auth-screen"
+import { RobotLogo, RobotLogoMark } from "@/components/brand/robot-logo"
+import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { Button } from "@/components/ui/button"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { cn } from "@/lib/utils"
 
 const links = [
@@ -16,22 +20,48 @@ const links = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { theme, setTheme } = useTheme()
+  const { signOut } = useAuthActions()
+  const { isAuthenticated, isLoading } = useConvexAuth()
+  const { email } = useJobFitUser()
+
+  if (isLoading) {
+    return (
+      <div className="relative flex min-h-dvh items-center justify-center">
+        <div className="absolute top-4 right-4">
+          <ThemeToggle />
+        </div>
+        <motion.div
+          className="flex flex-col items-center gap-3"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <RobotLogo size={40} />
+          <motion.div
+            className="h-1 w-12 overflow-hidden rounded-full bg-muted"
+          >
+            <motion.div
+              className="h-full w-1/2 rounded-full bg-primary"
+              animate={{ x: ["-100%", "200%"] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </motion.div>
+        </motion.div>
+      </div>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return <AuthScreen />
+  }
 
   return (
     <div className="min-h-dvh text-foreground">
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="group flex items-center gap-2 font-semibold tracking-tight">
-            <motion.span
-              className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary"
-              whileHover={{ scale: 1.05, rotate: 5 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15 }}
-            >
-              <Sparkles className="size-4" />
-            </motion.span>
+          <Link href="/" className="group flex items-center gap-2.5 font-semibold tracking-tight">
+            <RobotLogoMark />
             <span>
-              JobFit <span className="bg-gradient-to-r from-violet-600 to-indigo-500 bg-clip-text text-transparent dark:from-violet-400 dark:to-indigo-300">AI</span>
+              JobFit <span className="text-primary">AI</span>
             </span>
           </Link>
           <nav className="flex items-center gap-1">
@@ -58,15 +88,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </Link>
               )
             })}
+            {email ? (
+              <span className="ml-2 hidden max-w-[140px] truncate text-xs text-muted-foreground md:inline">
+                {email}
+              </span>
+            ) : null}
+            <ThemeToggle className="ml-1" />
             <Button
               variant="ghost"
               size="icon"
-              className="relative ml-1"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              aria-label="Toggle theme"
+              aria-label="Sign out"
+              onClick={() => void signOut()}
             >
-              <Sun className="size-4 scale-100 dark:scale-0" />
-              <Moon className="absolute size-4 scale-0 dark:scale-100" />
+              <LogOut className="size-4" />
             </Button>
           </nav>
         </div>

@@ -8,10 +8,13 @@ import { toast } from "sonner"
 import { api } from "@/convex/_generated/api"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
+import {
+  EmptySearchIllustration,
+  UploadIllustration,
+} from "@/components/illustrations/jobfit-illustrations"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { LottiePlayer } from "@/components/ui/lottie-player"
 import { PageHeader } from "@/components/ui/page-header"
 import { cn } from "@/lib/utils"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
@@ -20,8 +23,8 @@ const MAX_BYTES = 10 * 1024 * 1024
 const ACCEPT = ".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
 export default function ResumesPage() {
-  const { userId, ready } = useJobFitUser()
-  const resumes = useQuery(api.resumes.listByUser, userId ? { userId } : "skip")
+  const { ready } = useJobFitUser()
+  const resumes = useQuery(api.resumes.listByUser, ready ? {} : "skip")
   const generateUploadUrl = useMutation(api.resumes.generateUploadUrl)
   const createResume = useMutation(api.resumes.create)
   const setActive = useMutation(api.resumes.setActive)
@@ -31,7 +34,6 @@ export default function ResumesPage() {
 
   const upload = useCallback(
     async (file: File) => {
-      if (!userId) return
       if (file.size > MAX_BYTES) {
         toast.error("File too large (max 10 MB)")
         return
@@ -49,7 +51,6 @@ export default function ResumesPage() {
         const { storageId } = (await res.json()) as { storageId: Id<"_storage"> }
 
         await createResume({
-          userId,
           storageId,
           fileName: file.name,
           mimeType: file.type || "application/octet-stream",
@@ -61,7 +62,7 @@ export default function ResumesPage() {
         setUploading(false)
       }
     },
-    [userId, generateUploadUrl, createResume],
+    [generateUploadUrl, createResume],
   )
 
   if (!ready) {
@@ -97,7 +98,6 @@ export default function ResumesPage() {
         <motion.div
           animate={{
             scale: dragOver ? 1.01 : 1,
-            borderColor: dragOver ? "oklch(0.62 0.18 285)" : undefined,
           }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
         >
@@ -128,7 +128,7 @@ export default function ResumesPage() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
                   >
-                    <LottiePlayer src="/lottie/upload-cloud.json" className="h-32 w-32" />
+                    <UploadIllustration />
                     <p className="mt-2 text-sm font-medium text-muted-foreground">Uploading…</p>
                   </motion.div>
                 ) : (
@@ -143,7 +143,7 @@ export default function ResumesPage() {
                       animate={{ y: dragOver ? -4 : 0 }}
                       transition={{ type: "spring", stiffness: 300, damping: 20 }}
                     >
-                      <FileUp className="size-10 text-primary/70" />
+                      <FileUp className="size-10 text-primary" />
                     </motion.div>
                     <p className="text-sm font-medium">Drag & drop PDF or DOCX here</p>
                     <p className="text-xs text-muted-foreground">Max 10 MB</p>
@@ -158,9 +158,9 @@ export default function ResumesPage() {
       {resumes?.length === 0 ? (
         <FadeIn delay={0.1}>
           <Card className="border-border/60 bg-card/80">
-            <CardContent className="py-4">
-              <LottiePlayer src="/lottie/empty-search.json" className="h-28 w-28 opacity-70" />
-              <p className="-mt-2 text-center text-sm text-muted-foreground">
+            <CardContent className="flex flex-col items-center py-6">
+              <EmptySearchIllustration />
+              <p className="mt-2 text-center text-sm text-muted-foreground">
                 No resumes uploaded yet
               </p>
             </CardContent>
@@ -181,7 +181,7 @@ export default function ResumesPage() {
                     <div className="flex items-start justify-between gap-2">
                       <CardTitle className="text-base">{resume.fileName}</CardTitle>
                       {resume.isActive ? (
-                        <Badge className="gap-1 bg-primary/90">
+                        <Badge className="gap-1 bg-primary">
                           <Star className="size-3 fill-current" /> Active
                         </Badge>
                       ) : null}
@@ -191,12 +191,12 @@ export default function ResumesPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {!resume.isActive && userId ? (
+                    {!resume.isActive ? (
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() =>
-                          void setActive({ userId, resumeId: resume._id }).then(() =>
+                          void setActive({ resumeId: resume._id }).then(() =>
                             toast.success("Active resume updated"),
                           )
                         }

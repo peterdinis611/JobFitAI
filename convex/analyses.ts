@@ -1,5 +1,7 @@
 import { mutation, query } from "./_generated/server"
 import { v } from "convex/values"
+import type { Id } from "./_generated/dataModel"
+import { requireUser, requireUserId } from "./lib/auth"
 
 const skillCategory = v.object({
   name: v.string(),
@@ -7,6 +9,24 @@ const skillCategory = v.object({
   matched: v.array(v.string()),
   missing: v.array(v.string()),
 })
+
+async function assertResumeOwned(
+  ctx: { db: { get: (id: Id<"resumes">) => Promise<{ userId: Id<"users"> } | null> } },
+  resumeId: Id<"resumes">,
+  userId: Id<"users">,
+) {
+  const resume = await ctx.db.get(resumeId)
+  if (!resume || resume.userId !== userId) throw new Error("Resume not found")
+}
+
+async function assertJobOwned(
+  ctx: { db: { get: (id: Id<"jobPostings">) => Promise<{ userId: Id<"users"> } | null> } },
+  jobPostingId: Id<"jobPostings">,
+  userId: Id<"users">,
+) {
+  const job = await ctx.db.get(jobPostingId)
+  if (!job || job.userId !== userId) throw new Error("Job posting not found")
+}
 
 export const create = mutation({
   args: {
@@ -23,6 +43,9 @@ export const create = mutation({
     eveSessionId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    await assertResumeOwned(ctx, args.resumeId, args.userId)
+    await assertJobOwned(ctx, args.jobPostingId, args.userId)
+
     return await ctx.db.insert("analyses", {
       ...args,
       createdAt: Date.now(),
@@ -32,13 +55,13 @@ export const create = mutation({
 
 export const listByUser = query({
   args: {
-    userId: v.id("users"),
     minMatch: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
+    const userId = await requireUserId(ctx)
     const rows = await ctx.db
       .query("analyses")
-      .withIndex("by_user_created", (q) => q.eq("userId", args.userId))
+      .withIndex("by_user_created", (q) => q.eq("userId", userId))
       .order("desc")
       .collect()
 
@@ -50,15 +73,19 @@ export const listByUser = query({
 export const get = query({
   args: { analysisId: v.id("analyses") },
   handler: async (ctx, args) => {
-    return await ctx.db.get(args.analysisId)
+    const { userId } = await requireUser(ctx)
+    const analysis = await ctx.db.get(args.analysisId)
+    if (!analysis || analysis.userId !== userId) return null
+    return analysis
   },
 })
 
 export const getWithRelations = query({
   args: { analysisId: v.id("analyses") },
   handler: async (ctx, args) => {
+    const { userId } = await requireUser(ctx)
     const analysis = await ctx.db.get(args.analysisId)
-    if (!analysis) return null
+    if (!analysis || analysis.userId !== userId) return null
 
     const [resume, jobPosting] = await Promise.all([
       ctx.db.get(analysis.resumeId),

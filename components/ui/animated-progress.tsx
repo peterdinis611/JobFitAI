@@ -5,10 +5,10 @@ import { useEffect } from "react"
 import { cn } from "@/lib/utils"
 
 function matchColor(value: number) {
-  if (value >= 85) return "bg-emerald-500"
-  if (value >= 70) return "bg-violet-500"
-  if (value >= 50) return "bg-amber-500"
-  return "bg-rose-500"
+  if (value >= 85) return "bg-success"
+  if (value >= 70) return "bg-primary"
+  if (value >= 50) return "bg-warning"
+  return "bg-destructive"
 }
 
 export function AnimatedProgress({
@@ -39,7 +39,7 @@ export function AnimatedProgress({
         className={cn(
           "h-full rounded-full",
           matchColor(pct),
-          showGlow && "shadow-[0_0_12px_rgba(139,92,246,0.45)]",
+          showGlow && "shadow-[0_0_12px_var(--glow)]",
         )}
         style={{ width }}
       />
@@ -67,7 +67,7 @@ export function MatchScoreRing({
   }, [pct, spring])
 
   const stroke =
-    pct >= 85 ? "#10b981" : pct >= 70 ? "#8b5cf6" : pct >= 50 ? "#f59e0b" : "#f43f5e"
+    pct >= 85 ? "#10b981" : pct >= 70 ? "#0d9488" : pct >= 50 ? "#d97706" : "#e11d48"
 
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)}>

@@ -3,17 +3,21 @@
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { useQuery } from "convex/react"
-import { ArrowUpDown, BarChart3, Target, TrendingUp } from "lucide-react"
+import { ArrowUpDown, BarChart3, Plus, Target, TrendingUp } from "lucide-react"
 import { motion } from "motion/react"
 import { api } from "@/convex/_generated/api"
 import type { Doc } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
+import {
+  DashboardGettingStarted,
+  DashboardNoFilterResults,
+} from "@/components/dashboard/dashboard-states"
 import { AnimatedProgress } from "@/components/ui/animated-progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { EmptyState } from "@/components/ui/empty-state"
 import { PageHeader } from "@/components/ui/page-header"
+import { Skeleton } from "@/components/ui/skeleton"
 import { StatCard } from "@/components/ui/stat-card"
 import {
   Table,
@@ -25,11 +29,22 @@ import {
 } from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 
+const filters = [
+  { label: "All", value: 0 },
+  { label: "≥ 50%", value: 50 },
+  { label: "≥ 70%", value: 70 },
+  { label: "≥ 85%", value: 85 },
+]
+
 export default function DashboardPage() {
-  const { userId, ready } = useJobFitUser()
-  const analyses = useQuery(api.analyses.listByUser, userId ? { userId } : "skip")
+  const { ready } = useJobFitUser()
+  const analyses = useQuery(api.analyses.listByUser, ready ? {} : "skip")
+  const resumes = useQuery(api.resumes.listByUser, ready ? {} : "skip")
   const [sortDesc, setSortDesc] = useState(true)
   const [minMatch, setMinMatch] = useState(0)
+
+  const hasResume = Boolean(resumes?.some((r) => r.isActive))
+  const isEmpty = analyses?.length === 0
 
   const sorted = useMemo(() => {
     if (!analyses) return []
@@ -49,8 +64,20 @@ export default function DashboardPage() {
     return { avg, best, count: analyses.length }
   }, [analyses])
 
-  if (!ready) {
+  if (!ready || analyses === undefined) {
     return <DashboardSkeleton />
+  }
+
+  if (isEmpty) {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          title="Analysis history"
+          description="Track how well your resume matches each job posting over time."
+        />
+        <DashboardGettingStarted hasResume={hasResume} />
+      </div>
+    )
   }
 
   return (
@@ -60,93 +87,97 @@ export default function DashboardPage() {
         description="Track how well your resume matches each job posting over time."
         action={
           <Button asChild>
-            <Link href="/analyze">New analysis</Link>
+            <Link href="/analyze">
+              <Plus className="size-4" />
+              New analysis
+            </Link>
           </Button>
         }
       />
 
-      {analyses && analyses.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-3">
-          <StatCard label="Total analyses" value={stats.count} icon={BarChart3} delay={0.05} />
-          <StatCard label="Average match" value={`${stats.avg}%`} icon={Target} accent="emerald" delay={0.1} />
-          <StatCard label="Best score" value={`${stats.best}%`} icon={TrendingUp} accent="amber" delay={0.15} />
-        </div>
-      ) : null}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <StatCard label="Total analyses" value={stats.count} icon={BarChart3} delay={0.05} />
+        <StatCard label="Average match" value={`${stats.avg}%`} icon={Target} accent="emerald" delay={0.1} />
+        <StatCard label="Best score" value={`${stats.best}%`} icon={TrendingUp} accent="amber" delay={0.15} />
+      </div>
 
       <motion.div
-        className="flex flex-wrap gap-2"
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.15 }}
       >
+        <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-muted/30 p-1">
+          {filters.map(({ label, value }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setMinMatch(value)}
+              className={cn(
+                "rounded-lg px-3 py-1.5 text-sm font-medium transition-all",
+                minMatch === value
+                  ? "bg-card text-foreground shadow-sm"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         <Button variant="outline" size="sm" onClick={() => setSortDesc((v) => !v)}>
           <ArrowUpDown className="size-4" />
-          Sort by match {sortDesc ? "↓" : "↑"}
+          Match {sortDesc ? "high → low" : "low → high"}
         </Button>
-        {[0, 50, 70, 85].map((n) => (
-          <Button
-            key={n}
-            variant={minMatch === n ? "default" : "outline"}
-            size="sm"
-            onClick={() => setMinMatch(n)}
-          >
-            {n === 0 ? "All" : `≥ ${n}%`}
-          </Button>
-        ))}
       </motion.div>
 
-      <Card className="border-border/60 bg-card/80 backdrop-blur-sm">
-        <CardHeader>
-          <CardTitle>Analyses</CardTitle>
-          <CardDescription>
-            {sorted.length} result{sorted.length === 1 ? "" : "s"}
-          </CardDescription>
+      <Card className="overflow-hidden border-border/60 bg-card/80 backdrop-blur-sm">
+        <CardHeader className="border-b border-border/60 bg-muted/20">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <CardTitle>Recent analyses</CardTitle>
+              <CardDescription>
+                {sorted.length} of {analyses.length} shown
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
-          {analyses === undefined ? (
-            <DashboardSkeleton />
-          ) : sorted.length === 0 ? (
-            <EmptyState
-              lottieSrc="/lottie/empty-search.json"
-              title="No analyses yet"
-              description="Run your first resume vs job match to see scores, skill gaps, and recommendations here."
-              actionLabel="Run your first match"
-              actionHref="/analyze"
-            />
+        <CardContent className="p-0">
+          {sorted.length === 0 && minMatch > 0 ? (
+            <DashboardNoFilterResults minMatch={minMatch} onClear={() => setMinMatch(0)} />
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="hover:bg-transparent">
                   <TableHead>Match</TableHead>
                   <TableHead>Seniority</TableHead>
                   <TableHead>Skills matched</TableHead>
                   <TableHead>Date</TableHead>
-                  <TableHead />
+                  <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {sorted.map((row, index) => (
                   <motion.tr
                     key={row._id}
-                    className="group border-b transition-colors hover:bg-muted/40"
-                    initial={{ opacity: 0, y: 10 }}
+                    className="group border-b transition-colors hover:bg-muted/30"
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: 0.35,
-                      delay: index * 0.05,
+                      duration: 0.3,
+                      delay: index * 0.04,
                       ease: [0.22, 1, 0.36, 1],
                     }}
                   >
-                    <TableCell>
+                    <TableCell className="py-4">
                       <div className="flex min-w-[140px] flex-col gap-2">
                         <span
                           className={cn(
-                            "font-semibold tabular-nums",
-                            row.matchPercentage >= 85 && "text-emerald-600 dark:text-emerald-400",
+                            "text-lg font-semibold tabular-nums",
+                            row.matchPercentage >= 85 && "text-success",
                             row.matchPercentage >= 70 &&
                               row.matchPercentage < 85 &&
-                              "text-violet-600 dark:text-violet-400",
-                            row.matchPercentage < 50 && "text-rose-600 dark:text-rose-400",
+                              "text-primary",
+                            row.matchPercentage < 50 && "text-destructive",
                           )}
                         >
                           {row.matchPercentage}%
@@ -155,18 +186,38 @@ export default function DashboardPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary">{row.seniorityFit}</Badge>
+                      <Badge
+                        variant="secondary"
+                        className={cn(
+                          row.seniorityFit === "match" && "bg-success/15 text-success",
+                          row.seniorityFit === "under" && "bg-warning/15 text-warning",
+                          row.seniorityFit === "over" && "bg-primary/15 text-primary",
+                        )}
+                      >
+                        {row.seniorityFit}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="max-w-[200px] truncate text-muted-foreground">
-                      {row.matchingSkills.slice(0, 4).join(", ")}
-                      {row.matchingSkills.length > 4 ? "…" : ""}
+                    <TableCell className="max-w-[220px]">
+                      <p className="truncate text-sm text-muted-foreground">
+                        {row.matchingSkills.slice(0, 4).join(", ")}
+                        {row.matchingSkills.length > 4 ? ` +${row.matchingSkills.length - 4}` : ""}
+                      </p>
                     </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(row.createdAt).toLocaleDateString()}
+                    <TableCell className="text-sm text-muted-foreground">
+                      {new Date(row.createdAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
                     </TableCell>
-                    <TableCell>
-                      <Button asChild variant="ghost" size="sm" className="opacity-70 group-hover:opacity-100">
-                        <Link href={`/analyses/${row._id}`}>View</Link>
+                    <TableCell className="text-right">
+                      <Button
+                        asChild
+                        variant="ghost"
+                        size="sm"
+                        className="opacity-60 group-hover:opacity-100"
+                      >
+                        <Link href={`/analyses/${row._id}`}>View report</Link>
                       </Button>
                     </TableCell>
                   </motion.tr>
@@ -182,14 +233,17 @@ export default function DashboardPage() {
 
 function DashboardSkeleton() {
   return (
-    <div className="animate-pulse space-y-6">
-      <div className="h-10 w-56 rounded-lg bg-muted" />
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <Skeleton className="h-9 w-52" />
+        <Skeleton className="h-4 w-80 max-w-full" />
+      </div>
       <div className="grid gap-4 sm:grid-cols-3">
         {[0, 1, 2].map((i) => (
-          <div key={i} className="h-24 rounded-xl bg-muted" />
+          <Skeleton key={i} className="h-24 rounded-xl" />
         ))}
       </div>
-      <div className="h-64 rounded-xl bg-muted" />
+      <Skeleton className="h-80 rounded-2xl" />
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { mutation } from "./_generated/server"
-import { v } from "convex/values"
+import { requireUserId } from "./lib/auth"
 
 const DAILY_LIMIT = 20
 
@@ -8,17 +8,18 @@ function todayKey() {
 }
 
 export const checkAndIncrement = mutation({
-  args: { userId: v.id("users") },
-  handler: async (ctx, args) => {
+  args: {},
+  handler: async (ctx) => {
+    const userId = await requireUserId(ctx)
     const date = todayKey()
     const existing = await ctx.db
       .query("rateLimits")
-      .withIndex("by_user_date", (q) => q.eq("userId", args.userId).eq("date", date))
+      .withIndex("by_user_date", (q) => q.eq("userId", userId).eq("date", date))
       .unique()
 
     if (!existing) {
       await ctx.db.insert("rateLimits", {
-        userId: args.userId,
+        userId,
         date,
         analysisCount: 1,
       })

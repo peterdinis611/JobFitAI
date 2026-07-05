@@ -11,9 +11,12 @@ import { api } from "@/convex/_generated/api"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { AgentMessage } from "@/app/_components/agent-message"
 import { FadeIn } from "@/components/motion/motion-primitives"
+import {
+  AnalyzingIllustration,
+  EmptySearchIllustration,
+} from "@/components/illustrations/jobfit-illustrations"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { LottiePlayer } from "@/components/ui/lottie-player"
 import { PageHeader } from "@/components/ui/page-header"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
@@ -28,7 +31,7 @@ import { cn } from "@/lib/utils"
 
 export default function AnalyzePage() {
   const { userId, ready } = useJobFitUser()
-  const resumes = useQuery(api.resumes.listByUser, userId ? { userId } : "skip")
+  const resumes = useQuery(api.resumes.listByUser, ready ? {} : "skip")
   const createJob = useMutation(api.jobPostings.create)
   const checkRate = useMutation(api.rateLimits.checkAndIncrement)
 
@@ -65,14 +68,13 @@ export default function AnalyzePage() {
 
     setRunning(true)
     try {
-      const rate = await checkRate({ userId })
+      const rate = await checkRate({})
       if (!rate.allowed) {
         toast.error("Daily analysis limit reached (20/day)")
         return
       }
 
       const jobPostingId = await createJob({
-        userId,
         source,
         rawText: raw,
         cleanedText: source === "text" ? raw : raw,
@@ -172,11 +174,7 @@ Steps: parse_resume → ${source === "url" ? "fetch_job_posting →" : ""} score
               </Tabs>
 
               <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                <Button
-                  className="mt-4 w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500"
-                  disabled={isBusy}
-                  onClick={() => void runAnalysis()}
-                >
+                <Button className="mt-4 w-full" disabled={isBusy} onClick={() => void runAnalysis()}>
                   {isBusy ? (
                     <Loader2 className="size-4 animate-spin" />
                   ) : (
@@ -206,7 +204,7 @@ Steps: parse_resume → ${source === "url" ? "fetch_job_posting →" : ""} score
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  <LottiePlayer src="/lottie/ai-analyzing.json" className="h-36 w-36" />
+                  <AnalyzingIllustration />
                   <p className="text-sm font-medium text-muted-foreground">Analyzing your match…</p>
                 </motion.div>
               ) : agent.data.messages.length === 0 ? (
@@ -217,8 +215,8 @@ Steps: parse_resume → ${source === "url" ? "fetch_job_posting →" : ""} score
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  <LottiePlayer src="/lottie/empty-search.json" className="h-32 w-32 opacity-80" />
-                  <p className="mt-2 text-sm text-muted-foreground">
+                  <EmptySearchIllustration />
+                  <p className="mt-3 text-sm text-muted-foreground">
                     Start an analysis to see the live stream
                   </p>
                 </motion.div>

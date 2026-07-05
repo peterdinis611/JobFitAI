@@ -9,7 +9,10 @@
  */
 
 import type * as analyses from "../analyses.js";
+import type * as auth from "../auth.js";
+import type * as http from "../http.js";
 import type * as jobPostings from "../jobPostings.js";
+import type * as lib_auth from "../lib/auth.js";
 import type * as rateLimits from "../rateLimits.js";
 import type * as resumes from "../resumes.js";
 import type * as users from "../users.js";
@@ -22,7 +25,10 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   analyses: typeof analyses;
+  auth: typeof auth;
+  http: typeof http;
   jobPostings: typeof jobPostings;
+  "lib/auth": typeof lib_auth;
   rateLimits: typeof rateLimits;
   resumes: typeof resumes;
   users: typeof users;

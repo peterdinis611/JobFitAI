@@ -12,11 +12,14 @@
     "dev": "next dev",
     "start": "next start",
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "ui:add": "npx shadcn@latest add",
     "build:eve": "eve build",
     "dev:eve": "eve dev",
     "start:eve": "eve start"
   },
   "dependencies": {
+    "@auth/core": "^0.41.2",
+    "@convex-dev/auth": "^0.0.94",
     "@hookform/resolvers": "^5.4.0",
     "@radix-ui/react-use-controllable-state": "1.2.2",
     "@shikijs/core": "4.1.0",
@@ -36,7 +39,6 @@
     "convex": "^1.42.1",
     "effect": "^3.21.4",
     "eve": "^0.19.0",
-    "lottie-react": "^2.4.1",
     "lucide-react": "1.16.0",
     "mammoth": "^1.12.0",
     "motion": "12.40.0",
