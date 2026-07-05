@@ -117,8 +117,8 @@ export default function DashboardPage() {
 
       <div className="grid gap-4 sm:grid-cols-3">
         <StatCard label="Total analyses" value={stats.count} icon={BarChart3} delay={0.05} />
-        <StatCard label="Average match" value={`${stats.avg}%`} icon={Target} accent="emerald" delay={0.1} />
-        <StatCard label="Best score" value={`${stats.best}%`} icon={TrendingUp} accent="amber" delay={0.15} />
+        <StatCard label="Average match" value={`${stats.avg}%`} icon={Target} accent="success" delay={0.1} />
+        <StatCard label="Best score" value={`${stats.best}%`} icon={TrendingUp} accent="warning" delay={0.15} />
       </div>
 
       <motion.div
@@ -127,17 +127,15 @@ export default function DashboardPage() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.15 }}
       >
-        <div className="flex flex-wrap gap-1.5 rounded-xl border border-border bg-muted/30 p-1">
+        <div className="mac-segmented flex flex-wrap gap-0 p-0.5">
           {filters.map(({ label, value }) => (
             <button
               key={value}
               type="button"
               onClick={() => setMinMatch(value)}
               className={cn(
-                "rounded-lg px-3 py-1.5 text-sm font-medium transition-all",
-                minMatch === value
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
+                "mac-segmented-item",
+                minMatch === value && "mac-segmented-item-active",
               )}
             >
               {label}
@@ -158,7 +156,7 @@ export default function DashboardPage() {
         </p>
       ) : null}
 
-      <Card className="overflow-hidden border-border/60 bg-card/80 backdrop-blur-sm">
+      <Card className="overflow-hidden">
         <CardHeader className="border-b border-border/60 bg-muted/20">
           <CardTitle>Recent analyses</CardTitle>
           <CardDescription>

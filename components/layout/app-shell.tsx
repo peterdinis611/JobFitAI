@@ -17,7 +17,7 @@ const links = [
   { href: "/tracker", label: "Tracker", icon: Kanban },
   { href: "/resumes", label: "Resumes", icon: FileText },
   { href: "/analyze", label: "Analyze", icon: Briefcase },
-  { href: "/docs", label: "Docs", icon: BookOpen },
+  { href: "/docs", label: "Docs", icon: BookOpen, static: true },
 ]
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -28,25 +28,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   if (isLoading) {
     return (
-      <div className="relative flex min-h-dvh items-center justify-center">
+      <div className="relative flex min-h-dvh items-center justify-center bg-background">
         <div className="absolute top-4 right-4">
           <ThemeToggle />
         </div>
         <motion.div
-          className="flex flex-col items-center gap-3"
+          className="flex flex-col items-center gap-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <RobotLogo size={40} />
-          <motion.div
-            className="h-1 w-12 overflow-hidden rounded-full bg-muted"
-          >
+          <RobotLogo size={44} />
+          <div className="h-1 w-16 overflow-hidden rounded-full bg-muted">
             <motion.div
               className="h-full w-1/2 rounded-full bg-primary"
               animate={{ x: ["-100%", "200%"] }}
               transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
             />
-          </motion.div>
+          </div>
         </motion.div>
       </div>
     )
@@ -57,61 +55,91 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-dvh text-foreground">
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-background/70 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="group flex items-center gap-2.5 font-semibold tracking-tight">
+    <div className="flex min-h-dvh flex-col text-foreground">
+      <header className="mac-toolbar sticky top-0 z-40">
+        <div className="mx-auto flex h-[52px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+          <Link
+            href="/"
+            className="flex shrink-0 items-center gap-2 font-semibold tracking-tight"
+          >
             <RobotLogoMark />
-            <span>
-              JobFit <span className="text-primary">AI</span>
-            </span>
+            <span className="hidden text-[15px] sm:inline">JobFit AI</span>
           </Link>
-          <nav className="flex items-center gap-1">
-            {links.map(({ href, label, icon: Icon }) => {
-              const active = href === "/docs" ? pathname.startsWith("/docs") : pathname === href
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={cn(
-                    "relative flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors",
-                    active ? "text-primary" : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {active ? (
-                    <motion.span
-                      layoutId="nav-active"
-                      className="absolute inset-0 rounded-lg bg-primary/10"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  ) : null}
-                  <Icon className="relative size-4" />
-                  <span className="relative hidden sm:inline">{label}</span>
+
+          <nav className="mac-segmented hidden overflow-x-auto sm:flex">
+            {links.map(({ href, label, icon: Icon, static: isStatic }) => {
+              const active =
+                href.startsWith("/docs") ? pathname.startsWith("/docs") : pathname === href
+              const className = cn(
+                "mac-segmented-item whitespace-nowrap",
+                active && "mac-segmented-item-active",
+              )
+              const inner = (
+                <>
+                  <Icon className="size-3.5 shrink-0 opacity-80" strokeWidth={2.25} />
+                  <span>{label}</span>
+                </>
+              )
+              return isStatic ? (
+                <a key={href} href={href} className={className}>
+                  {inner}
+                </a>
+              ) : (
+                <Link key={href} href={href} className={className}>
+                  {inner}
                 </Link>
               )
             })}
+          </nav>
+
+          <div className="flex shrink-0 items-center gap-1">
             {email ? (
-              <span className="ml-2 hidden max-w-[140px] truncate text-xs text-muted-foreground md:inline">
+              <span className="mr-1 hidden max-w-[120px] truncate text-[11px] text-muted-foreground lg:inline">
                 {email}
               </span>
             ) : null}
-            <ThemeToggle className="ml-1" />
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Sign out"
-              onClick={() => void signOut()}
-            >
+            <ThemeToggle />
+            <Button variant="ghost" size="icon-sm" aria-label="Sign out" onClick={() => void signOut()}>
               <LogOut className="size-4" />
             </Button>
-          </nav>
+          </div>
+        </div>
+
+        {/* Mobile nav */}
+        <div className="flex gap-1 overflow-x-auto border-t border-border/60 px-3 py-2 sm:hidden">
+          {links.map(({ href, label, icon: Icon, static: isStatic }) => {
+            const active =
+              href.startsWith("/docs") ? pathname.startsWith("/docs") : pathname === href
+            const className = cn(
+              "flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium",
+              active
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground",
+            )
+            const inner = (
+              <>
+                <Icon className="size-3.5" />
+                {label}
+              </>
+            )
+            return isStatic ? (
+              <a key={href} href={href} className={className}>
+                {inner}
+              </a>
+            ) : (
+              <Link key={href} href={href} className={className}>
+                {inner}
+              </Link>
+            )
+          })}
         </div>
       </header>
+
       <motion.main
-        className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8"
-        initial={{ opacity: 0, y: 8 }}
+        className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 sm:py-8"
+        initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         key={pathname}
       >
         {children}

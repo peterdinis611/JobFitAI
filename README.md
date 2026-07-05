@@ -26,18 +26,18 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:3000](http://localhost:3000). Docs: [http://localhost:3000/docs/](http://localhost:3000/docs/) (run `npm run build:docs` first).
 
 ### Documentation
 
-Docs are built with [Docusaurus](https://docusaurus.io/) and served at `/docs`.
+Docs are built with [Docusaurus](https://docusaurus.io/) and served as static files at `/docs/`.
 
 ```bash
-# Dev — run alongside npm run dev (proxied via next.config rewrites)
-npm run dev:docs
-
-# Production build (included in npm run build)
+# Build docs into public/docs (required before first visit, and after doc edits)
 npm run build:docs
+
+# Optional — live reload while editing website/docs/
+npm run dev:docs   # then open http://localhost:3001/docs/
 ```
 
 See [website/docs/](./website/docs/) for source content.

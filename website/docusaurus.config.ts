@@ -20,10 +20,26 @@ const config: Config = {
   onBrokenLinks: 'throw',
 
   markdown: {
+    mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: 'warn',
     },
   },
+
+  themes: ['@docusaurus/theme-mermaid'],
+
+  plugins: [
+    [
+      require.resolve('@easyops-cn/docusaurus-search-local'),
+      {
+        hashed: true,
+        language: ['en'],
+        indexDocs: true,
+        docsRouteBasePath: '/',
+        highlightSearchTermsOnTargetPage: true,
+      },
+    ],
+  ],
 
   i18n: {
     defaultLocale: 'en',
@@ -51,13 +67,17 @@ const config: Config = {
       respectPrefersColorScheme: true,
     },
     navbar: {
-      title: 'JobFit AI Docs',
+      title: 'JobFit AI',
       items: [
         {
           type: 'docSidebar',
           sidebarId: 'docsSidebar',
           position: 'left',
-          label: 'Documentation',
+          label: 'Docs',
+        },
+        {
+          type: 'search',
+          position: 'right',
         },
         {
           href: '/',
@@ -70,16 +90,28 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Learn',
           items: [
-            { label: 'Introduction', to: '/' },
-            { label: 'Getting started', to: '/getting-started' },
-            { label: 'Architecture', to: '/architecture' },
+            { label: 'Getting started', to: '/getting-started/installation' },
+            { label: 'User guide', to: '/user-guide/dashboard' },
+            { label: 'Architecture', to: '/architecture/overview' },
           ],
         },
         {
-          title: 'App',
-          items: [{ label: 'Dashboard', href: '/' }],
+          title: 'Reference',
+          items: [
+            { label: 'Agent tools', to: '/reference/agent-tools' },
+            { label: 'Convex API', to: '/reference/convex-api' },
+            { label: 'Environment variables', to: '/reference/environment-variables' },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
+            { label: 'FAQ', to: '/help/faq' },
+            { label: 'Troubleshooting', to: '/help/troubleshooting' },
+            { label: 'Open app', href: '/' },
+          ],
         },
       ],
       copyright: `Copyright © ${new Date().getFullYear()} JobFit AI. Built with Docusaurus.`,
@@ -87,6 +119,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
+      additionalLanguages: ['bash', 'typescript', 'json'],
     },
   } satisfies Preset.ThemeConfig,
 };

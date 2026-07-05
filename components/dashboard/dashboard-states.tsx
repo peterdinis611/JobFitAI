@@ -43,10 +43,7 @@ export function DashboardGettingStarted({
 
   return (
     <motion.div
-      className={cn(
-        "overflow-hidden rounded-2xl border border-border bg-gradient-to-b from-card to-muted/30",
-        className,
-      )}
+      className={cn("mac-window", className)}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -100,8 +97,8 @@ export function DashboardGettingStarted({
               <Link
                 href={step.href}
                 className={cn(
-                  "group flex h-full flex-col rounded-xl border border-border/70 bg-card p-4 transition-all hover:border-primary/30 hover:shadow-md",
-                  done && "border-primary/25 bg-primary/5",
+                  "group flex h-full flex-col rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md",
+                  done && "border-primary/30 bg-primary/5",
                 )}
               >
                 <div className="mb-3 flex items-center justify-between">

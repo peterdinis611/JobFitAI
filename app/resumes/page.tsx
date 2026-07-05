@@ -103,7 +103,7 @@ export default function ResumesPage() {
         >
           <Card
             className={cn(
-              "border-2 border-dashed border-border/70 bg-card/60 backdrop-blur-sm transition-colors",
+              "border-2 border-dashed border-border bg-card transition-colors",
               dragOver && "border-primary bg-primary/5",
               uploading && "pointer-events-none opacity-60",
             )}
@@ -166,8 +166,8 @@ export default function ResumesPage() {
               <motion.div whileHover={{ y: -3 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
                 <Card
                   className={cn(
-                    "border-border/60 bg-card/80 backdrop-blur-sm transition-shadow hover:shadow-md",
-                    resume.isActive && "border-primary/40 ring-1 ring-primary/20",
+                    "transition-shadow hover:shadow-md",
+                    resume.isActive && "ring-2 ring-primary/30",
                   )}
                 >
                   <CardHeader className="pb-2">

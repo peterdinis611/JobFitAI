@@ -8,7 +8,8 @@ export function Toaster() {
       position="bottom-right"
       toastOptions={{
         classNames: {
-          toast: "border border-border bg-card text-foreground",
+          toast:
+            "mac-panel !rounded-xl !border-border !bg-card !text-foreground !shadow-lg !text-[13px]",
         },
       }}
     />

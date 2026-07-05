@@ -9,7 +9,6 @@ import { AuthHeroIllustration } from "@/components/illustrations/jobfit-illustra
 import { RobotLogoMark } from "@/components/brand/robot-logo"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
@@ -57,110 +56,110 @@ export function AuthScreen() {
   }
 
   return (
-    <div className="relative flex min-h-dvh items-center justify-center px-4 py-10">
+    <div className="relative flex min-h-dvh items-center justify-center bg-background p-4">
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      <div className="grid w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card shadow-xl lg:grid-cols-2">
-        <div className="relative hidden flex-col justify-center bg-gradient-to-br from-primary/90 via-primary to-primary/80 p-10 lg:flex">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,oklch(1_0_0/0.15),transparent_55%)]" />
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="relative z-10"
-          >
-            <div className="flex items-center gap-2">
-              <RobotLogoMark inverted />
-              <p className="text-sm font-medium uppercase tracking-widest text-primary-foreground/75">
-                JobFit AI
-              </p>
-            </div>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-primary-foreground">
-              Match your resume to any role
-            </h2>
-            <p className="mt-3 max-w-sm text-sm leading-relaxed text-primary-foreground/80">
-              Sign in to upload CVs, analyze job postings, and track your match scores over time.
-            </p>
-            <AuthHeroIllustration className="mt-8 opacity-95" />
-          </motion.div>
+
+      <motion.div
+        className="mac-window w-full max-w-[420px]"
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
+      >
+        <div className="mac-titlebar">
+          <div className="mac-traffic-lights" aria-hidden>
+            <span />
+            <span />
+            <span />
+          </div>
+          <span className="flex-1 text-center text-[13px] font-medium text-muted-foreground">
+            JobFit AI
+          </span>
+          <div className="w-[52px]" />
         </div>
 
-        <Card className="rounded-none border-0 bg-card shadow-none">
-          <CardHeader className="space-y-1 pb-4">
-            <CardTitle className="text-2xl">
-              {step === "signIn" ? "Sign in" : "Create account"}
-            </CardTitle>
-            <CardDescription>
+        <div className="p-6 sm:p-8">
+          <div className="mb-6 flex flex-col items-center text-center">
+            <RobotLogoMark />
+            <h1 className="mac-large-title mt-4">
+              {step === "signIn" ? "Sign In" : "Create Account"}
+            </h1>
+            <p className="mt-1.5 text-[13px] text-muted-foreground">
               {step === "signIn"
                 ? "Enter your email and password to continue"
-                : "Start analyzing job matches in minutes"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    placeholder="you@company.com"
-                    className="pl-9"
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <div className="relative">
-                  <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete={step === "signIn" ? "current-password" : "new-password"}
-                    required
-                    minLength={8}
-                    placeholder="Min. 8 characters"
-                    className="pl-9"
-                  />
-                </div>
-              </div>
-
-              {error ? (
-                <Alert variant="destructive">
-                  <AlertCircle />
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              ) : null}
-
-              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? <Loader2 className="size-4 animate-spin" /> : null}
-                  {step === "signIn" ? "Sign in" : "Create account"}
-                </Button>
-              </motion.div>
-            </form>
-
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-              {step === "signIn" ? "New here?" : "Already have an account?"}{" "}
-              <button
-                type="button"
-                className={cn("font-medium text-primary hover:underline")}
-                onClick={() => {
-                  setError(null)
-                  setStep(step === "signIn" ? "signUp" : "signIn")
-                }}
-              >
-                {step === "signIn" ? "Create an account" : "Sign in"}
-              </button>
+                : "Start matching your resume to any role"}
             </p>
-          </CardContent>
-        </Card>
+          </div>
+
+          <form onSubmit={(e) => void handleSubmit(e)} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-[13px] font-medium">
+                Email
+              </Label>
+              <div className="relative">
+                <Mail className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  placeholder="you@icloud.com"
+                  className="pl-9"
+                />
+              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-[13px] font-medium">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete={step === "signIn" ? "current-password" : "new-password"}
+                  required
+                  minLength={8}
+                  placeholder="Min. 8 characters"
+                  className="pl-9"
+                />
+              </div>
+            </div>
+
+            {error ? (
+              <Alert variant="destructive">
+                <AlertCircle className="size-4" />
+                <AlertDescription className="text-[13px]">{error}</AlertDescription>
+              </Alert>
+            ) : null}
+
+            <Button type="submit" className="mt-2 w-full" size="lg" disabled={loading}>
+              {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+              {step === "signIn" ? "Sign In" : "Create Account"}
+            </Button>
+          </form>
+
+          <p className="mt-5 text-center text-[13px] text-muted-foreground">
+            {step === "signIn" ? "Don't have an account?" : "Already have an account?"}{" "}
+            <button
+              type="button"
+              className={cn("font-medium text-primary hover:underline")}
+              onClick={() => {
+                setError(null)
+                setStep(step === "signIn" ? "signUp" : "signIn")
+              }}
+            >
+              {step === "signIn" ? "Sign up" : "Sign in"}
+            </button>
+          </p>
+        </div>
+      </motion.div>
+
+      <div className="pointer-events-none absolute bottom-8 hidden opacity-40 lg:block">
+        <AuthHeroIllustration className="max-h-32" />
       </div>
     </div>
   )

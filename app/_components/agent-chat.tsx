@@ -106,7 +106,7 @@ function StatusDot({ status }: { readonly status: AgentStatus }) {
     status === "error"
       ? "bg-destructive"
       : isLive
-        ? "bg-emerald-500"
+        ? "bg-success"
         : status === "ready"
           ? "bg-muted-foreground"
           : "bg-muted-foreground/50";

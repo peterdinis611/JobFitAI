@@ -15,38 +15,37 @@ export function StatCard({
   label: string
   value: string | number
   icon: LucideIcon
-  accent?: "primary" | "emerald" | "amber" | "rose"
+  accent?: "primary" | "success" | "warning" | "destructive"
   delay?: number
 }) {
   const accents = {
-    primary: "from-primary/15 to-primary/5 text-primary",
-    emerald: "from-emerald-500/15 to-emerald-500/5 text-emerald-600 dark:text-emerald-400",
-    amber: "from-amber-500/15 to-amber-500/5 text-amber-600 dark:text-amber-400",
-    rose: "from-rose-500/15 to-rose-500/5 text-rose-600 dark:text-rose-400",
+    primary: "bg-primary/12 text-primary",
+    success: "bg-success/12 text-success",
+    warning: "bg-warning/12 text-warning",
+    destructive: "bg-destructive/12 text-destructive",
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.45, delay, ease: [0.22, 1, 0.36, 1] }}
-      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+      transition={{ duration: 0.35, delay, ease: [0.25, 0.1, 0.25, 1] }}
     >
-      <Card className="overflow-hidden border-border/60 bg-card/80 backdrop-blur-sm">
-        <CardContent className="flex items-center gap-4 p-5">
+      <Card>
+        <CardContent className="flex items-center gap-4 p-4">
           <div
             className={cn(
-              "flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br",
+              "flex size-10 shrink-0 items-center justify-center rounded-lg",
               accents[accent],
             )}
           >
-            <Icon className="size-5" />
+            <Icon className="size-[18px]" strokeWidth={2.25} />
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               {label}
             </p>
-            <p className="text-2xl font-bold tabular-nums tracking-tight">{value}</p>
+            <p className="text-[22px] font-semibold tabular-nums tracking-tight">{value}</p>
           </div>
         </CardContent>
       </Card>

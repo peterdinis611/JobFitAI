@@ -98,7 +98,7 @@ export default function AnalysisDetailPage() {
       </FadeIn>
 
       <FadeIn delay={0.1}>
-        <AnimatedProgress value={analysis.matchPercentage} className="h-3" showGlow />
+        <AnimatedProgress value={analysis.matchPercentage} className="h-2.5" />
       </FadeIn>
 
       {rescoreDelta ? (
@@ -114,7 +114,7 @@ export default function AnalysisDetailPage() {
       <StaggerList className="grid gap-4 lg:grid-cols-2">
         {chartData.length > 0 ? (
           <StaggerItem>
-            <Card className="border-border/60 bg-card/80 backdrop-blur-sm">
+            <Card>
               <CardHeader>
                 <CardTitle className="text-base">Skill categories</CardTitle>
               </CardHeader>
@@ -140,7 +140,7 @@ export default function AnalysisDetailPage() {
           <Card className="border-border/60 bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <CheckCircle2 className="size-4 text-emerald-500" /> Matching skills
+                <CheckCircle2 className="size-4 text-success" /> Matching skills
               </CardTitle>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
@@ -180,7 +180,7 @@ export default function AnalysisDetailPage() {
 
         {analysis.redFlags.length > 0 ? (
           <StaggerItem>
-            <Card className="border-destructive/30 bg-card/80 backdrop-blur-sm">
+            <Card className="border-destructive/40">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-base text-destructive">
                   <AlertTriangle className="size-4" /> Red flags
@@ -201,7 +201,7 @@ export default function AnalysisDetailPage() {
           <Card className="border-border/60 bg-card/80 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-base">
-                <Lightbulb className="size-4 text-amber-500" /> Recommendations
+                <Lightbulb className="size-4 text-warning" /> Recommendations
               </CardTitle>
               <CardDescription>Actionable CV improvements</CardDescription>
             </CardHeader>

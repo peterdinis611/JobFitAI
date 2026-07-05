@@ -22,9 +22,9 @@ export function PageHeader({
       transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
+        <h1 className="mac-large-title">{title}</h1>
         {description ? (
-          <p className="max-w-xl text-sm text-muted-foreground sm:text-base">{description}</p>
+          <p className="max-w-xl text-[15px] text-muted-foreground">{description}</p>
         ) : null}
       </div>
       {action}

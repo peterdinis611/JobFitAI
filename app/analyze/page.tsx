@@ -135,7 +135,7 @@ Steps: parse_resume → ${source === "url" ? "fetch_job_posting → update_job_p
         />
 
         <FadeIn delay={0.05}>
-          <Card className={cn("border-border/60 bg-card/80 backdrop-blur-sm", !activeResume && "border-amber-500/30")}>
+          <Card className={cn(!activeResume && "border-warning/50")}>
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base">
                 <FileText className="size-4 text-primary" />
@@ -156,7 +156,7 @@ Steps: parse_resume → ${source === "url" ? "fetch_job_posting → update_job_p
         </FadeIn>
 
         <FadeIn delay={0.1}>
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm">
+          <Card>
             <CardHeader>
               <CardTitle className="text-base">Job posting</CardTitle>
               <CardDescription>Paste the description or provide a URL</CardDescription>
@@ -202,7 +202,7 @@ Steps: parse_resume → ${source === "url" ? "fetch_job_posting → update_job_p
       </div>
 
       <FadeIn delay={0.15}>
-        <Card className="flex min-h-[520px] flex-col overflow-hidden border-border/60 bg-card/80 backdrop-blur-sm">
+        <Card className="flex min-h-[520px] flex-col overflow-hidden">
           <CardHeader>
             <CardTitle className="text-base">Live agent stream</CardTitle>
             <CardDescription>Tool calls and reasoning from your analysis session</CardDescription>

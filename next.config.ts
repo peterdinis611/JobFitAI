@@ -2,18 +2,24 @@ import type { NextConfig } from "next";
 import { withEve } from "eve/next";
 
 const nextConfig: NextConfig = {
-  async rewrites() {
-    if (process.env.NODE_ENV !== "development") return [];
+  async redirects() {
     return [
       {
         source: "/docs",
-        destination: "http://localhost:3001/docs",
-      },
-      {
-        source: "/docs/:path*",
-        destination: "http://localhost:3001/docs/:path*",
+        destination: "/docs/index.html",
+        permanent: false,
       },
     ];
+  },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: "/docs/:path((?!assets|img|index.html).*)",
+          destination: "/docs/:path/index.html",
+        },
+      ],
+    };
   },
 };
 

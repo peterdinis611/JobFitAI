@@ -34,8 +34,15 @@ export type MessageContentProps = HTMLAttributes<HTMLDivElement>;
 export const MessageContent = ({ children, className, ...props }: MessageContentProps) => (
   <div
     className={cn(
-      "is-user:dark flex w-fit min-w-0 max-w-full flex-col gap-2 overflow-hidden text-sm",
-      "group-[.is-user]:ml-auto group-[.is-user]:rounded-2xl group-[.is-user]:bg-primary group-[.is-user]:px-4 group-[.is-user]:py-2.5 group-[.is-user]:text-primary-foreground",
+      "is-user:dark flex w-fit min-w-0 max-w-full flex-col gap-2 overflow-hidden text-[13px] leading-relaxed",
+      /* User — soft mac panel, not saturated iMessage blue */
+      "group-[.is-user]:ml-auto group-[.is-user]:max-w-[92%] group-[.is-user]:rounded-xl",
+      "group-[.is-user]:border group-[.is-user]:border-border group-[.is-user]:bg-secondary",
+      "group-[.is-user]:px-4 group-[.is-user]:py-3 group-[.is-user]:text-foreground group-[.is-user]:shadow-sm",
+      "group-[.is-user]:[&_pre]:rounded-lg group-[.is-user]:[&_pre]:border group-[.is-user]:[&_pre]:border-border",
+      "group-[.is-user]:[&_pre]:bg-card group-[.is-user]:[&_pre]:text-foreground",
+      "group-[.is-user]:[&_code]:rounded group-[.is-user]:[&_code]:bg-muted group-[.is-user]:[&_code]:px-1",
+      /* Assistant — plain on canvas */
       "group-[.is-assistant]:w-full group-[.is-assistant]:text-foreground",
       "group-data-[optimistic=true]:opacity-70",
       className,

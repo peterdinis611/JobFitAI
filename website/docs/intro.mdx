@@ -4,31 +4,73 @@ sidebar_position: 1
 title: Introduction
 ---
 
-# JobFit AI
+import Link from '@docusaurus/Link';
 
-JobFit AI analyzes job postings against your resume and scores how well you match — with actionable feedback on skills, seniority fit, and CV improvements.
+# JobFit AI Documentation
 
-## What you can do
+Match your resume to any role — with honest scoring, actionable feedback, and career tools powered by AI.
 
-- **Upload CVs** (PDF/DOCX) and run match analyses against pasted job text or URLs
-- **Track history** with match scores, filters, and side-by-side comparison
-- **Tailor bullets**, generate **cover letters**, and build **learning plans** from each report
-- **Track applications** on a kanban board (Saved → Applied → Interview → Offer)
-- **Re-score** after uploading a revised CV and see the match % delta
+<div className="row margin-vert--lg">
+  <div className="col col--4">
+    <div className="card margin-bottom--md">
+      <div className="card__header"><h3>🚀 Getting Started</h3></div>
+      <div className="card__body">
+        <p>Install locally and run your first analysis in minutes.</p>
+      </div>
+      <div className="card__footer">
+        <Link className="button button--primary button--block" to="/getting-started/installation">Install →</Link>
+      </div>
+    </div>
+  </div>
+  <div className="col col--4">
+    <div className="card margin-bottom--md">
+      <div className="card__header"><h3>📖 User Guide</h3></div>
+      <div className="card__body">
+        <p>Every screen: dashboard, analyze, tracker, career tools.</p>
+      </div>
+      <div className="card__footer">
+        <Link className="button button--secondary button--block" to="/user-guide/dashboard">Explore →</Link>
+      </div>
+    </div>
+  </div>
+  <div className="col col--4">
+    <div className="card margin-bottom--md">
+      <div className="card__header"><h3>⚙️ Reference</h3></div>
+      <div className="card__body">
+        <p>Agent tools, Convex API, env vars, deployment.</p>
+      </div>
+      <div className="card__footer">
+        <Link className="button button--secondary button--block" to="/reference/agent-tools">Reference →</Link>
+      </div>
+    </div>
+  </div>
+</div>
+
+## What JobFit AI does
+
+- **Upload CVs** (PDF/DOCX) and score fit against any job posting
+- **Track history** with filters, comparison, and export
+- **Tailor bullets**, generate **cover letters**, build **learning plans**
+- **Track applications** on a kanban board (Saved → Offer)
+- **Re-score** after CV edits and see match % delta
 
 ## Stack
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Next.js, shadcn/ui, Tailwind |
-| Agent | [eve](https://eve.dev) with Claude via AI Gateway |
-| Backend | [Convex](https://convex.dev) (auth, storage, queries) |
-| Docs | [Docusaurus](https://docusaurus.io/) |
+| Frontend | Next.js 16, shadcn/ui, Tailwind v4 |
+| Agent | [eve](https://eve.dev) + Claude Sonnet |
+| Backend | [Convex](https://convex.dev) (auth, storage, realtime) |
+| Docs | [Docusaurus](https://docusaurus.io/) 3.10 |
 
 ## Quick links
 
-- [Getting started](./getting-started) — local setup
-- [Architecture](./architecture) — agent, schema, tools
-- [Features](./features) — product capabilities
+| Topic | Link |
+|-------|------|
+| First analysis walkthrough | [Getting started →](./getting-started/first-analysis) |
+| How scoring works | [Matching scores →](./concepts/matching-scores) |
+| System architecture | [Overview →](./architecture/overview) |
+| Deploy to production | [Production →](./deployment/production) |
+| FAQ | [Help →](./help/faq) |
 
-[Open the app →](/)
+<a className="button button--primary button--lg margin-top--md" href="/">Open JobFit AI App →</a>
