@@ -55,10 +55,82 @@ export const saveAnalysisInputSchema = scoreMatchOutputSchema.extend({
   resumeId: z.string().min(1),
   jobPostingId: z.string().min(1),
   eveSessionId: z.string().optional(),
+  previousAnalysisId: z.string().optional(),
 })
 
 export const saveAnalysisOutputSchema = z.object({
   analysisId: z.string(),
+})
+
+export const updateJobPostingInputSchema = z.object({
+  userId: z.string().min(1),
+  jobPostingId: z.string().min(1),
+  title: z.string().optional(),
+  cleanedText: z.string().min(1),
+})
+
+export const updateJobPostingOutputSchema = z.object({
+  jobPostingId: z.string(),
+  title: z.string().optional(),
+})
+
+export const tailoredBulletSchema = z.object({
+  original: z.string(),
+  rewritten: z.string(),
+  rationale: z.string().optional(),
+})
+
+export const tailorBulletsInputSchema = z.object({
+  resumeText: z.string().min(50),
+  jobText: z.string().min(50),
+  jobTitle: z.string().optional(),
+  missingSkills: z.array(z.string()).optional(),
+  recommendations: z.array(z.string()).optional(),
+})
+
+export const tailorBulletsOutputSchema = z.object({
+  bullets: z.array(tailoredBulletSchema).min(3).max(5),
+})
+
+export const coverLetterInputSchema = z.object({
+  resumeText: z.string().min(50),
+  jobText: z.string().min(50),
+  jobTitle: z.string().optional(),
+  matchPercentage: z.number(),
+  matchingSkills: z.array(z.string()),
+  missingSkills: z.array(z.string()),
+  seniorityFit: seniorityFitSchema,
+})
+
+export const coverLetterOutputSchema = z.object({
+  coverLetter: z.string().min(100),
+})
+
+export const learningPlanInputSchema = z.object({
+  missingSkills: z.array(z.string()).min(1),
+  jobTitle: z.string().optional(),
+  seniorityFit: seniorityFitSchema.optional(),
+})
+
+export const learningPlanItemSchema = z.object({
+  skill: z.string(),
+  durationWeeks: z.number().int().min(1).max(4),
+  steps: z.array(z.string()).min(2),
+})
+
+export const learningPlanOutputSchema = z.object({
+  plans: z.array(learningPlanItemSchema).min(1),
+})
+
+export const saveArtifactInputSchema = z.object({
+  userId: z.string().min(1),
+  analysisId: z.string().min(1),
+  type: z.enum(["tailored_bullets", "cover_letter", "learning_plan"]),
+  content: z.unknown(),
+})
+
+export const saveArtifactOutputSchema = z.object({
+  artifactId: z.string(),
 })
 
 export type ParseResumeInput = z.infer<typeof parseResumeInputSchema>

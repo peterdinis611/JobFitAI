@@ -8,10 +8,10 @@ import { toast } from "sonner"
 import { api } from "@/convex/_generated/api"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
-import {
-  EmptySearchIllustration,
-  UploadIllustration,
-} from "@/components/illustrations/jobfit-illustrations"
+import { DashboardGettingStarted } from "@/components/dashboard/dashboard-states"
+import { ResumePreviewDialog } from "@/components/resumes/resume-preview-dialog"
+import { UploadIllustration } from "@/components/illustrations/jobfit-illustrations"
+import { wordCount } from "@/lib/extract-job-title"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -157,14 +157,7 @@ export default function ResumesPage() {
 
       {resumes?.length === 0 ? (
         <FadeIn delay={0.1}>
-          <Card className="border-border/60 bg-card/80">
-            <CardContent className="flex flex-col items-center py-6">
-              <EmptySearchIllustration />
-              <p className="mt-2 text-center text-sm text-muted-foreground">
-                No resumes uploaded yet
-              </p>
-            </CardContent>
-          </Card>
+          <DashboardGettingStarted hasResume={false} />
         </FadeIn>
       ) : (
         <StaggerList className="grid gap-4 sm:grid-cols-2">
@@ -186,11 +179,21 @@ export default function ResumesPage() {
                         </Badge>
                       ) : null}
                     </div>
-                    <CardDescription>
-                      v{resume.version} · {new Date(resume.createdAt).toLocaleDateString()}
+                    <CardDescription className="flex flex-wrap items-center gap-2">
+                      <span>
+                        v{resume.version} · {new Date(resume.createdAt).toLocaleDateString()}
+                      </span>
+                      {resume.parsedText?.trim() ? (
+                        <Badge variant="secondary">
+                          {wordCount(resume.parsedText).toLocaleString()} words
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline">Not parsed yet</Badge>
+                      )}
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex flex-wrap gap-2">
+                    <ResumePreviewDialog resume={resume} />
                     {!resume.isActive ? (
                       <Button
                         variant="outline"

@@ -10,6 +10,7 @@ import { toast } from "sonner"
 import { api } from "@/convex/_generated/api"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { AgentMessage } from "@/app/_components/agent-message"
+import { DashboardGettingStarted } from "@/components/dashboard/dashboard-states"
 import { FadeIn } from "@/components/motion/motion-primitives"
 import {
   AnalyzingIllustration,
@@ -98,7 +99,7 @@ Context JSON:
 ${JSON.stringify(context, null, 2)}
 \`\`\`
 
-Steps: parse_resume → ${source === "url" ? "fetch_job_posting →" : ""} score_match → save_analysis.`,
+Steps: parse_resume → ${source === "url" ? "fetch_job_posting → update_job_posting →" : ""} score_match → save_analysis.`,
       })
 
       toast.success("Analysis started — streaming below")
@@ -111,6 +112,18 @@ Steps: parse_resume → ${source === "url" ? "fetch_job_posting →" : ""} score
 
   if (!ready) {
     return <div className="h-60 animate-pulse rounded-xl bg-muted" />
+  }
+
+  if (!activeResume && resumes?.length === 0) {
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          title="Analyze match"
+          description="Compare your active CV against a job posting and get AI-powered insights."
+        />
+        <DashboardGettingStarted hasResume={false} />
+      </div>
+    )
   }
 
   return (

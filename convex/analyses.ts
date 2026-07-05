@@ -41,10 +41,18 @@ export const create = mutation({
     recommendations: v.array(v.string()),
     skillCategories: v.optional(v.array(skillCategory)),
     eveSessionId: v.optional(v.string()),
+    previousAnalysisId: v.optional(v.id("analyses")),
   },
   handler: async (ctx, args) => {
     await assertResumeOwned(ctx, args.resumeId, args.userId)
     await assertJobOwned(ctx, args.jobPostingId, args.userId)
+
+    if (args.previousAnalysisId) {
+      const prev = await ctx.db.get(args.previousAnalysisId)
+      if (!prev || prev.userId !== args.userId) {
+        throw new Error("Previous analysis not found")
+      }
+    }
 
     return await ctx.db.insert("analyses", {
       ...args,
@@ -65,8 +73,18 @@ export const listByUser = query({
       .order("desc")
       .collect()
 
-    if (args.minMatch === undefined) return rows
-    return rows.filter((r) => r.matchPercentage >= args.minMatch!)
+    const filtered =
+      args.minMatch === undefined ? rows : rows.filter((r) => r.matchPercentage >= args.minMatch!)
+
+    return await Promise.all(
+      filtered.map(async (analysis) => {
+        const [resume, jobPosting] = await Promise.all([
+          ctx.db.get(analysis.resumeId),
+          ctx.db.get(analysis.jobPostingId),
+        ])
+        return { analysis, resume, jobPosting }
+      }),
+    )
   },
 })
 
@@ -93,5 +111,25 @@ export const getWithRelations = query({
     ])
 
     return { analysis, resume, jobPosting }
+  },
+})
+
+export const getRescoreDelta = query({
+  args: { analysisId: v.id("analyses") },
+  handler: async (ctx, args) => {
+    const { userId } = await requireUser(ctx)
+    const analysis = await ctx.db.get(args.analysisId)
+    if (!analysis || analysis.userId !== userId) return null
+    if (!analysis.previousAnalysisId) return null
+
+    const previous = await ctx.db.get(analysis.previousAnalysisId)
+    if (!previous) return null
+
+    return {
+      current: analysis.matchPercentage,
+      previous: previous.matchPercentage,
+      delta: analysis.matchPercentage - previous.matchPercentage,
+      previousAnalysisId: previous._id,
+    }
   },
 })

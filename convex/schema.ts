@@ -63,11 +63,42 @@ export default defineSchema({
       ),
     ),
     eveSessionId: v.optional(v.string()),
+    previousAnalysisId: v.optional(v.id("analyses")),
     createdAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_user_created", ["userId", "createdAt"])
-    .index("by_user_match", ["userId", "matchPercentage"]),
+    .index("by_user_match", ["userId", "matchPercentage"])
+    .index("by_previous", ["previousAnalysisId"]),
+
+  applications: defineTable({
+    userId: v.id("users"),
+    analysisId: v.id("analyses"),
+    status: v.union(
+      v.literal("saved"),
+      v.literal("applied"),
+      v.literal("interview"),
+      v.literal("offer"),
+    ),
+    notes: v.optional(v.string()),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_user_status", ["userId", "status"])
+    .index("by_analysis", ["analysisId"]),
+
+  artifacts: defineTable({
+    userId: v.id("users"),
+    analysisId: v.id("analyses"),
+    type: v.union(
+      v.literal("tailored_bullets"),
+      v.literal("cover_letter"),
+      v.literal("learning_plan"),
+    ),
+    content: v.any(),
+    createdAt: v.number(),
+  }).index("by_analysis_type", ["analysisId", "type"]),
 
   rateLimits: defineTable({
     userId: v.id("users"),

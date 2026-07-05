@@ -13,6 +13,9 @@ import {
 import { AlertTriangle, ArrowLeft, CheckCircle2, Lightbulb } from "lucide-react"
 import { motion } from "motion/react"
 import { api } from "@/convex/_generated/api"
+import { ExportReportButton } from "@/components/analyses/export-report-button"
+import { AnalysisActionsPanel } from "@/components/analyses/analysis-actions-panel"
+import { RescoreDeltaBanner } from "@/components/analyses/artifact-views"
 import { AnimatedProgress, MatchScoreRing } from "@/components/ui/animated-progress"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -23,6 +26,7 @@ export default function AnalysisDetailPage() {
   const params = useParams()
   const analysisId = params.id as Id<"analyses">
   const data = useQuery(api.analyses.getWithRelations, { analysisId })
+  const rescoreDelta = useQuery(api.analyses.getRescoreDelta, { analysisId })
 
   if (data === undefined) {
     return (
@@ -83,15 +87,28 @@ export default function AnalysisDetailPage() {
               {resume?.fileName} · {new Date(analysis.createdAt).toLocaleString()}
             </p>
           </div>
-          <div className="flex flex-col items-center gap-2">
-            <MatchScoreRing value={analysis.matchPercentage} size={128} />
-            <Badge variant="secondary">Seniority: {analysis.seniorityFit}</Badge>
+          <div className="flex flex-col items-end gap-3">
+            <ExportReportButton analysis={analysis} resume={resume} jobPosting={jobPosting} />
+            <div className="flex flex-col items-center gap-2">
+              <MatchScoreRing value={analysis.matchPercentage} size={128} />
+              <Badge variant="secondary">Seniority: {analysis.seniorityFit}</Badge>
+            </div>
           </div>
         </div>
       </FadeIn>
 
       <FadeIn delay={0.1}>
         <AnimatedProgress value={analysis.matchPercentage} className="h-3" showGlow />
+      </FadeIn>
+
+      {rescoreDelta ? (
+        <FadeIn delay={0.12}>
+          <RescoreDeltaBanner delta={rescoreDelta} />
+        </FadeIn>
+      ) : null}
+
+      <FadeIn delay={0.14}>
+        <AnalysisActionsPanel data={{ analysis, resume, jobPosting }} />
       </FadeIn>
 
       <StaggerList className="grid gap-4 lg:grid-cols-2">

@@ -9,6 +9,8 @@
  */
 
 import type * as analyses from "../analyses.js";
+import type * as applications from "../applications.js";
+import type * as artifacts from "../artifacts.js";
 import type * as auth from "../auth.js";
 import type * as http from "../http.js";
 import type * as jobPostings from "../jobPostings.js";
@@ -25,6 +27,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   analyses: typeof analyses;
+  applications: typeof applications;
+  artifacts: typeof artifacts;
   auth: typeof auth;
   http: typeof http;
   jobPostings: typeof jobPostings;

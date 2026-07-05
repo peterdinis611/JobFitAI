@@ -6,7 +6,7 @@ Use this playbook when the user requests a **full resume vs. job posting analysi
 
 ### 1. Gather inputs
 - Confirm `resumeId`, `userId`, and `jobPostingId` from session context.
-- Determine job content: URL → `fetch_job_posting`; pasted text → use `cleanedText` from context.
+- Determine job content: URL → `fetch_job_posting` then `update_job_posting` with the returned title and cleanedText; pasted text → use `cleanedText` from context (title already extracted on create).
 
 ### 2. Parse resume
 - Call `parse_resume({ resumeId })`.

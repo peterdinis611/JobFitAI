@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react"
-import { Briefcase, FileText, History, LogOut } from "lucide-react"
+import { Briefcase, FileText, History, Kanban, LogOut } from "lucide-react"
 import { motion } from "motion/react"
 import { AuthScreen } from "@/components/auth/auth-screen"
 import { RobotLogo, RobotLogoMark } from "@/components/brand/robot-logo"
@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 
 const links = [
   { href: "/", label: "History", icon: History },
+  { href: "/tracker", label: "Tracker", icon: Kanban },
   { href: "/resumes", label: "Resumes", icon: FileText },
   { href: "/analyze", label: "Analyze", icon: Briefcase },
 ]

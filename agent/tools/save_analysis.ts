@@ -28,6 +28,7 @@ export default defineTool({
           recommendations: input.recommendations,
           skillCategories: input.skillCategories,
           eveSessionId: input.eveSessionId,
+          previousAnalysisId: input.previousAnalysisId as Id<"analyses"> | undefined,
         })
         return { analysisId: String(analysisId) }
       },

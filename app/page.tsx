@@ -3,10 +3,10 @@
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { useQuery } from "convex/react"
-import { ArrowUpDown, BarChart3, Plus, Target, TrendingUp } from "lucide-react"
+import { ArrowUpDown, BarChart3, GitCompare, Plus, Target, TrendingUp } from "lucide-react"
 import { motion } from "motion/react"
 import { api } from "@/convex/_generated/api"
-import type { Doc } from "@/convex/_generated/dataModel"
+import type { Id } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import {
   DashboardGettingStarted,
@@ -38,33 +38,43 @@ const filters = [
 
 export default function DashboardPage() {
   const { ready } = useJobFitUser()
-  const analyses = useQuery(api.analyses.listByUser, ready ? {} : "skip")
+  const rows = useQuery(api.analyses.listByUser, ready ? {} : "skip")
   const resumes = useQuery(api.resumes.listByUser, ready ? {} : "skip")
   const [sortDesc, setSortDesc] = useState(true)
   const [minMatch, setMinMatch] = useState(0)
+  const [compareIds, setCompareIds] = useState<Id<"analyses">[]>([])
 
   const hasResume = Boolean(resumes?.some((r) => r.isActive))
-  const isEmpty = analyses?.length === 0
+  const isEmpty = rows?.length === 0
 
   const sorted = useMemo(() => {
-    if (!analyses) return []
-    const filtered = analyses.filter((a: Doc<"analyses">) => a.matchPercentage >= minMatch)
+    if (!rows) return []
+    const filtered = rows.filter(({ analysis }) => analysis.matchPercentage >= minMatch)
     return [...filtered].sort((a, b) =>
-      sortDesc ? b.matchPercentage - a.matchPercentage : a.matchPercentage - b.matchPercentage,
+      sortDesc
+        ? b.analysis.matchPercentage - a.analysis.matchPercentage
+        : a.analysis.matchPercentage - b.analysis.matchPercentage,
     )
-  }, [analyses, sortDesc, minMatch])
+  }, [rows, sortDesc, minMatch])
 
   const stats = useMemo(() => {
-    if (!analyses?.length) return { avg: 0, best: 0, count: 0 }
+    if (!rows?.length) return { avg: 0, best: 0, count: 0 }
     const avg = Math.round(
-      analyses.reduce((sum: number, a: Doc<"analyses">) => sum + a.matchPercentage, 0) /
-        analyses.length,
+      rows.reduce((sum, { analysis }) => sum + analysis.matchPercentage, 0) / rows.length,
     )
-    const best = Math.max(...analyses.map((a: Doc<"analyses">) => a.matchPercentage))
-    return { avg, best, count: analyses.length }
-  }, [analyses])
+    const best = Math.max(...rows.map(({ analysis }) => analysis.matchPercentage))
+    return { avg, best, count: rows.length }
+  }, [rows])
 
-  if (!ready || analyses === undefined) {
+  function toggleCompare(id: Id<"analyses">) {
+    setCompareIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id)
+      if (prev.length >= 2) return [prev[1], id]
+      return [...prev, id]
+    })
+  }
+
+  if (!ready || rows === undefined) {
     return <DashboardSkeleton />
   }
 
@@ -86,12 +96,22 @@ export default function DashboardPage() {
         title="Analysis history"
         description="Track how well your resume matches each job posting over time."
         action={
-          <Button asChild>
-            <Link href="/analyze">
-              <Plus className="size-4" />
-              New analysis
-            </Link>
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            {compareIds.length === 2 ? (
+              <Button asChild variant="secondary">
+                <Link href={`/compare?a=${compareIds[0]}&b=${compareIds[1]}`}>
+                  <GitCompare className="size-4" />
+                  Compare selected
+                </Link>
+              </Button>
+            ) : null}
+            <Button asChild>
+              <Link href="/analyze">
+                <Plus className="size-4" />
+                New analysis
+              </Link>
+            </Button>
+          </div>
         }
       />
 
@@ -130,16 +150,20 @@ export default function DashboardPage() {
         </Button>
       </motion.div>
 
+      {compareIds.length > 0 ? (
+        <p className="text-sm text-muted-foreground">
+          {compareIds.length === 1
+            ? "Select one more analysis to compare"
+            : "Two analyses selected — click Compare selected"}
+        </p>
+      ) : null}
+
       <Card className="overflow-hidden border-border/60 bg-card/80 backdrop-blur-sm">
         <CardHeader className="border-b border-border/60 bg-muted/20">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <CardTitle>Recent analyses</CardTitle>
-              <CardDescription>
-                {sorted.length} of {analyses.length} shown
-              </CardDescription>
-            </div>
-          </div>
+          <CardTitle>Recent analyses</CardTitle>
+          <CardDescription>
+            {sorted.length} of {rows.length} shown · select two rows to compare
+          </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           {sorted.length === 0 && minMatch > 0 ? (
@@ -148,80 +172,79 @@ export default function DashboardPage() {
             <Table>
               <TableHeader>
                 <TableRow className="hover:bg-transparent">
+                  <TableHead className="w-10" />
+                  <TableHead>Role</TableHead>
                   <TableHead>Match</TableHead>
                   <TableHead>Seniority</TableHead>
-                  <TableHead>Skills matched</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {sorted.map((row, index) => (
-                  <motion.tr
-                    key={row._id}
-                    className="group border-b transition-colors hover:bg-muted/30"
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: index * 0.04,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  >
-                    <TableCell className="py-4">
-                      <div className="flex min-w-[140px] flex-col gap-2">
-                        <span
-                          className={cn(
-                            "text-lg font-semibold tabular-nums",
-                            row.matchPercentage >= 85 && "text-success",
-                            row.matchPercentage >= 70 &&
-                              row.matchPercentage < 85 &&
-                              "text-primary",
-                            row.matchPercentage < 50 && "text-destructive",
-                          )}
-                        >
-                          {row.matchPercentage}%
-                        </span>
-                        <AnimatedProgress value={row.matchPercentage} showGlow />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          row.seniorityFit === "match" && "bg-success/15 text-success",
-                          row.seniorityFit === "under" && "bg-warning/15 text-warning",
-                          row.seniorityFit === "over" && "bg-primary/15 text-primary",
-                        )}
-                      >
-                        {row.seniorityFit}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="max-w-[220px]">
-                      <p className="truncate text-sm text-muted-foreground">
-                        {row.matchingSkills.slice(0, 4).join(", ")}
-                        {row.matchingSkills.length > 4 ? ` +${row.matchingSkills.length - 4}` : ""}
-                      </p>
-                    </TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {new Date(row.createdAt).toLocaleDateString(undefined, {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        asChild
-                        variant="ghost"
-                        size="sm"
-                        className="opacity-60 group-hover:opacity-100"
-                      >
-                        <Link href={`/analyses/${row._id}`}>View report</Link>
-                      </Button>
-                    </TableCell>
-                  </motion.tr>
-                ))}
+                {sorted.map(({ analysis, jobPosting }, index) => {
+                  const selected = compareIds.includes(analysis._id)
+                  return (
+                    <motion.tr
+                      key={analysis._id}
+                      className={cn(
+                        "group border-b transition-colors hover:bg-muted/30",
+                        selected && "bg-primary/5",
+                      )}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.04 }}
+                    >
+                      <TableCell>
+                        <input
+                          type="checkbox"
+                          checked={selected}
+                          onChange={() => toggleCompare(analysis._id)}
+                          className="size-4 rounded border-border accent-primary"
+                          aria-label="Select for comparison"
+                        />
+                      </TableCell>
+                      <TableCell className="max-w-[200px]">
+                        <p className="truncate font-medium">
+                          {jobPosting?.title ?? "Untitled role"}
+                        </p>
+                        {jobPosting?.url ? (
+                          <p className="truncate text-xs text-muted-foreground">{jobPosting.url}</p>
+                        ) : null}
+                      </TableCell>
+                      <TableCell className="py-4">
+                        <div className="flex min-w-[100px] flex-col gap-2">
+                          <span
+                            className={cn(
+                              "text-lg font-semibold tabular-nums",
+                              analysis.matchPercentage >= 85 && "text-success",
+                              analysis.matchPercentage >= 70 &&
+                                analysis.matchPercentage < 85 &&
+                                "text-primary",
+                              analysis.matchPercentage < 50 && "text-destructive",
+                            )}
+                          >
+                            {analysis.matchPercentage}%
+                          </span>
+                          <AnimatedProgress value={analysis.matchPercentage} />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary">{analysis.seniorityFit}</Badge>
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {new Date(analysis.createdAt).toLocaleDateString(undefined, {
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button asChild variant="ghost" size="sm">
+                          <Link href={`/analyses/${analysis._id}`}>View</Link>
+                        </Button>
+                      </TableCell>
+                    </motion.tr>
+                  )
+                })}
               </TableBody>
             </Table>
           )}
