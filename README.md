@@ -28,9 +28,23 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+### Documentation
+
+Docs are built with [Docusaurus](https://docusaurus.io/) and served at `/docs`.
+
+```bash
+# Dev — run alongside npm run dev (proxied via next.config rewrites)
+npm run dev:docs
+
+# Production build (included in npm run build)
+npm run build:docs
+```
+
+See [website/docs/](./website/docs/) for source content.
+
 ## Project layout
 
-See [docs/PLANNING.md](./docs/PLANNING.md) for architecture, Convex schema, Zod tool contracts, and UI wireframes.
+Planning notes for contributors: [docs/PLANNING.md](./docs/PLANNING.md). User-facing docs: `/docs` (Docusaurus).
 
 ```
 agent/          # eve agent (instructions, skills, tools)

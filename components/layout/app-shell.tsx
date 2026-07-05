@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react"
-import { Briefcase, FileText, History, Kanban, LogOut } from "lucide-react"
+import { Briefcase, BookOpen, FileText, History, Kanban, LogOut } from "lucide-react"
 import { motion } from "motion/react"
 import { AuthScreen } from "@/components/auth/auth-screen"
 import { RobotLogo, RobotLogoMark } from "@/components/brand/robot-logo"
@@ -17,6 +17,7 @@ const links = [
   { href: "/tracker", label: "Tracker", icon: Kanban },
   { href: "/resumes", label: "Resumes", icon: FileText },
   { href: "/analyze", label: "Analyze", icon: Briefcase },
+  { href: "/docs", label: "Docs", icon: BookOpen },
 ]
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -67,7 +68,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
           <nav className="flex items-center gap-1">
             {links.map(({ href, label, icon: Icon }) => {
-              const active = pathname === href
+              const active = href === "/docs" ? pathname.startsWith("/docs") : pathname === href
               return (
                 <Link
                   key={href}
