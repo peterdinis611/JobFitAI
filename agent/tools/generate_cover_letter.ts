@@ -6,6 +6,7 @@ import {
   coverLetterOutputSchema,
 } from "../../lib/schemas/tools"
 import { runEffect } from "#lib/effect"
+import { agentModel } from "#lib/model"
 
 export default defineTool({
   description: "Draft a tailored cover letter from resume + job analysis context.",
@@ -14,7 +15,7 @@ export default defineTool({
     const program = Effect.tryPromise({
       try: async () => {
         const { object } = await generateObject({
-          model: "anthropic/claude-sonnet-5",
+          model: agentModel,
           schema: coverLetterOutputSchema,
           prompt: `Write a professional cover letter (250–400 words) for this application.
 

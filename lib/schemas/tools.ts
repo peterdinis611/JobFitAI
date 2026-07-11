@@ -10,6 +10,7 @@ export const skillCategorySchema = z.object({
 })
 
 export const parseResumeInputSchema = z.object({
+  userId: z.string().min(1),
   resumeId: z.string().min(1),
 })
 
@@ -55,7 +56,10 @@ export const saveAnalysisInputSchema = scoreMatchOutputSchema.extend({
   resumeId: z.string().min(1),
   jobPostingId: z.string().min(1),
   eveSessionId: z.string().optional(),
-  previousAnalysisId: z.string().optional(),
+  previousAnalysisId: z
+    .string()
+    .optional()
+    .transform((value) => (value?.trim() ? value.trim() : undefined)),
 })
 
 export const saveAnalysisOutputSchema = z.object({
@@ -72,6 +76,20 @@ export const updateJobPostingInputSchema = z.object({
 export const updateJobPostingOutputSchema = z.object({
   jobPostingId: z.string(),
   title: z.string().optional(),
+})
+
+export const loadJobPostingInputSchema = z.object({
+  userId: z.string().min(1),
+  jobPostingId: z.string().min(1),
+})
+
+export const loadJobPostingOutputSchema = z.object({
+  jobPostingId: z.string(),
+  source: z.enum(["text", "url"]),
+  title: z.string().optional(),
+  cleanedText: z.string().min(1),
+  url: z.string().optional(),
+  wordCount: z.number().int().nonnegative(),
 })
 
 export const tailoredBulletSchema = z.object({

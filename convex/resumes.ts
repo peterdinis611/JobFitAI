@@ -67,6 +67,19 @@ export const get = query({
   },
 })
 
+/** Agent-trusted: eve tools run without a user JWT and pass userId explicitly. */
+export const getForAgent = query({
+  args: {
+    resumeId: v.id("resumes"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const resume = await ctx.db.get(args.resumeId)
+    if (!resume || resume.userId !== args.userId) return null
+    return resume
+  },
+})
+
 export const setActive = mutation({
   args: { resumeId: v.id("resumes") },
   handler: async (ctx, args) => {
@@ -99,10 +112,37 @@ export const updateParsedText = mutation({
   },
 })
 
+export const updateParsedTextForAgent = mutation({
+  args: {
+    resumeId: v.id("resumes"),
+    userId: v.id("users"),
+    parsedText: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const resume = await ctx.db.get(args.resumeId)
+    if (!resume || resume.userId !== args.userId) {
+      throw new Error("Resume not found")
+    }
+    await ctx.db.patch(args.resumeId, { parsedText: args.parsedText })
+  },
+})
+
 export const getFileUrl = query({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
     await requireUserId(ctx)
     return await ctx.storage.getUrl(args.storageId)
+  },
+})
+
+export const getFileUrlForAgent = query({
+  args: {
+    resumeId: v.id("resumes"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const resume = await ctx.db.get(args.resumeId)
+    if (!resume || resume.userId !== args.userId) return null
+    return await ctx.storage.getUrl(resume.storageId)
   },
 })

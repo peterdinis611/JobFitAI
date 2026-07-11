@@ -31,6 +31,7 @@ import {
 } from "@/components/ai-elements/conversation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
+import { formatAgentSkillMessage } from "@/lib/agent-message"
 
 type AnalysisContext = {
   analysis: Doc<"analyses">
@@ -45,7 +46,6 @@ function buildContextJson({ analysis, resume, jobPosting }: AnalysisContext, use
     resumeId: analysis.resumeId,
     jobPostingId: analysis.jobPostingId,
     jobTitle: jobPosting?.title,
-    jobText: jobPosting?.cleanedText,
     matchPercentage: analysis.matchPercentage,
     matchingSkills: analysis.matchingSkills,
     missingSkills: analysis.missingSkills,
@@ -100,14 +100,11 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
     setActiveTab(tab)
     try {
       await agent.send({
-        message: `Run the ${skill} skill for this analysis.
-
-Context JSON:
-\`\`\`json
-${JSON.stringify(buildContextJson(data, userId), null, 2)}
-\`\`\`
-
-Steps: ${steps}`,
+        message: formatAgentSkillMessage({
+          skill,
+          context: buildContextJson(data, userId),
+          steps,
+        }),
       })
       toast.success("Generation started")
     } catch (e) {
@@ -149,14 +146,11 @@ Steps: ${steps}`,
 
       setActiveTab("stream")
       await agent.send({
-        message: `Run the rescore-after-edit skill.
-
-Context JSON:
-\`\`\`json
-${JSON.stringify(context, null, 2)}
-\`\`\`
-
-Steps: parse_resume → score_match → save_analysis (include previousAnalysisId).`,
+        message: formatAgentSkillMessage({
+          skill: "rescore-after-edit",
+          context,
+          steps: "parse_resume → load_job_posting → score_match → save_analysis (include previousAnalysisId).",
+        }),
       })
       toast.success("Re-score started — check the stream for the new analysis ID")
     } catch (e) {

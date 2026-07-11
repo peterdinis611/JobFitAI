@@ -14,21 +14,24 @@ export default defineTool({
   description: "Persist a completed match analysis to Convex.",
   inputSchema: saveAnalysisInputSchema,
   async execute(input) {
+    const parsed = saveAnalysisInputSchema.parse(input)
     const program = Effect.tryPromise({
       try: async () => {
         const analysisId = await convexMutation(api.analyses.create, {
-          userId: input.userId as Id<"users">,
-          resumeId: input.resumeId as Id<"resumes">,
-          jobPostingId: input.jobPostingId as Id<"jobPostings">,
-          matchPercentage: input.matchPercentage,
-          matchingSkills: input.matchingSkills,
-          missingSkills: input.missingSkills,
-          seniorityFit: input.seniorityFit,
-          redFlags: input.redFlags,
-          recommendations: input.recommendations,
-          skillCategories: input.skillCategories,
-          eveSessionId: input.eveSessionId,
-          previousAnalysisId: input.previousAnalysisId as Id<"analyses"> | undefined,
+          userId: parsed.userId as Id<"users">,
+          resumeId: parsed.resumeId as Id<"resumes">,
+          jobPostingId: parsed.jobPostingId as Id<"jobPostings">,
+          matchPercentage: parsed.matchPercentage,
+          matchingSkills: parsed.matchingSkills,
+          missingSkills: parsed.missingSkills,
+          seniorityFit: parsed.seniorityFit,
+          redFlags: parsed.redFlags,
+          recommendations: parsed.recommendations,
+          skillCategories: parsed.skillCategories,
+          eveSessionId: parsed.eveSessionId,
+          ...(parsed.previousAnalysisId
+            ? { previousAnalysisId: parsed.previousAnalysisId as Id<"analyses"> }
+            : {}),
         })
         return { analysisId: String(analysisId) }
       },

@@ -6,6 +6,7 @@ import {
   tailorBulletsOutputSchema,
 } from "../../lib/schemas/tools"
 import { runEffect } from "#lib/effect"
+import { agentModel } from "#lib/model"
 
 export default defineTool({
   description:
@@ -15,7 +16,7 @@ export default defineTool({
     const program = Effect.tryPromise({
       try: async () => {
         const { object } = await generateObject({
-          model: "anthropic/claude-sonnet-5",
+          model: agentModel,
           schema: tailorBulletsOutputSchema,
           prompt: `You are an expert CV writer. Rewrite exactly 3–5 resume bullets to better match this job.
 

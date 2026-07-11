@@ -6,6 +6,7 @@ import {
   learningPlanOutputSchema,
 } from "../../lib/schemas/tools"
 import { runEffect } from "#lib/effect"
+import { agentModel } from "#lib/model"
 
 export default defineTool({
   description:
@@ -15,7 +16,7 @@ export default defineTool({
     const program = Effect.tryPromise({
       try: async () => {
         const { object } = await generateObject({
-          model: "anthropic/claude-sonnet-5",
+          model: agentModel,
           schema: learningPlanOutputSchema,
           prompt: `Create practical 2-week learning plans to close these skill gaps for a ${input.jobTitle ?? "target"} role.
 

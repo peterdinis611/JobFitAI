@@ -15,11 +15,12 @@ export default defineTool({
   description:
     "Load a resume from Convex storage and extract plain text from PDF or DOCX.",
   inputSchema: parseResumeInputSchema,
-  async execute({ resumeId }) {
+  async execute({ userId, resumeId }) {
     const program = Effect.gen(function* () {
       const resume = yield* Effect.tryPromise({
         try: () =>
-          convexQuery(api.resumes.get, {
+          convexQuery(api.resumes.getForAgent, {
+            userId: userId as Id<"users">,
             resumeId: resumeId as Id<"resumes">,
           }),
         catch: (error) =>
@@ -44,8 +45,9 @@ export default defineTool({
 
       const fileUrl = yield* Effect.tryPromise({
         try: () =>
-          convexQuery(api.resumes.getFileUrl, {
-            storageId: resume.storageId,
+          convexQuery(api.resumes.getFileUrlForAgent, {
+            userId: userId as Id<"users">,
+            resumeId: resumeId as Id<"resumes">,
           }),
         catch: (error) =>
           new ConvexError({
@@ -73,7 +75,8 @@ export default defineTool({
 
       yield* Effect.tryPromise({
         try: () =>
-          convexMutation(api.resumes.updateParsedText, {
+          convexMutation(api.resumes.updateParsedTextForAgent, {
+            userId: userId as Id<"users">,
             resumeId: resume._id,
             parsedText,
           }),

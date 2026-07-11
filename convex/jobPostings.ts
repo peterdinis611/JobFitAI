@@ -98,3 +98,16 @@ export const get = query({
     return job
   },
 })
+
+/** Agent-trusted: eve tools run without a user JWT and pass userId explicitly. */
+export const getForAgent = query({
+  args: {
+    jobPostingId: v.id("jobPostings"),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const job = await ctx.db.get(args.jobPostingId)
+    if (!job || job.userId !== args.userId) return null
+    return job
+  },
+})

@@ -6,10 +6,12 @@ Use this playbook when the user requests a **full resume vs. job posting analysi
 
 ### 1. Gather inputs
 - Confirm `resumeId`, `userId`, and `jobPostingId` from session context.
-- Determine job content: URL → `fetch_job_posting` then `update_job_posting` with the returned title and cleanedText; pasted text → use `cleanedText` from context (title already extracted on create).
+- Determine job content:
+  - **URL** → `fetch_job_posting` then `update_job_posting` with the returned title and cleanedText
+  - **Pasted text** → call `load_job_posting({ userId, jobPostingId })` to read cleanedText from Convex (do not expect full job text in the chat message)
 
 ### 2. Parse resume
-- Call `parse_resume({ resumeId })`.
+- Call `parse_resume({ userId, resumeId })`.
 - If parsing fails, stop and explain the document issue.
 
 ### 3. Extract job requirements (if unstructured)
@@ -22,6 +24,7 @@ Use this playbook when the user requests a **full resume vs. job posting analysi
 
 ### 5. Persist
 - Call `save_analysis` with all score fields + context IDs + `eveSessionId` if available.
+- **Do not** pass `previousAnalysisId` unless this is an explicit re-score flow.
 
 ### 6. Report
 - Summarize for the user using the format in `instructions.md`.

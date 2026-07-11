@@ -6,6 +6,7 @@ import {
   scoreMatchOutputSchema,
 } from "../../lib/schemas/tools"
 import { runEffect } from "#lib/effect"
+import { agentModel } from "#lib/model"
 
 const SKILL_HINTS = [
   "typescript",
@@ -54,7 +55,7 @@ export default defineTool({
 
         try {
           const { object } = await generateObject({
-            model: "anthropic/claude-sonnet-5",
+            model: agentModel,
             schema: scoreMatchOutputSchema,
             prompt: `You are an expert technical recruiter. Compare this resume to the job posting.
 
