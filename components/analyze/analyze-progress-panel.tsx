@@ -228,12 +228,21 @@ export function AnalyzeProgressPanel({
                   </div>
 
                   {stream.analysisId ? (
-                    <Button asChild className="mt-4 w-full sm:w-auto" size="sm">
-                      <Link href={`/analyses/${stream.analysisId}`}>
-                        <Sparkles className="size-3.5" />
-                        View full report
-                      </Link>
-                    </Button>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Button asChild size="sm">
+                        <Link href={`/analyses/${stream.analysisId}`}>
+                          <Sparkles className="size-3.5" />
+                          View full report
+                        </Link>
+                      </Button>
+                      <Button asChild size="sm" variant="outline">
+                        <Link href="/">Open history</Link>
+                      </Button>
+                    </div>
+                  ) : stream.allDone && stream.hasError && stream.failedStep?.id === "save_analysis" ? (
+                    <p className="mt-4 text-xs text-destructive">
+                      Report was not saved — run the analysis again to add it to History.
+                    </p>
                   ) : null}
                 </div>
               )}

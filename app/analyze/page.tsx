@@ -1,6 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
 import { useEveAgent } from "eve/react"
 import { toast } from "sonner"
@@ -11,9 +12,11 @@ import { AnalyzeSetupPanel } from "@/components/analyze/analyze-setup-panel"
 import { AnalyzeProgressPanel } from "@/components/analyze/analyze-progress-panel"
 import { PageHeader } from "@/components/ui/page-header"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
+import { parseAnalysisStream } from "@/lib/analyze-stream"
 import type { Doc } from "@/convex/_generated/dataModel"
 
 export default function AnalyzePage() {
+  const router = useRouter()
   const { userId, ready } = useJobFitUser()
   const resumes = useQuery(api.resumes.listByUser, ready ? {} : "skip")
   const createJob = useMutation(api.jobPostings.create)
@@ -30,6 +33,37 @@ export default function AnalyzePage() {
     [resumes],
   )
   const isBusy = agent.status === "submitted" || agent.status === "streaming" || running
+  const stream = useMemo(() => parseAnalysisStream(agent.data.messages), [agent.data.messages])
+  const notifiedId = useRef<string | null>(null)
+  const notifiedSaveError = useRef(false)
+
+  useEffect(() => {
+    if (stream.analysisId && stream.analysisId !== notifiedId.current) {
+      notifiedId.current = stream.analysisId
+      notifiedSaveError.current = false
+      toast.success("Saved to history", {
+        description: "Your match report is ready.",
+        action: {
+          label: "View report",
+          onClick: () => router.push(`/analyses/${stream.analysisId}`),
+        },
+      })
+    }
+  }, [stream.analysisId, router])
+
+  useEffect(() => {
+    if (
+      stream.allDone &&
+      stream.hasError &&
+      stream.failedStep?.id === "save_analysis" &&
+      !notifiedSaveError.current
+    ) {
+      notifiedSaveError.current = true
+      toast.error("Report was not saved to history", {
+        description: "Re-run the analysis — the save step failed.",
+      })
+    }
+  }, [stream.allDone, stream.hasError, stream.failedStep?.id])
 
   async function runAnalysis() {
     if (!userId || !activeResume) {

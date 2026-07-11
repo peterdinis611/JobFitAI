@@ -27,8 +27,10 @@ export default defineTool({
           seniorityFit: parsed.seniorityFit,
           redFlags: parsed.redFlags,
           recommendations: parsed.recommendations,
-          skillCategories: parsed.skillCategories,
-          eveSessionId: parsed.eveSessionId,
+          ...(parsed.skillCategories?.length
+            ? { skillCategories: parsed.skillCategories }
+            : {}),
+          ...(parsed.eveSessionId ? { eveSessionId: parsed.eveSessionId } : {}),
           ...(parsed.previousAnalysisId
             ? { previousAnalysisId: parsed.previousAnalysisId as Id<"analyses"> }
             : {}),

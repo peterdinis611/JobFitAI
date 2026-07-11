@@ -9,6 +9,7 @@ import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import {
+  DashboardEmptyHistory,
   DashboardGettingStarted,
   DashboardNoFilterResults,
 } from "@/components/dashboard/dashboard-states"
@@ -85,7 +86,11 @@ export default function DashboardPage() {
           title="Analysis history"
           description="Track how well your resume matches each job posting over time."
         />
-        <DashboardGettingStarted hasResume={hasResume} />
+        {hasResume ? (
+          <DashboardEmptyHistory />
+        ) : (
+          <DashboardGettingStarted hasResume={false} />
+        )}
       </div>
     )
   }

@@ -128,6 +128,36 @@ export function DashboardGettingStarted({
   )
 }
 
+export function DashboardEmptyHistory({ className }: { className?: string }) {
+  return (
+    <motion.div
+      className={cn("mac-panel flex flex-col items-center px-6 py-12 text-center", className)}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+    >
+      <div className="flex size-14 items-center justify-center rounded-2xl bg-muted">
+        <Sparkles className="size-6 text-muted-foreground" />
+      </div>
+      <h3 className="mt-4 text-lg font-semibold">No analyses in history yet</h3>
+      <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+        Completed analyses appear here after the <strong>Save report</strong> step succeeds. If you
+        already ran one, check the Analyze page — a failed save won&apos;t show up here.
+      </p>
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <Button asChild>
+          <Link href="/analyze">Run analysis</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/tracker">Application tracker</Link>
+        </Button>
+      </div>
+      <p className="mt-4 max-w-sm text-xs text-muted-foreground">
+        Tracker is separate — save a report from its detail page to track an application.
+      </p>
+    </motion.div>
+  )
+}
+
 export function DashboardNoFilterResults({
   minMatch,
   onClear,

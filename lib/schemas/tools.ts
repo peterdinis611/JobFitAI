@@ -55,7 +55,10 @@ export const saveAnalysisInputSchema = scoreMatchOutputSchema.extend({
   userId: z.string().min(1),
   resumeId: z.string().min(1),
   jobPostingId: z.string().min(1),
-  eveSessionId: z.string().optional(),
+  eveSessionId: z
+    .string()
+    .optional()
+    .transform((value) => (value?.trim() ? value.trim() : undefined)),
   previousAnalysisId: z
     .string()
     .optional()

@@ -72,11 +72,12 @@ export default function TrackerPage() {
             <div>
               <p className="font-medium">No tracked applications yet</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Open an analysis report and click &quot;Save to tracker&quot;
+                History shows completed analyses. Open a report there and click &quot;Save to
+                tracker&quot; to add it here.
               </p>
             </div>
             <Button asChild variant="outline">
-              <Link href="/">View analyses</Link>
+              <Link href="/">View history</Link>
             </Button>
           </CardContent>
         </Card>
