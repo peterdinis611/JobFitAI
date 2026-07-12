@@ -15,7 +15,8 @@ const nextConfig: NextConfig = {
     return {
       beforeFiles: [
         {
-          source: "/docs/:path((?!assets|img|index.html).*)",
+          // SPA routes only — skip static files (e.g. search-index.json, sitemap.xml)
+          source: "/docs/:path((?!assets|img|index.html)(?!.*\\..*).*)",
           destination: "/docs/:path/index.html",
         },
       ],
