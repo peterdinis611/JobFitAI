@@ -93,6 +93,7 @@ export const create = mutation({
 export const listByUser = query({
   args: {
     minMatch: v.optional(v.number()),
+    includeArchived: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUserId(ctx)
@@ -102,8 +103,13 @@ export const listByUser = query({
       .order("desc")
       .collect()
 
+    const includeArchived = args.includeArchived === true
+    const visible = includeArchived ? rows : rows.filter((r) => r.archivedAt === undefined)
+
     const filtered =
-      args.minMatch === undefined ? rows : rows.filter((r) => r.matchPercentage >= args.minMatch!)
+      args.minMatch === undefined
+        ? visible
+        : visible.filter((r) => r.matchPercentage >= args.minMatch!)
 
     return await Promise.all(
       filtered.map(async (analysis) => {
@@ -160,5 +166,59 @@ export const getRescoreDelta = query({
       delta: analysis.matchPercentage - previous.matchPercentage,
       previousAnalysisId: previous._id,
     }
+  },
+})
+
+export const setArchived = mutation({
+  args: {
+    analysisId: v.id("analyses"),
+    archived: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireUserId(ctx)
+    const analysis = await ctx.db.get(args.analysisId)
+    if (!analysis || analysis.userId !== userId) throw new Error("Analysis not found")
+
+    if (args.archived) {
+      await ctx.db.patch(args.analysisId, { archivedAt: Date.now() })
+    } else {
+      await ctx.db.patch(args.analysisId, { archivedAt: undefined })
+    }
+  },
+})
+
+export const remove = mutation({
+  args: { analysisId: v.id("analyses") },
+  handler: async (ctx, args) => {
+    const userId = await requireUserId(ctx)
+    const analysis = await ctx.db.get(args.analysisId)
+    if (!analysis || analysis.userId !== userId) throw new Error("Analysis not found")
+
+    const apps = await ctx.db
+      .query("applications")
+      .withIndex("by_analysis", (q) => q.eq("analysisId", args.analysisId))
+      .collect()
+    for (const app of apps) {
+      await ctx.db.delete(app._id)
+    }
+
+    const artifacts = await ctx.db
+      .query("artifacts")
+      .withIndex("by_analysis_type", (q) => q.eq("analysisId", args.analysisId))
+      .collect()
+    for (const artifact of artifacts) {
+      await ctx.db.delete(artifact._id)
+    }
+
+    // Clear rescore links pointing at this analysis
+    const children = await ctx.db
+      .query("analyses")
+      .withIndex("by_previous", (q) => q.eq("previousAnalysisId", args.analysisId))
+      .collect()
+    for (const child of children) {
+      await ctx.db.patch(child._id, { previousAnalysisId: undefined })
+    }
+
+    await ctx.db.delete(args.analysisId)
   },
 })

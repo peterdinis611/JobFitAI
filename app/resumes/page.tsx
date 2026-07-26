@@ -1,7 +1,7 @@
 "use client"
 
 import { useMutation, useQuery } from "convex/react"
-import { Check, FileUp, Star } from "lucide-react"
+import { Check, FileUp, Star, Trash2 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -29,6 +29,7 @@ export default function ResumesPage() {
   const generateUploadUrl = useMutation(api.resumes.generateUploadUrl)
   const createResume = useMutation(api.resumes.create)
   const setActive = useMutation(api.resumes.setActive)
+  const removeResume = useMutation(api.resumes.remove)
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -211,8 +212,32 @@ export default function ResumesPage() {
                         <Check className="size-4" /> Set active
                       </Button>
                     ) : (
-                      <p className="text-xs text-muted-foreground">Used for new analyses</p>
+                      <p className="self-center text-xs text-muted-foreground">
+                        Used for new analyses
+                      </p>
                     )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-destructive"
+                      onClick={() => {
+                        if (
+                          !window.confirm(
+                            `Delete “${resume.fileName}”? Existing analyses keep their scores but lose this file link.`,
+                          )
+                        ) {
+                          return
+                        }
+                        void removeResume({ resumeId: resume._id })
+                          .then(() => toast.success("Resume deleted"))
+                          .catch((e) =>
+                            toast.error(e instanceof Error ? e.message : "Failed to delete"),
+                          )
+                      }}
+                    >
+                      <Trash2 className="size-4" />
+                      Delete
+                    </Button>
                   </CardContent>
                 </Card>
               </motion.div>

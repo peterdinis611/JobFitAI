@@ -20,10 +20,16 @@ Every successful analysis save creates a **Saved** card automatically. You don't
 | **Applied** | Application submitted |
 | **Interview** | In interview process |
 | **Offer** | Offer received (or negotiating) |
+| **Rejected** | Closed / not moving forward |
 
 ## Drag and drop
 
 Drag a card between columns to update status. Drop on the column body (or another card in that column). Status also updates via the dropdown on each card.
+
+## Notes and remove
+
+- **Add notes** on any card (interview feedback, contacts, next steps). Saves on blur.
+- **Remove** deletes the tracker card only — the History analysis remains.
 
 ## Card contents
 
@@ -32,8 +38,9 @@ Each card shows:
 - Job title (with fallbacks if the posting had no title)  
 - Match percentage  
 - Status control  
+- Optional notes  
 - **View report** link  
-
+- Remove from tracker
 ## Empty state
 
 If no applications are tracked, the page links back to **History** or **Analyze**. Run an analysis first — Tracker fills on save.

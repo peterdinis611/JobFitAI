@@ -64,6 +64,7 @@ export default defineSchema({
     ),
     eveSessionId: v.optional(v.string()),
     previousAnalysisId: v.optional(v.id("analyses")),
+    archivedAt: v.optional(v.number()),
     createdAt: v.number(),
   })
     .index("by_user", ["userId"])
@@ -79,6 +80,7 @@ export default defineSchema({
       v.literal("applied"),
       v.literal("interview"),
       v.literal("offer"),
+      v.literal("rejected"),
     ),
     notes: v.optional(v.string()),
     createdAt: v.number(),

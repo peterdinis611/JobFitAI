@@ -146,3 +146,28 @@ export const getFileUrlForAgent = query({
     return await ctx.storage.getUrl(resume.storageId)
   },
 })
+
+export const remove = mutation({
+  args: { resumeId: v.id("resumes") },
+  handler: async (ctx, args) => {
+    const userId = await requireUserId(ctx)
+    const resume = await ctx.db.get(args.resumeId)
+    if (!resume || resume.userId !== userId) throw new Error("Resume not found")
+
+    const wasActive = resume.isActive
+    await ctx.storage.delete(resume.storageId)
+    await ctx.db.delete(args.resumeId)
+
+    if (wasActive) {
+      const remaining = await ctx.db
+        .query("resumes")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .order("desc")
+        .collect()
+      const next = remaining[0]
+      if (next) {
+        await ctx.db.patch(next._id, { isActive: true })
+      }
+    }
+  },
+})

@@ -1,17 +1,77 @@
 "use client"
 
+import { Copy, Download } from "lucide-react"
 import Link from "next/link"
+import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  downloadTextFile,
+  tailoredBulletsPlainList,
+  tailoredBulletsToMarkdown,
+} from "@/lib/tailored-export"
 import { cn } from "@/lib/utils"
 
 type Bullet = { original: string; rewritten: string; rationale?: string }
 
-export function TailoredBulletsView({ bullets }: { bullets: Bullet[] }) {
+export function TailoredBulletsView({
+  bullets,
+  jobTitle,
+}: {
+  bullets: Bullet[]
+  jobTitle?: string
+}) {
+  async function copyRewritten() {
+    try {
+      await navigator.clipboard.writeText(tailoredBulletsPlainList(bullets))
+      toast.success("Rewritten bullets copied")
+    } catch {
+      toast.error("Could not copy")
+    }
+  }
+
+  async function copyMarkdown() {
+    try {
+      await navigator.clipboard.writeText(tailoredBulletsToMarkdown(bullets, { jobTitle }))
+      toast.success("Markdown pack copied")
+    } catch {
+      toast.error("Could not copy")
+    }
+  }
+
+  function downloadMarkdown() {
+    const slug = (jobTitle ?? "role")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "")
+      .slice(0, 40)
+    downloadTextFile(
+      `tailored-bullets-${slug || "role"}.md`,
+      tailoredBulletsToMarkdown(bullets, { jobTitle }),
+    )
+    toast.success("Downloaded markdown pack")
+  }
+
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" size="sm" variant="secondary" onClick={() => void copyRewritten()}>
+          <Copy className="size-3.5" />
+          Copy rewritten
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={() => void copyMarkdown()}>
+          <Copy className="size-3.5" />
+          Copy markdown pack
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={downloadMarkdown}>
+          <Download className="size-3.5" />
+          Download .md
+        </Button>
+      </div>
+
       {bullets.map((b, i) => (
-        <Card key={i} className="border-border/60 bg-muted/20">
+        <Card key={`${i}-${b.rewritten.slice(0, 24)}`} className="border-border/60 bg-muted/20">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Bullet {i + 1}</CardTitle>
           </CardHeader>
@@ -37,9 +97,24 @@ export function TailoredBulletsView({ bullets }: { bullets: Bullet[] }) {
 }
 
 export function CoverLetterView({ text }: { text: string }) {
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(text)
+      toast.success("Cover letter copied")
+    } catch {
+      toast.error("Could not copy")
+    }
+  }
+
   return (
-    <div className="rounded-lg border bg-muted/30 p-4">
-      <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">{text}</pre>
+    <div className="space-y-3">
+      <Button type="button" size="sm" variant="secondary" onClick={() => void copy()}>
+        <Copy className="size-3.5" />
+        Copy letter
+      </Button>
+      <div className="rounded-lg border bg-muted/30 p-4">
+        <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">{text}</pre>
+      </div>
     </div>
   )
 }
@@ -63,7 +138,7 @@ export function LearningPlanView({ plans }: { plans: Plan[] }) {
           <CardContent>
             <ol className="list-decimal space-y-2 pl-4 text-sm">
               {plan.steps.map((step, i) => (
-                <li key={i}>{step}</li>
+                <li key={`${plan.skill}-${i}`}>{step}</li>
               ))}
             </ol>
           </CardContent>

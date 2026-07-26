@@ -2,9 +2,18 @@
 
 import { useMutation, useQuery } from "convex/react"
 import { useEveAgent } from "eve/react"
-import { BookOpen, FileText, Kanban, Loader2, PenLine, RefreshCw, Sparkles } from "lucide-react"
+import {
+  ArrowRight,
+  BookOpen,
+  FileText,
+  Kanban,
+  Loader2,
+  PenLine,
+  RefreshCw,
+  Sparkles,
+} from "lucide-react"
 import Link from "next/link"
-import { useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
 import { AgentMessage } from "@/app/_components/agent-message"
 import {
@@ -24,6 +33,7 @@ import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
+import { parseAnalysisStream } from "@/lib/analyze-stream"
 
 type AnalysisContext = {
   analysis: Doc<"analyses">
@@ -53,7 +63,10 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
   const [activeTab, setActiveTab] = useState("tailored_bullets")
   const [running, setRunning] = useState<string | null>(null)
   const [rescoreUploading, setRescoreUploading] = useState(false)
+  const [awaitingRescore, setAwaitingRescore] = useState(false)
+  const [newAnalysisId, setNewAnalysisId] = useState<Id<"analyses"> | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
+  const announcedRescore = useRef<string | null>(null)
 
   const tailored = useQuery(api.artifacts.getByType, {
     analysisId: data.analysis._id,
@@ -75,6 +88,27 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
   const generateUploadUrl = useMutation(api.resumes.generateUploadUrl)
   const createResume = useMutation(api.resumes.create)
   const checkRate = useMutation(api.rateLimits.checkAndIncrement)
+
+  const streamState = useMemo(() => parseAnalysisStream(agent.data.messages), [agent.data.messages])
+
+  useEffect(() => {
+    if (!awaitingRescore) return
+    const id = streamState.analysisId
+    if (!id || id === data.analysis._id) return
+    if (announcedRescore.current === id) return
+
+    announcedRescore.current = id
+    setNewAnalysisId(id as Id<"analyses">)
+    setAwaitingRescore(false)
+    toast.success("Re-score saved — open the new report", {
+      action: {
+        label: "Open",
+        onClick: () => {
+          window.location.href = `/analyses/${id}`
+        },
+      },
+    })
+  }, [awaitingRescore, streamState.analysisId, data.analysis._id])
 
   const isBusy =
     running !== null ||
@@ -105,6 +139,8 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
   async function handleRescore(file: File) {
     if (!userId) return
     setRescoreUploading(true)
+    setNewAnalysisId(null)
+    announcedRescore.current = null
     try {
       const rate = await checkRate({})
       if (!rate.allowed) {
@@ -133,6 +169,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
       }
 
       setActiveTab("stream")
+      setAwaitingRescore(true)
       await agent.send({
         message: formatAgentSkillMessage({
           skill: "rescore-after-edit",
@@ -141,8 +178,9 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
             "parse_resume → load_job_posting → score_match → save_analysis (include previousAnalysisId).",
         }),
       })
-      toast.success("Re-score started — check the stream for the new analysis ID")
+      toast.message("Re-score running — we'll link the new report when it saves")
     } catch (e) {
+      setAwaitingRescore(false)
       toast.error(e instanceof Error ? e.message : "Re-score failed")
     } finally {
       setRescoreUploading(false)
@@ -164,6 +202,26 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
 
   return (
     <div className="space-y-4">
+      {newAnalysisId ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-success/30 bg-success/10 px-4 py-3 text-sm">
+          <p>
+            New re-score report is ready
+            {streamState.matchPercentage != null ? (
+              <>
+                {" "}
+                (<span className="font-semibold tabular-nums">{streamState.matchPercentage}%</span>)
+              </>
+            ) : null}
+          </p>
+          <Button asChild size="sm">
+            <Link href={`/analyses/${newAnalysisId}`}>
+              Open new report
+              <ArrowRight className="size-3.5" />
+            </Link>
+          </Button>
+        </div>
+      ) : null}
+
       <Card className="border-border/60 bg-card/80">
         <CardHeader>
           <CardTitle className="text-base">Career tools</CardTitle>
@@ -285,6 +343,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
         <TabsContent value="tailored_bullets" className="mt-4">
           {tailoredContent?.bullets?.length ? (
             <TailoredBulletsView
+              jobTitle={data.jobPosting?.title}
               bullets={
                 tailoredContent.bullets as {
                   original: string

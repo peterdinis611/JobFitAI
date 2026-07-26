@@ -1,20 +1,25 @@
 "use client"
 
-import { useQuery } from "convex/react"
+import { useMutation, useQuery } from "convex/react"
 import {
+  Archive,
+  ArchiveRestore,
   ArrowRight,
   ArrowUpDown,
   BarChart3,
   Briefcase,
   Check,
   GitCompare,
+  MoreHorizontal,
   Plus,
   Target,
+  Trash2,
   TrendingUp,
 } from "lucide-react"
 import { motion } from "motion/react"
 import Link from "next/link"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import {
   DashboardEmptyHistory,
   DashboardGettingStarted,
@@ -22,6 +27,13 @@ import {
 } from "@/components/dashboard/dashboard-states"
 import { AnimatedProgress } from "@/components/ui/animated-progress"
 import { Button } from "@/components/ui/button"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { PageHeader } from "@/components/ui/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatCard } from "@/components/ui/stat-card"
@@ -40,14 +52,17 @@ const filters = [
 
 export default function DashboardPage() {
   const { ready } = useJobFitUser()
-  const rows = useQuery(api.analyses.listByUser, ready ? {} : "skip")
+  const [includeArchived, setIncludeArchived] = useState(false)
+  const rows = useQuery(api.analyses.listByUser, ready ? { includeArchived } : "skip")
   const resumes = useQuery(api.resumes.listByUser, ready ? {} : "skip")
+  const setArchived = useMutation(api.analyses.setArchived)
+  const removeAnalysis = useMutation(api.analyses.remove)
   const [sortDesc, setSortDesc] = useState(true)
   const [minMatch, setMinMatch] = useState(0)
   const [compareIds, setCompareIds] = useState<Id<"analyses">[]>([])
 
   const hasResume = Boolean(resumes?.some((r) => r.isActive))
-  const isEmpty = rows?.length === 0
+  const isEmpty = rows?.length === 0 && !includeArchived
 
   const sorted = useMemo(() => {
     if (!rows) return []
@@ -74,6 +89,33 @@ export default function DashboardPage() {
       if (prev.length >= 2) return [prev[1], id]
       return [...prev, id]
     })
+  }
+
+  async function archiveAnalysis(id: Id<"analyses">, archived: boolean) {
+    try {
+      await setArchived({ analysisId: id, archived })
+      setCompareIds((prev) => prev.filter((x) => x !== id))
+      toast.success(archived ? "Archived" : "Restored")
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to update")
+    }
+  }
+
+  async function deleteAnalysis(id: Id<"analyses">, title: string) {
+    if (
+      !window.confirm(
+        `Permanently delete “${title}”? This also removes tracker cards and career tools for it.`,
+      )
+    ) {
+      return
+    }
+    try {
+      await removeAnalysis({ analysisId: id })
+      setCompareIds((prev) => prev.filter((x) => x !== id))
+      toast.success("Analysis deleted")
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete")
+    }
   }
 
   if (!ready || rows === undefined) {
@@ -151,10 +193,20 @@ export default function DashboardPage() {
             </button>
           ))}
         </div>
-        <Button variant="outline" size="sm" onClick={() => setSortDesc((v) => !v)}>
-          <ArrowUpDown className="size-3.5" />
-          {sortDesc ? "Highest match" : "Lowest match"}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => setSortDesc((v) => !v)}>
+            <ArrowUpDown className="size-3.5" />
+            {sortDesc ? "Highest match" : "Lowest match"}
+          </Button>
+          <Button
+            variant={includeArchived ? "secondary" : "outline"}
+            size="sm"
+            onClick={() => setIncludeArchived((v) => !v)}
+          >
+            <Archive className="size-3.5" />
+            {includeArchived ? "Hide archived" : "Show archived"}
+          </Button>
+        </div>
       </div>
 
       {compareIds.length > 0 ? (
@@ -251,6 +303,12 @@ export default function DashboardPage() {
                           >
                             {seniority.label}
                           </span>
+                          {analysis.archivedAt ? (
+                            <span className="inline-flex items-center gap-1 rounded-md bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground">
+                              <Archive className="size-3" />
+                              Archived
+                            </span>
+                          ) : null}
                         </div>
                         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-muted-foreground">
                           <span>
@@ -311,17 +369,52 @@ export default function DashboardPage() {
                       </div>
                     </div>
 
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="w-full shrink-0 sm:w-auto"
-                    >
-                      <Link href={`/analyses/${analysis._id}`}>
-                        Open
-                        <ArrowRight className="size-3.5" />
-                      </Link>
-                    </Button>
+                    <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto">
+                      <Button asChild variant="outline" size="sm" className="flex-1 sm:flex-none">
+                        <Link href={`/analyses/${analysis._id}`}>
+                          Open
+                          <ArrowRight className="size-3.5" />
+                        </Link>
+                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="size-8 shrink-0 px-0"
+                            aria-label="More actions"
+                          >
+                            <MoreHorizontal className="size-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {analysis.archivedAt ? (
+                            <DropdownMenuItem
+                              onClick={() => void archiveAnalysis(analysis._id, false)}
+                            >
+                              <ArchiveRestore className="size-4" />
+                              Restore
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem
+                              onClick={() => void archiveAnalysis(analysis._id, true)}
+                            >
+                              <Archive className="size-4" />
+                              Archive
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            variant="destructive"
+                            onClick={() => void deleteAnalysis(analysis._id, title)}
+                          >
+                            <Trash2 className="size-4" />
+                            Delete permanently
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
                   </div>
                 </motion.li>
               )

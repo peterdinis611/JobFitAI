@@ -7,6 +7,7 @@ const applicationStatus = v.union(
   v.literal("applied"),
   v.literal("interview"),
   v.literal("offer"),
+  v.literal("rejected"),
 )
 
 export const listByUser = query({
@@ -86,6 +87,23 @@ export const updateStatus = mutation({
     if (!app || app.userId !== userId) throw new Error("Application not found")
     await ctx.db.patch(args.applicationId, {
       status: args.status,
+      updatedAt: Date.now(),
+    })
+  },
+})
+
+export const updateNotes = mutation({
+  args: {
+    applicationId: v.id("applications"),
+    notes: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireUserId(ctx)
+    const app = await ctx.db.get(args.applicationId)
+    if (!app || app.userId !== userId) throw new Error("Application not found")
+    const trimmed = args.notes.trim()
+    await ctx.db.patch(args.applicationId, {
+      notes: trimmed.length > 0 ? trimmed : undefined,
       updatedAt: Date.now(),
     })
   },

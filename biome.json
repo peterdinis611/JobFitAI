@@ -19,7 +19,8 @@
       "!**/dist",
       "!**/bun.lock",
       "!**/package-lock.json",
-      "!**/*.css"
+      "!**/*.css",
+      "!**/.vscode"
     ]
   },
   "formatter": {

@@ -46,6 +46,13 @@ Each saved analysis appears as a card (not a dense table row):
 2. Click **Compare selected** in the header  
 3. Side-by-side scores and skills on `/compare`  
 
+## Archive and delete
+
+Use the ⋯ menu on each card:
+
+- **Archive** — hides from the default History list (toggle **Show archived** to restore)  
+- **Delete permanently** — removes the analysis, related tracker card, and career-tool artifacts  
+
 ## Empty and filtered states
 
 | State | What you see |

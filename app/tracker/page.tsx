@@ -9,6 +9,8 @@ import {
   GripVertical,
   Kanban,
   Sparkles,
+  StickyNote,
+  Trash2,
 } from "lucide-react"
 import Link from "next/link"
 import { type DragEvent, useCallback, useRef, useState } from "react"
@@ -22,12 +24,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { roleTitle } from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
-type Status = "saved" | "applied" | "interview" | "offer"
+type Status = "saved" | "applied" | "interview" | "offer" | "rejected"
 
 const columns: {
   id: Status
@@ -64,6 +67,13 @@ const columns: {
     accent: "bg-success",
     header: "text-success",
   },
+  {
+    id: "rejected",
+    label: "Rejected",
+    hint: "Closed",
+    accent: "bg-destructive",
+    header: "text-destructive",
+  },
 ]
 
 const STATUS_IDS = new Set<Status>(columns.map((c) => c.id))
@@ -94,24 +104,46 @@ function formatDate(ts: number) {
 function TrackerCard({
   row,
   onMove,
+  onRemove,
+  onSaveNotes,
   isDragging,
   onDragStart,
   onDragEnd,
 }: {
   row: Row
   onMove: (id: Id<"applications">, status: Status) => void
+  onRemove: (id: Id<"applications">) => void
+  onSaveNotes: (id: Id<"applications">, notes: string) => Promise<void>
   isDragging: boolean
   onDragStart: (id: Id<"applications">, status: Status) => void
   onDragEnd: () => void
 }) {
   const { application, analysis, resume, jobPosting } = row
   const title = roleTitle(jobPosting, analysis)
+  const [notesOpen, setNotesOpen] = useState(Boolean(application.notes?.trim()))
+  const [notesDraft, setNotesDraft] = useState(application.notes ?? "")
+  const [savingNotes, setSavingNotes] = useState(false)
 
   function handleDragStart(e: DragEvent<HTMLElement>) {
     e.dataTransfer.setData(DRAG_MIME, application._id)
     e.dataTransfer.setData("text/plain", application._id)
     e.dataTransfer.effectAllowed = "move"
     onDragStart(application._id, application.status)
+  }
+
+  async function persistNotes() {
+    const next = notesDraft.trim()
+    const prev = (application.notes ?? "").trim()
+    if (next === prev) return
+    setSavingNotes(true)
+    try {
+      await onSaveNotes(application._id, notesDraft)
+      toast.success("Notes saved")
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to save notes")
+    } finally {
+      setSavingNotes(false)
+    }
   }
 
   return (
@@ -163,6 +195,12 @@ function TrackerCard({
         </p>
       ) : null}
 
+      {!notesOpen && application.notes?.trim() ? (
+        <p className="mt-2 line-clamp-2 pl-6 text-[11px] text-muted-foreground">
+          {application.notes}
+        </p>
+      ) : null}
+
       <div
         className="mt-3 space-y-2 border-t border-border/70 pt-3"
         onPointerDown={(e) => e.stopPropagation()}
@@ -184,17 +222,74 @@ function TrackerCard({
           </SelectContent>
         </Select>
 
-        <Button
-          asChild
-          variant="ghost"
-          size="sm"
-          className="h-8 w-full justify-between px-2.5 text-[12px] text-muted-foreground hover:text-foreground"
-        >
-          <Link href={`/analyses/${analysis._id}`} draggable={false}>
-            View report
-            <ChevronRight className="size-3.5 opacity-60 transition-transform group-hover:translate-x-0.5" />
-          </Link>
-        </Button>
+        {notesOpen ? (
+          <div className="space-y-1.5">
+            <Textarea
+              value={notesDraft}
+              onChange={(e) => setNotesDraft(e.target.value)}
+              onBlur={() => void persistNotes()}
+              placeholder="Interview notes, contacts, next steps…"
+              className="min-h-[72px] resize-y text-[12px]"
+              disabled={savingNotes}
+            />
+            <div className="flex justify-end gap-1">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-7 px-2 text-[11px]"
+                onClick={() => {
+                  setNotesDraft(application.notes ?? "")
+                  setNotesOpen(Boolean(application.notes?.trim()))
+                }}
+              >
+                Hide
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-8 w-full justify-start gap-1.5 px-2.5 text-[12px] text-muted-foreground"
+            onClick={() => {
+              setNotesDraft(application.notes ?? "")
+              setNotesOpen(true)
+            }}
+          >
+            <StickyNote className="size-3.5" />
+            {application.notes?.trim() ? "Edit notes" : "Add notes"}
+          </Button>
+        )}
+
+        <div className="flex gap-1">
+          <Button
+            asChild
+            variant="ghost"
+            size="sm"
+            className="h-8 flex-1 justify-between px-2.5 text-[12px] text-muted-foreground hover:text-foreground"
+          >
+            <Link href={`/analyses/${analysis._id}`} draggable={false}>
+              View report
+              <ChevronRight className="size-3.5 opacity-60" />
+            </Link>
+          </Button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="size-8 shrink-0 text-muted-foreground hover:text-destructive"
+            aria-label="Remove from tracker"
+            onClick={() => {
+              if (window.confirm(`Remove “${title}” from tracker?`)) {
+                void onRemove(application._id)
+              }
+            }}
+          >
+            <Trash2 className="size-3.5" />
+          </Button>
+        </div>
       </div>
     </article>
   )
@@ -206,6 +301,8 @@ function DropColumn({
   isOver,
   isDragging,
   onMove,
+  onRemove,
+  onSaveNotes,
   onDragStart,
   onDragEnd,
   onDragEnter,
@@ -218,6 +315,8 @@ function DropColumn({
   isOver: boolean
   isDragging: boolean
   onMove: (id: Id<"applications">, status: Status) => void
+  onRemove: (id: Id<"applications">) => void
+  onSaveNotes: (id: Id<"applications">, notes: string) => Promise<void>
   onDragStart: (id: Id<"applications">, status: Status) => void
   onDragEnd: () => void
   onDragEnter: (status: Status) => void
@@ -268,6 +367,8 @@ function DropColumn({
             key={row.application._id}
             row={row}
             onMove={onMove}
+            onRemove={onRemove}
+            onSaveNotes={onSaveNotes}
             isDragging={draggingId === row.application._id}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
@@ -298,6 +399,8 @@ function DropColumn({
 export default function TrackerPage() {
   const rows = useQuery(api.applications.listByUser, {})
   const updateStatus = useMutation(api.applications.updateStatus)
+  const updateNotes = useMutation(api.applications.updateNotes)
+  const removeApplication = useMutation(api.applications.remove)
 
   const [draggingId, setDraggingId] = useState<Id<"applications"> | null>(null)
   const [overColumn, setOverColumn] = useState<Status | null>(null)
@@ -321,6 +424,25 @@ export default function TrackerPage() {
       }
     },
     [updateStatus],
+  )
+
+  const remove = useCallback(
+    async (applicationId: Id<"applications">) => {
+      try {
+        await removeApplication({ applicationId })
+        toast.success("Removed from tracker")
+      } catch (e) {
+        toast.error(e instanceof Error ? e.message : "Failed to remove")
+      }
+    },
+    [removeApplication],
+  )
+
+  const saveNotes = useCallback(
+    async (applicationId: Id<"applications">, notes: string) => {
+      await updateNotes({ applicationId, notes })
+    },
+    [updateNotes],
   )
 
   function handleDragStart(id: Id<"applications">, status: Status) {
@@ -371,7 +493,7 @@ export default function TrackerPage() {
     <div className="space-y-6">
       <PageHeader
         title="Application tracker"
-        description="Drag cards between columns — or use the status menu. Each card links to its match report."
+        description="Drag cards between columns — add notes, or remove roles you no longer track."
         action={
           !isEmpty && rows !== undefined ? (
             <Button asChild size="sm">
@@ -385,7 +507,7 @@ export default function TrackerPage() {
       />
 
       {rows === undefined ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           {columns.map((col) => (
             <div key={col.id} className="h-56 animate-pulse rounded-2xl bg-muted" />
           ))}
@@ -411,7 +533,7 @@ export default function TrackerPage() {
               <p className="text-lg font-semibold tracking-tight">No applications yet</p>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 Run an analysis — successful reports land under Saved. Then drag them across Applied
-                → Interview → Offer.
+                → Interview → Offer (or Rejected).
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-2">
@@ -431,7 +553,7 @@ export default function TrackerPage() {
             {isDragging ? " · Drop on a column to update status" : " · Drag cards to move"}
           </p>
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             {columns.map((col) => (
               <DropColumn
                 key={col.id}
@@ -441,6 +563,8 @@ export default function TrackerPage() {
                 isDragging={isDragging}
                 draggingId={draggingId}
                 onMove={move}
+                onRemove={remove}
+                onSaveNotes={saveNotes}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onDragEnter={handleDragEnter}
