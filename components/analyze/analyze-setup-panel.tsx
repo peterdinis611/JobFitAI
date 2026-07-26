@@ -2,9 +2,9 @@
 
 import Link from "next/link"
 import { FileText, Link2, Sparkles, Loader2 } from "lucide-react"
+import { JobPostingEditor } from "@/components/analyze/job-posting-editor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 
 type AnalyzeSetupPanelProps = {
@@ -114,11 +114,11 @@ export function AnalyzeSetupPanel({
 
           {tab === "text" ? (
             <div className="space-y-2">
-              <Textarea
-                placeholder="Paste the full job description…"
-                className="mac-field field-sizing-fixed h-[200px] max-h-[240px] resize-none overflow-y-auto text-[13px]"
+              <JobPostingEditor
                 value={jobText}
-                onChange={(e) => onJobTextChange(e.target.value)}
+                onChange={onJobTextChange}
+                disabled={isBusy}
+                placeholder="Paste the full job description…"
               />
               {jobText.length > 0 ? (
                 <p className="text-xs text-muted-foreground">
