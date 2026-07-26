@@ -1,7 +1,7 @@
 "use client"
 
 import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react"
-import { BookOpen, Briefcase, FileText, History, Kanban, LogOut } from "lucide-react"
+import { BookOpen, Briefcase, FileText, GitCompare, History, Kanban, LogOut } from "lucide-react"
 import { motion } from "motion/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -13,11 +13,43 @@ import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { cn } from "@/lib/utils"
 
 const links = [
-  { href: "/", label: "History", icon: History },
-  { href: "/tracker", label: "Tracker", icon: Kanban },
-  { href: "/resumes", label: "Resumes", icon: FileText },
-  { href: "/analyze", label: "Analyze", icon: Briefcase },
-  { href: "/docs", label: "Docs", icon: BookOpen, static: true },
+  {
+    href: "/",
+    label: "History",
+    icon: History,
+    match: (p: string) => p === "/" || p.startsWith("/analyses/"),
+  },
+  {
+    href: "/compare",
+    label: "Compare",
+    icon: GitCompare,
+    match: (p: string) => p.startsWith("/compare"),
+  },
+  {
+    href: "/tracker",
+    label: "Tracker",
+    icon: Kanban,
+    match: (p: string) => p.startsWith("/tracker"),
+  },
+  {
+    href: "/resumes",
+    label: "Resumes",
+    icon: FileText,
+    match: (p: string) => p.startsWith("/resumes"),
+  },
+  {
+    href: "/analyze",
+    label: "Analyze",
+    icon: Briefcase,
+    match: (p: string) => p.startsWith("/analyze"),
+  },
+  {
+    href: "/docs",
+    label: "Docs",
+    icon: BookOpen,
+    static: true,
+    match: (p: string) => p.startsWith("/docs"),
+  },
 ]
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -64,10 +96,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
 
           <nav className="mac-segmented hidden overflow-x-auto sm:flex">
-            {links.map(({ href, label, icon: Icon, static: isStatic }) => {
-              const active = href.startsWith("/docs")
-                ? pathname.startsWith("/docs")
-                : pathname === href
+            {links.map(({ href, label, icon: Icon, static: isStatic, match }) => {
+              const active = match(pathname)
               const className = cn(
                 "mac-segmented-item whitespace-nowrap",
                 active && "mac-segmented-item-active",
@@ -110,10 +140,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Mobile nav */}
         <div className="flex gap-1 overflow-x-auto border-t border-border/60 px-3 py-2 sm:hidden">
-          {links.map(({ href, label, icon: Icon, static: isStatic }) => {
-            const active = href.startsWith("/docs")
-              ? pathname.startsWith("/docs")
-              : pathname === href
+          {links.map(({ href, label, icon: Icon, static: isStatic, match }) => {
+            const active = match(pathname)
             const className = cn(
               "flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium",
               active

@@ -85,10 +85,24 @@ export const updateStatus = mutation({
     const userId = await requireUserId(ctx)
     const app = await ctx.db.get(args.applicationId)
     if (!app || app.userId !== userId) throw new Error("Application not found")
-    await ctx.db.patch(args.applicationId, {
+
+    const now = Date.now()
+    const next: Record<string, unknown> = {
       status: args.status,
-      updatedAt: Date.now(),
-    })
+      updatedAt: now,
+    }
+
+    if (args.status === "offer" || args.status === "rejected") {
+      next.followUpAt = undefined
+    } else if (
+      (args.status === "applied" || args.status === "interview") &&
+      app.followUpAt === undefined
+    ) {
+      const days = args.status === "interview" ? 3 : 7
+      next.followUpAt = now + days * 24 * 60 * 60 * 1000
+    }
+
+    await ctx.db.patch(args.applicationId, next)
   },
 })
 
@@ -106,6 +120,55 @@ export const updateNotes = mutation({
       notes: trimmed.length > 0 ? trimmed : undefined,
       updatedAt: Date.now(),
     })
+  },
+})
+
+export const setFollowUp = mutation({
+  args: {
+    applicationId: v.id("applications"),
+    followUpAt: v.union(v.number(), v.null()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireUserId(ctx)
+    const app = await ctx.db.get(args.applicationId)
+    if (!app || app.userId !== userId) throw new Error("Application not found")
+    await ctx.db.patch(args.applicationId, {
+      followUpAt: args.followUpAt === null ? undefined : args.followUpAt,
+      updatedAt: Date.now(),
+    })
+  },
+})
+
+export const listDueFollowUps = query({
+  args: {
+    withinDays: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const userId = await requireUserId(ctx)
+    const withinMs = (args.withinDays ?? 7) * 24 * 60 * 60 * 1000
+    const horizon = Date.now() + withinMs
+
+    const apps = await ctx.db
+      .query("applications")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect()
+
+    const due = apps
+      .filter(
+        (app) =>
+          app.followUpAt !== undefined &&
+          app.followUpAt <= horizon &&
+          (app.status === "applied" || app.status === "interview"),
+      )
+      .sort((a, b) => (a.followUpAt ?? 0) - (b.followUpAt ?? 0))
+
+    return await Promise.all(
+      due.map(async (app) => {
+        const analysis = await ctx.db.get(app.analysisId)
+        const jobPosting = analysis ? await ctx.db.get(analysis.jobPostingId) : null
+        return { application: app, analysis, jobPosting }
+      }),
+    )
   },
 })
 

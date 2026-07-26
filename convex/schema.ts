@@ -83,12 +83,14 @@ export default defineSchema({
       v.literal("rejected"),
     ),
     notes: v.optional(v.string()),
+    followUpAt: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_user_status", ["userId", "status"])
-    .index("by_analysis", ["analysisId"]),
+    .index("by_analysis", ["analysisId"])
+    .index("by_user_follow_up", ["userId", "followUpAt"]),
 
   artifacts: defineTable({
     userId: v.id("users"),

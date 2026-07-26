@@ -18,7 +18,7 @@ Rewrites **3–5 resume bullets** for the specific job:
 2. `tailor_bullets` — LLM rewrite with before/after pairs
 3. `save_artifact` — type `tailored_bullets`
 
-**Tab:** Before/after cards with optional rationale per bullet.
+**Tab:** Before/after cards with optional rationale per bullet. Export as copy, `.md`, `.docx`, or `.pdf`.
 
 :::warning
 Bullets are suggestions — verify accuracy before using on a real application. The agent won't invent employers but may suggest metrics you should confirm.

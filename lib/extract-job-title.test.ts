@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { extractJobTitle, wordCount } from "./extract-job-title"
+import { extractJobTitle, hostFromUrl, normalizeJobUrl, wordCount } from "./extract-job-title"
 
 describe("extractJobTitle", () => {
   it("returns undefined for empty text", () => {
@@ -20,8 +20,35 @@ describe("extractJobTitle", () => {
     )
   })
 
-  it("skips soft openers", () => {
-    expect(extractJobTitle("We are looking for talent\nRequirements")).toBeUndefined()
+  it("skips soft openers and finds a later title-like line", () => {
+    expect(extractJobTitle("We are looking for talent\nFull Stack Developer\nRequirements")).toBe(
+      "Full Stack Developer",
+    )
+  })
+
+  it("supports SK/CZ role words", () => {
+    expect(extractJobTitle("Senior vývojář\nPožadavky")).toBe("Senior vývojář")
+  })
+})
+
+describe("normalizeJobUrl", () => {
+  it("upgrades http to https", () => {
+    expect(normalizeJobUrl("http://example.com/jobs/1")).toBe("https://example.com/jobs/1")
+  })
+
+  it("adds https to bare hosts", () => {
+    expect(normalizeJobUrl("careers.acme.com/role")).toBe("https://careers.acme.com/role")
+  })
+
+  it("rejects invalid input", () => {
+    expect(normalizeJobUrl("not a url")).toBeNull()
+    expect(normalizeJobUrl("")).toBeNull()
+  })
+})
+
+describe("hostFromUrl", () => {
+  it("strips www", () => {
+    expect(hostFromUrl("https://www.acme.com/x")).toBe("acme.com")
   })
 })
 

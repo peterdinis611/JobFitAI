@@ -26,10 +26,11 @@ Every successful analysis save creates a **Saved** card automatically. You don't
 
 Drag a card between columns to update status. Drop on the column body (or another card in that column). Status also updates via the dropdown on each card.
 
-## Notes and remove
+## Notes, remove, and follow-ups
 
 - **Add notes** on any card (interview feedback, contacts, next steps). Saves on blur.
 - **Remove** deletes the tracker card only — the History analysis remains.
+- **Follow-up reminders** auto-schedule when you move to **Applied** (7 days) or **Interview** (3 days). Edit or clear the date on the card. Due/overdue items appear in a banner at the top of Tracker.
 
 ## Card contents
 

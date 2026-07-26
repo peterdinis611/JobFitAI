@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { tailoredBulletsPlainList, tailoredBulletsToMarkdown } from "./tailored-export"
+import { slugifyRole, tailoredBulletsPlainList, tailoredBulletsToMarkdown } from "./tailored-export"
 
 const bullets = [
   {
@@ -31,5 +31,11 @@ describe("tailoredBulletsPlainList", () => {
     expect(tailoredBulletsPlainList(bullets)).toBe(
       "• Shipped React dashboards used by 12k weekly users\n• Owned TypeScript migrations across 4 services",
     )
+  })
+})
+
+describe("slugifyRole", () => {
+  it("slugifies titles", () => {
+    expect(slugifyRole("Senior Frontend Engineer")).toBe("senior-frontend-engineer")
   })
 })

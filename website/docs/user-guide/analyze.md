@@ -23,25 +23,15 @@ You need an **active resume**. If none exists, you'll see a prompt linking to **
 
 ## Job input modes
 
-### Paste text (default)
+### Paste text (recommended)
 
-Use the rich text editor to paste the full job description — requirements, responsibilities, nice-to-haves. Content is sent to the agent as plain text.
-
-:::tip Clearer History labels
-Put the **job title on the first line**. JobFit extracts titles from the top of the paste when possible. See [Role titles](../concepts/role-titles).
-:::
+Paste the full job description — put the **role title on line 1**. JobFit auto-detects the title (editable before you run). Prefer paste when boards require login or block bots.
 
 ### URL
 
-Provide an **HTTPS** URL. The agent:
+HTTPS careers links (http is upgraded). If fetch fails, Analyze shows a **Switch to paste** prompt — scoring is the same either way.
 
-1. Fetches the page server-side  
-2. Strips HTML and sanitizes content  
-3. Persists cleaned text + title via `update_job_posting`  
-
-:::caution
-Some job boards block scraping or require login. If fetch fails, paste the text manually.
-:::
+You can always set or override the **Role title** field before running.
 
 ## What happens on Run
 

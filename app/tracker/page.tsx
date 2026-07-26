@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery } from "convex/react"
 import {
+  Bell,
   Briefcase,
   Calendar,
   ChevronRight,
@@ -13,7 +14,7 @@ import {
   Trash2,
 } from "lucide-react"
 import Link from "next/link"
-import { type DragEvent, useCallback, useRef, useState } from "react"
+import { type DragEvent, useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/page-header"
@@ -101,11 +102,32 @@ function formatDate(ts: number) {
   }).format(new Date(ts))
 }
 
+function toDateInputValue(ts: number) {
+  const d = new Date(ts)
+  const yyyy = d.getFullYear()
+  const mm = String(d.getMonth() + 1).padStart(2, "0")
+  const dd = String(d.getDate()).padStart(2, "0")
+  return `${yyyy}-${mm}-${dd}`
+}
+
+function followUpLabel(ts: number) {
+  const start = new Date()
+  start.setHours(0, 0, 0, 0)
+  const target = new Date(ts)
+  target.setHours(0, 0, 0, 0)
+  const diffDays = Math.round((target.getTime() - start.getTime()) / (24 * 60 * 60 * 1000))
+  if (diffDays < 0) return `Overdue · ${formatDate(ts)}`
+  if (diffDays === 0) return "Due today"
+  if (diffDays === 1) return "Due tomorrow"
+  return `Due ${formatDate(ts)}`
+}
+
 function TrackerCard({
   row,
   onMove,
   onRemove,
   onSaveNotes,
+  onSetFollowUp,
   isDragging,
   onDragStart,
   onDragEnd,
@@ -114,6 +136,7 @@ function TrackerCard({
   onMove: (id: Id<"applications">, status: Status) => void
   onRemove: (id: Id<"applications">) => void
   onSaveNotes: (id: Id<"applications">, notes: string) => Promise<void>
+  onSetFollowUp: (id: Id<"applications">, followUpAt: number | null) => Promise<void>
   isDragging: boolean
   onDragStart: (id: Id<"applications">, status: Status) => void
   onDragEnd: () => void
@@ -123,6 +146,8 @@ function TrackerCard({
   const [notesOpen, setNotesOpen] = useState(Boolean(application.notes?.trim()))
   const [notesDraft, setNotesDraft] = useState(application.notes ?? "")
   const [savingNotes, setSavingNotes] = useState(false)
+  const followUpOverdue =
+    application.followUpAt !== undefined && application.followUpAt < Date.now()
 
   function handleDragStart(e: DragEvent<HTMLElement>) {
     e.dataTransfer.setData(DRAG_MIME, application._id)
@@ -201,6 +226,18 @@ function TrackerCard({
         </p>
       ) : null}
 
+      {application.followUpAt ? (
+        <p
+          className={cn(
+            "mt-2 flex items-center gap-1.5 pl-6 text-[11px] font-medium",
+            followUpOverdue ? "text-destructive" : "text-warning",
+          )}
+        >
+          <Bell className="size-3 shrink-0" />
+          {followUpLabel(application.followUpAt)}
+        </p>
+      ) : null}
+
       <div
         className="mt-3 space-y-2 border-t border-border/70 pt-3"
         onPointerDown={(e) => e.stopPropagation()}
@@ -263,6 +300,44 @@ function TrackerCard({
           </Button>
         )}
 
+        {(application.status === "applied" ||
+          application.status === "interview" ||
+          application.followUpAt) && (
+          <div className="flex items-center gap-2">
+            <label className="sr-only" htmlFor={`follow-up-${application._id}`}>
+              Follow-up date
+            </label>
+            <input
+              id={`follow-up-${application._id}`}
+              type="date"
+              className="h-8 flex-1 rounded-md border border-input bg-transparent px-2 text-[12px]"
+              value={application.followUpAt ? toDateInputValue(application.followUpAt) : ""}
+              onChange={(e) => {
+                const value = e.target.value
+                void onSetFollowUp(
+                  application._id,
+                  value ? new Date(`${value}T12:00:00`).getTime() : null,
+                ).then(() => toast.success(value ? "Follow-up set" : "Follow-up cleared"))
+              }}
+            />
+            {application.followUpAt ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                className="h-8 px-2 text-[11px]"
+                onClick={() =>
+                  void onSetFollowUp(application._id, null).then(() =>
+                    toast.success("Follow-up cleared"),
+                  )
+                }
+              >
+                Clear
+              </Button>
+            ) : null}
+          </div>
+        )}
+
         <div className="flex gap-1">
           <Button
             asChild
@@ -303,6 +378,7 @@ function DropColumn({
   onMove,
   onRemove,
   onSaveNotes,
+  onSetFollowUp,
   onDragStart,
   onDragEnd,
   onDragEnter,
@@ -317,6 +393,7 @@ function DropColumn({
   onMove: (id: Id<"applications">, status: Status) => void
   onRemove: (id: Id<"applications">) => void
   onSaveNotes: (id: Id<"applications">, notes: string) => Promise<void>
+  onSetFollowUp: (id: Id<"applications">, followUpAt: number | null) => Promise<void>
   onDragStart: (id: Id<"applications">, status: Status) => void
   onDragEnd: () => void
   onDragEnter: (status: Status) => void
@@ -369,6 +446,7 @@ function DropColumn({
             onMove={onMove}
             onRemove={onRemove}
             onSaveNotes={onSaveNotes}
+            onSetFollowUp={onSetFollowUp}
             isDragging={draggingId === row.application._id}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
@@ -398,14 +476,35 @@ function DropColumn({
 
 export default function TrackerPage() {
   const rows = useQuery(api.applications.listByUser, {})
+  const dueFollowUps = useQuery(api.applications.listDueFollowUps, { withinDays: 7 })
   const updateStatus = useMutation(api.applications.updateStatus)
   const updateNotes = useMutation(api.applications.updateNotes)
+  const setFollowUp = useMutation(api.applications.setFollowUp)
   const removeApplication = useMutation(api.applications.remove)
 
   const [draggingId, setDraggingId] = useState<Id<"applications"> | null>(null)
   const [overColumn, setOverColumn] = useState<Status | null>(null)
   const dragFromRef = useRef<Status | null>(null)
   const dragDepth = useRef<Record<string, number>>({})
+  const reminded = useRef(false)
+
+  useEffect(() => {
+    if (reminded.current || !dueFollowUps?.length) return
+    const overdue = dueFollowUps.filter(
+      (r) => r.application.followUpAt !== undefined && r.application.followUpAt < Date.now(),
+    ).length
+    if (overdue === 0 && dueFollowUps.length === 0) return
+    reminded.current = true
+    if (overdue > 0) {
+      toast.message(`${overdue} follow-up${overdue === 1 ? "" : "s"} overdue`, {
+        description: "Check Applied / Interview cards with a bell reminder.",
+      })
+    } else if (dueFollowUps.length > 0) {
+      toast.message(
+        `${dueFollowUps.length} follow-up${dueFollowUps.length === 1 ? "" : "s"} this week`,
+      )
+    }
+  }, [dueFollowUps])
 
   const byStatus = columns.reduce(
     (acc, col) => {
@@ -419,6 +518,14 @@ export default function TrackerPage() {
     async (applicationId: Id<"applications">, status: Status) => {
       try {
         await updateStatus({ applicationId, status })
+        const label = columns.find((c) => c.id === status)?.label ?? status
+        if (status === "applied") {
+          toast.success(`Moved to ${label} · follow-up in 7 days`)
+        } else if (status === "interview") {
+          toast.success(`Moved to ${label} · follow-up in 3 days`)
+        } else {
+          toast.success(`Moved to ${label}`)
+        }
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Failed to update")
       }
@@ -443,6 +550,13 @@ export default function TrackerPage() {
       await updateNotes({ applicationId, notes })
     },
     [updateNotes],
+  )
+
+  const saveFollowUp = useCallback(
+    async (applicationId: Id<"applications">, followUpAt: number | null) => {
+      await setFollowUp({ applicationId, followUpAt })
+    },
+    [setFollowUp],
   )
 
   function handleDragStart(id: Id<"applications">, status: Status) {
@@ -480,9 +594,7 @@ export default function TrackerPage() {
     if (!applicationId || !STATUS_IDS.has(status)) return
     if (from === status) return
 
-    const label = columns.find((c) => c.id === status)?.label ?? status
     await move(applicationId, status)
-    toast.success(`Moved to ${label}`)
   }
 
   const isEmpty = rows?.length === 0
@@ -553,6 +665,33 @@ export default function TrackerPage() {
             {isDragging ? " · Drop on a column to update status" : " · Drag cards to move"}
           </p>
 
+          {dueFollowUps && dueFollowUps.length > 0 ? (
+            <div className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm">
+              <div className="flex items-start gap-2">
+                <Bell className="mt-0.5 size-4 shrink-0 text-warning" />
+                <div className="min-w-0 space-y-1.5">
+                  <p className="font-medium">
+                    {dueFollowUps.length} follow-up{dueFollowUps.length === 1 ? "" : "s"} due soon
+                  </p>
+                  <ul className="space-y-1 text-xs text-muted-foreground">
+                    {dueFollowUps.slice(0, 4).map((row) => {
+                      const title = roleTitle(row.jobPosting, row.analysis ?? undefined)
+                      const when = row.application.followUpAt
+                        ? followUpLabel(row.application.followUpAt)
+                        : ""
+                      return (
+                        <li key={row.application._id} className="flex flex-wrap gap-x-2">
+                          <span className="font-medium text-foreground">{title}</span>
+                          <span>{when}</span>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
             {columns.map((col) => (
               <DropColumn
@@ -565,6 +704,7 @@ export default function TrackerPage() {
                 onMove={move}
                 onRemove={remove}
                 onSaveNotes={saveNotes}
+                onSetFollowUp={saveFollowUp}
                 onDragStart={handleDragStart}
                 onDragEnd={handleDragEnd}
                 onDragEnter={handleDragEnter}

@@ -1,46 +1,7 @@
 import { v } from "convex/values"
+import { extractJobTitle } from "../lib/extract-job-title"
 import { mutation, query } from "./_generated/server"
 import { requireUserId } from "./lib/auth"
-
-function extractJobTitleFromText(text: string): string | undefined {
-  const lines = text
-    .split(/\r?\n/)
-    .map((l) => l.replace(/^[\s\p{Emoji_Presentation}\p{Extended_Pictographic}•\-*]+/u, "").trim())
-    .filter(Boolean)
-  if (lines.length === 0) return undefined
-
-  const labeled = lines.find((l) =>
-    /^(job title|role|position|title|pozice|název)\s*[:–-]\s*/i.test(l),
-  )
-  if (labeled) {
-    const title = labeled
-      .replace(/^(job title|role|position|title|pozice|název)\s*[:–-]\s*/i, "")
-      .trim()
-    if (title.length >= 3 && title.length <= 120) return title
-  }
-
-  const roleWord =
-    /\b(engineer|developer|designer|manager|analyst|architect|lead|director|specialist|consultant|intern|vývojář|programátor|inženýr)\b/i
-
-  for (const line of lines.slice(0, 8)) {
-    if (line.length < 3 || line.length > 90) continue
-    if (line.endsWith(".") && line.length > 40) continue
-    const lower = line.toLowerCase()
-    if (
-      lower.startsWith("we are") ||
-      lower.startsWith("about") ||
-      lower.startsWith("requirements") ||
-      lower.startsWith("znalost") ||
-      lower.startsWith("povinn")
-    ) {
-      continue
-    }
-    if (roleWord.test(line) || /^[A-ZÁÉÍÓÚÝŽČŠĎŤŇ][\p{L}0-9 /&+()-]+$/u.test(line)) {
-      return line
-    }
-  }
-  return undefined
-}
 
 export const create = mutation({
   args: {
@@ -52,8 +13,13 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const userId = await requireUserId(ctx)
+    const trimmedTitle = args.title?.trim()
     const title =
-      args.title ?? (args.source === "text" ? extractJobTitleFromText(args.cleanedText) : undefined)
+      trimmedTitle && trimmedTitle.length > 0
+        ? trimmedTitle.slice(0, 120)
+        : args.source === "text"
+          ? extractJobTitle(args.cleanedText)
+          : undefined
     return await ctx.db.insert("jobPostings", {
       userId,
       source: args.source,
@@ -75,7 +41,8 @@ export const updateTitle = mutation({
     const userId = await requireUserId(ctx)
     const job = await ctx.db.get(args.jobPostingId)
     if (!job || job.userId !== userId) throw new Error("Job posting not found")
-    await ctx.db.patch(args.jobPostingId, { title: args.title })
+    const title = args.title.trim().slice(0, 120)
+    await ctx.db.patch(args.jobPostingId, { title: title || undefined })
   },
 })
 
@@ -89,7 +56,7 @@ export const updateFromFetch = mutation({
   handler: async (ctx, args) => {
     const job = await ctx.db.get(args.jobPostingId)
     if (!job || job.userId !== args.userId) throw new Error("Job posting not found")
-    const title = args.title ?? extractJobTitleFromText(args.cleanedText) ?? job.title
+    const title = args.title?.trim() || extractJobTitle(args.cleanedText) || job.title
     await ctx.db.patch(args.jobPostingId, {
       cleanedText: args.cleanedText,
       title,

@@ -7,7 +7,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
+  downloadTailoredDocx,
+  downloadTailoredPdf,
   downloadTextFile,
+  slugifyRole,
   tailoredBulletsPlainList,
   tailoredBulletsToMarkdown,
 } from "@/lib/tailored-export"
@@ -41,16 +44,29 @@ export function TailoredBulletsView({
   }
 
   function downloadMarkdown() {
-    const slug = (jobTitle ?? "role")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
-      .slice(0, 40)
     downloadTextFile(
-      `tailored-bullets-${slug || "role"}.md`,
+      `tailored-bullets-${slugifyRole(jobTitle) || "role"}.md`,
       tailoredBulletsToMarkdown(bullets, { jobTitle }),
     )
     toast.success("Downloaded markdown pack")
+  }
+
+  async function downloadDocx() {
+    try {
+      await downloadTailoredDocx(bullets, { jobTitle })
+      toast.success("Downloaded DOCX")
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "DOCX export failed")
+    }
+  }
+
+  function downloadPdf() {
+    try {
+      downloadTailoredPdf(bullets, { jobTitle })
+      toast.success("Downloaded PDF")
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "PDF export failed")
+    }
   }
 
   return (
@@ -62,11 +78,19 @@ export function TailoredBulletsView({
         </Button>
         <Button type="button" size="sm" variant="outline" onClick={() => void copyMarkdown()}>
           <Copy className="size-3.5" />
-          Copy markdown pack
+          Copy markdown
         </Button>
         <Button type="button" size="sm" variant="outline" onClick={downloadMarkdown}>
           <Download className="size-3.5" />
-          Download .md
+          .md
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={() => void downloadDocx()}>
+          <Download className="size-3.5" />
+          .docx
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={downloadPdf}>
+          <Download className="size-3.5" />
+          .pdf
         </Button>
       </div>
 

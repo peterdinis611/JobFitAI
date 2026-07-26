@@ -14,6 +14,7 @@ import type { Doc } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
 import { parseAnalysisStream } from "@/lib/analyze-stream"
+import { extractJobTitle, normalizeJobUrl } from "@/lib/extract-job-title"
 
 export default function AnalyzePage() {
   const router = useRouter()
@@ -25,7 +26,10 @@ export default function AnalyzePage() {
   const [tab, setTab] = useState<"text" | "url">("text")
   const [jobText, setJobText] = useState("")
   const [jobUrl, setJobUrl] = useState("")
+  const [jobTitle, setJobTitle] = useState("")
+  const [titleTouched, setTitleTouched] = useState(false)
   const [running, setRunning] = useState(false)
+  const [urlFetchFailed, setUrlFetchFailed] = useState(false)
 
   const agent = useEveAgent()
   const activeResume = useMemo(() => resumes?.find((r: Doc<"resumes">) => r.isActive), [resumes])
@@ -33,6 +37,15 @@ export default function AnalyzePage() {
   const stream = useMemo(() => parseAnalysisStream(agent.data.messages), [agent.data.messages])
   const notifiedId = useRef<string | null>(null)
   const notifiedSaveError = useRef(false)
+  const notifiedFetchError = useRef(false)
+
+  // Keep title in sync with paste heuristics until the user edits it
+  useEffect(() => {
+    if (titleTouched) return
+    if (tab === "text") {
+      setJobTitle(extractJobTitle(jobText) ?? "")
+    }
+  }, [jobText, tab, titleTouched])
 
   useEffect(() => {
     if (stream.analysisId && stream.analysisId !== notifiedId.current) {
@@ -62,6 +75,42 @@ export default function AnalyzePage() {
     }
   }, [stream.allDone, stream.hasError, stream.failedStep?.id])
 
+  useEffect(() => {
+    const fetchFailed =
+      stream.failedStep?.id === "fetch_job_posting" ||
+      stream.steps.some((s) => s.id === "fetch_job_posting" && s.status === "error")
+    if (fetchFailed && !notifiedFetchError.current) {
+      notifiedFetchError.current = true
+      setUrlFetchFailed(true)
+      toast.error("Couldn’t fetch that job URL", {
+        description: "Paste the posting text instead — most boards block bots.",
+        action: {
+          label: "Paste text",
+          onClick: () => {
+            setTab("text")
+            setUrlFetchFailed(false)
+          },
+        },
+      })
+    }
+  }, [stream.failedStep, stream.steps])
+
+  function handleJobTitleChange(value: string) {
+    setTitleTouched(true)
+    setJobTitle(value)
+  }
+
+  function handleTabChange(next: "text" | "url") {
+    setTab(next)
+    if (next === "url") setUrlFetchFailed(false)
+  }
+
+  function switchToPaste() {
+    setTab("text")
+    setUrlFetchFailed(false)
+    toast.message("Paste the full job description, then run again")
+  }
+
   async function runAnalysis() {
     if (!userId || !activeResume) {
       toast.error("Upload an active resume first")
@@ -69,19 +118,26 @@ export default function AnalyzePage() {
     }
 
     const source = tab
-    const raw = source === "url" ? jobUrl.trim() : jobText.trim()
+    let raw = source === "url" ? jobUrl.trim() : jobText.trim()
 
     if (!raw) {
       toast.error(source === "url" ? "Enter a job URL" : "Paste job description")
       return
     }
 
-    if (source === "url" && !raw.startsWith("https://")) {
-      toast.error("Only HTTPS URLs are supported")
-      return
+    if (source === "url") {
+      const normalized = normalizeJobUrl(raw)
+      if (!normalized) {
+        toast.error("Enter a valid HTTPS job URL")
+        return
+      }
+      raw = normalized
+      setJobUrl(normalized)
     }
 
     setRunning(true)
+    setUrlFetchFailed(false)
+    notifiedFetchError.current = false
     try {
       const rate = await checkRate({})
       if (!rate.allowed) {
@@ -89,11 +145,15 @@ export default function AnalyzePage() {
         return
       }
 
+      const title =
+        jobTitle.trim() || (source === "text" ? extractJobTitle(raw) : undefined) || undefined
+
       const jobPostingId = await createJob({
         source,
         rawText: raw,
         cleanedText: source === "text" ? raw : raw,
         url: source === "url" ? raw : undefined,
+        title,
       })
 
       const context = {
@@ -102,13 +162,14 @@ export default function AnalyzePage() {
         jobPostingId,
         jobSource: source,
         jobUrl: source === "url" ? raw : undefined,
+        jobTitle: title,
         resumeFileName: activeResume.fileName,
       }
 
       const summary =
         source === "text"
-          ? `Job description: ${raw.length.toLocaleString()} characters (stored in Convex — use load_job_posting).`
-          : `Job URL: ${raw}`
+          ? `Job description: ${raw.length.toLocaleString()} characters (stored in Convex — use load_job_posting).${title ? ` Title: ${title}.` : ""}`
+          : `Job URL: ${raw}.${title ? ` Expected title: ${title}.` : ""}`
 
       await agent.send({
         message: formatAgentSkillMessage({
@@ -150,20 +211,24 @@ export default function AnalyzePage() {
         description="Compare your active CV against a job posting and get AI-powered insights."
       />
 
-      {/* Flex — no sticky, no grid overlap on mid widths */}
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <aside className="w-full shrink-0 lg:w-[360px]">
           <AnalyzeSetupPanel
             activeResumeName={activeResume?.fileName}
             hasResume={Boolean(activeResume)}
             tab={tab}
-            onTabChange={setTab}
+            onTabChange={handleTabChange}
             jobText={jobText}
             onJobTextChange={setJobText}
             jobUrl={jobUrl}
             onJobUrlChange={setJobUrl}
+            jobTitle={jobTitle}
+            onJobTitleChange={handleJobTitleChange}
+            titleAutoDetected={!titleTouched && Boolean(jobTitle)}
+            urlFetchFailed={urlFetchFailed}
             isBusy={isBusy}
             onRun={() => void runAnalysis()}
+            onSwitchToPaste={switchToPaste}
           />
         </aside>
 
