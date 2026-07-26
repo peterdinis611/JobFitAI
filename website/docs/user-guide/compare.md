@@ -10,7 +10,7 @@ Side-by-side comparison of two saved analyses — same or different roles.
 
 ## From the dashboard
 
-1. On **History**, check two rows
+1. On **History**, check two analysis cards
 2. Click **Compare selected**
 
 Query params `?a=<id>&b=<id>` pre-fill the selectors.

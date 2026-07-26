@@ -41,7 +41,7 @@ export default function AnalyzePage() {
     if (stream.analysisId && stream.analysisId !== notifiedId.current) {
       notifiedId.current = stream.analysisId
       notifiedSaveError.current = false
-      toast.success("Saved to history", {
+      toast.success("Saved to History & Tracker", {
         description: "Your match report is ready.",
         action: {
           label: "View report",
@@ -147,14 +147,15 @@ export default function AnalyzePage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="space-y-6">
       <PageHeader
         title="Analyze match"
         description="Compare your active CV against a job posting and get AI-powered insights."
       />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,400px)_1fr] lg:items-start">
-        <div className="lg:sticky lg:top-[68px]">
+      {/* Flex — no sticky, no grid overlap on mid widths */}
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        <aside className="w-full shrink-0 lg:w-[360px]">
           <AnalyzeSetupPanel
             activeResumeName={activeResume?.fileName}
             hasResume={Boolean(activeResume)}
@@ -167,9 +168,11 @@ export default function AnalyzePage() {
             isBusy={isBusy}
             onRun={() => void runAnalysis()}
           />
-        </div>
+        </aside>
 
-        <AnalyzeProgressPanel messages={agent.data.messages} isBusy={isBusy} />
+        <div className="w-full min-w-0 flex-1">
+          <AnalyzeProgressPanel messages={agent.data.messages} isBusy={isBusy} />
+        </div>
       </div>
     </div>
   )

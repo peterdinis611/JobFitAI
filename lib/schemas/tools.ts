@@ -51,18 +51,29 @@ export const scoreMatchOutputSchema = z.object({
   skillCategories: z.array(skillCategorySchema),
 })
 
-export const saveAnalysisInputSchema = scoreMatchOutputSchema.extend({
+const optionalId = z
+  .union([z.string(), z.null(), z.undefined()])
+  .optional()
+  .transform((value) => {
+    if (typeof value !== "string") return undefined
+    const trimmed = value.trim()
+    return trimmed.length > 0 ? trimmed : undefined
+  })
+
+/** Lenient schema — agents often omit fields or send empty strings. */
+export const saveAnalysisInputSchema = z.object({
   userId: z.string().min(1),
   resumeId: z.string().min(1),
   jobPostingId: z.string().min(1),
-  eveSessionId: z
-    .string()
-    .optional()
-    .transform((value) => (value?.trim() ? value.trim() : undefined)),
-  previousAnalysisId: z
-    .string()
-    .optional()
-    .transform((value) => (value?.trim() ? value.trim() : undefined)),
+  matchPercentage: z.coerce.number().min(0).max(100),
+  matchingSkills: z.array(z.string()).catch([]),
+  missingSkills: z.array(z.string()).catch([]),
+  seniorityFit: seniorityFitSchema.catch("match"),
+  redFlags: z.array(z.string()).catch([]),
+  recommendations: z.array(z.string()).catch([]),
+  skillCategories: z.array(skillCategorySchema).optional().catch([]),
+  eveSessionId: optionalId,
+  previousAnalysisId: optionalId,
 })
 
 export const saveAnalysisOutputSchema = z.object({

@@ -45,11 +45,11 @@ LLM scoring with structured output.
 
 ### `save_analysis`
 
-Insert analysis row.
+Insert analysis row (and auto-create a Tracker **Saved** application when missing).
 
 | | |
 |---|---|
-| **Input** | Score fields + `userId`, `resumeId`, `jobPostingId`, optional `previousAnalysisId` |
+| **Input** | Score fields + `userId`, `resumeId`, `jobPostingId`, optional `previousAnalysisId` / `eveSessionId` (empty strings stripped) |
 | **Output** | `{ analysisId }` |
 
 ## Career tools

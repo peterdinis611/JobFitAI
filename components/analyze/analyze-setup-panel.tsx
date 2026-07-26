@@ -38,7 +38,7 @@ export function AnalyzeSetupPanel({
     (tab === "text" ? jobText.trim().length > 0 : jobUrl.trim().length > 0)
 
   return (
-    <section className="mac-window">
+    <section className="mac-window w-full min-w-0 overflow-hidden">
       <div className="mac-titlebar">
         <div className="mac-traffic-lights" aria-hidden>
           <span />
@@ -82,12 +82,12 @@ export function AnalyzeSetupPanel({
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between gap-3">
-            <div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
               <h2 className="text-[15px] font-semibold">Job posting</h2>
               <p className="text-xs text-muted-foreground">Paste text or paste a careers page URL.</p>
             </div>
-            <div className="mac-segmented shrink-0">
+            <div className="mac-segmented w-fit shrink-0">
               <button
                 type="button"
                 className={cn(

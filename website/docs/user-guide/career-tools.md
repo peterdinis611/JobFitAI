@@ -63,4 +63,8 @@ Use after tailoring your CV based on recommendations.
 
 Creates an `applications` row in **Saved** status linked to this analysis. No agent call — instant Convex mutation.
 
-[Agent skills reference →](../reference/agent-skills)
+:::tip Auto-track
+New analyses already create a **Saved** card when `save_analysis` succeeds. Use this button if the card was removed or for older reports created before auto-track.
+:::
+
+[Agent skills reference →](../reference/agent-skills) · [History vs Tracker →](../concepts/history-vs-tracker)

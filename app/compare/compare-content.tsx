@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
+import { roleTitle, seniorityLabel } from "@/lib/role-label"
 
 type AnalysisRow = {
   analysis: Doc<"analyses">
@@ -35,12 +36,12 @@ function ComparePanel({ label, data }: { label: string; data: AnalysisRow | null
     <Card className="border-border/60">
       <CardHeader>
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-        <CardTitle className="text-lg">{jobPosting?.title ?? "Untitled role"}</CardTitle>
+        <CardTitle className="text-lg">{roleTitle(jobPosting, analysis)}</CardTitle>
         <div className="flex justify-center pt-2">
           <MatchScoreRing value={analysis.matchPercentage} size={100} />
         </div>
         <Badge variant="secondary" className="w-fit">
-          Seniority: {analysis.seniorityFit}
+          {seniorityLabel(analysis.seniorityFit).label}
         </Badge>
       </CardHeader>
       <CardContent className="space-y-4 text-sm">

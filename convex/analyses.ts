@@ -54,10 +54,39 @@ export const create = mutation({
       }
     }
 
-    return await ctx.db.insert("analyses", {
-      ...args,
-      createdAt: Date.now(),
+    const now = Date.now()
+    const analysisId = await ctx.db.insert("analyses", {
+      userId: args.userId,
+      resumeId: args.resumeId,
+      jobPostingId: args.jobPostingId,
+      matchPercentage: args.matchPercentage,
+      matchingSkills: args.matchingSkills,
+      missingSkills: args.missingSkills,
+      seniorityFit: args.seniorityFit,
+      redFlags: args.redFlags,
+      recommendations: args.recommendations,
+      ...(args.skillCategories?.length ? { skillCategories: args.skillCategories } : {}),
+      ...(args.eveSessionId ? { eveSessionId: args.eveSessionId } : {}),
+      ...(args.previousAnalysisId ? { previousAnalysisId: args.previousAnalysisId } : {}),
+      createdAt: now,
     })
+
+    // Auto-track so Tracker is not empty after a successful analysis
+    const existingApp = await ctx.db
+      .query("applications")
+      .withIndex("by_analysis", (q) => q.eq("analysisId", analysisId))
+      .first()
+    if (!existingApp) {
+      await ctx.db.insert("applications", {
+        userId: args.userId,
+        analysisId,
+        status: "saved",
+        createdAt: now,
+        updatedAt: now,
+      })
+    }
+
+    return analysisId
   },
 })
 

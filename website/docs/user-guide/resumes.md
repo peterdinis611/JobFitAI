@@ -36,5 +36,11 @@ Parsing runs during the first analysis via `parse_resume`. Until then, preview s
 
 ## Versioning tips
 
-- Upload a revised CV as a new version rather than overwriting
-- Use **Re-score with new CV** on a report to link before/after match scores
+- Upload a revised CV as a new version rather than overwriting  
+- Use **Re-score with new CV** on a report to link before/after match scores  
+- Keep one **active** resume for new analyses; switch active only when you want all new runs to use that version  
+
+## Related
+
+- [First analysis](../getting-started/first-analysis)  
+- [Career tools — Re-score](./career-tools#re-score)  

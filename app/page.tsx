@@ -3,7 +3,17 @@
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { useQuery } from "convex/react"
-import { ArrowUpDown, BarChart3, GitCompare, Plus, Target, TrendingUp } from "lucide-react"
+import {
+  ArrowRight,
+  ArrowUpDown,
+  BarChart3,
+  Briefcase,
+  Check,
+  GitCompare,
+  Plus,
+  Target,
+  TrendingUp,
+} from "lucide-react"
 import { motion } from "motion/react"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
@@ -14,20 +24,16 @@ import {
   DashboardNoFilterResults,
 } from "@/components/dashboard/dashboard-states"
 import { AnimatedProgress } from "@/components/ui/animated-progress"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatCard } from "@/components/ui/stat-card"
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+  matchBadgeClass,
+  matchToneClass,
+  roleTitle,
+  seniorityLabel,
+} from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
 const filters = [
@@ -96,17 +102,17 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         title="Analysis history"
-        description="Track how well your resume matches each job posting over time."
+        description="Your past match reports — filter, compare, and reopen anytime."
         action={
           <div className="flex flex-wrap gap-2">
             {compareIds.length === 2 ? (
               <Button asChild variant="secondary">
                 <Link href={`/compare?a=${compareIds[0]}&b=${compareIds[1]}`}>
                   <GitCompare className="size-4" />
-                  Compare selected
+                  Compare
                 </Link>
               </Button>
             ) : null}
@@ -120,19 +126,26 @@ export default function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard label="Total analyses" value={stats.count} icon={BarChart3} delay={0.05} />
-        <StatCard label="Average match" value={`${stats.avg}%`} icon={Target} accent="success" delay={0.1} />
-        <StatCard label="Best score" value={`${stats.best}%`} icon={TrendingUp} accent="warning" delay={0.15} />
+      <div className="grid gap-3 sm:grid-cols-3">
+        <StatCard label="Total analyses" value={stats.count} icon={BarChart3} delay={0.04} />
+        <StatCard
+          label="Average match"
+          value={`${stats.avg}%`}
+          icon={Target}
+          accent="success"
+          delay={0.08}
+        />
+        <StatCard
+          label="Best score"
+          value={`${stats.best}%`}
+          icon={TrendingUp}
+          accent="warning"
+          delay={0.12}
+        />
       </div>
 
-      <motion.div
-        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.15 }}
-      >
-        <div className="mac-segmented flex flex-wrap gap-0 p-0.5">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mac-segmented w-fit">
           {filters.map(({ label, value }) => (
             <button
               key={value}
@@ -148,125 +161,197 @@ export default function DashboardPage() {
           ))}
         </div>
         <Button variant="outline" size="sm" onClick={() => setSortDesc((v) => !v)}>
-          <ArrowUpDown className="size-4" />
-          Match {sortDesc ? "high → low" : "low → high"}
+          <ArrowUpDown className="size-3.5" />
+          {sortDesc ? "Highest match" : "Lowest match"}
         </Button>
-      </motion.div>
+      </div>
 
       {compareIds.length > 0 ? (
-        <p className="text-sm text-muted-foreground">
-          {compareIds.length === 1
-            ? "Select one more analysis to compare"
-            : "Two analyses selected — click Compare selected"}
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 text-sm">
+          <p className="text-muted-foreground">
+            {compareIds.length === 1
+              ? "Select one more analysis to compare side by side."
+              : "Two analyses selected — ready to compare."}
+          </p>
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" onClick={() => setCompareIds([])}>
+              Clear
+            </Button>
+            {compareIds.length === 2 ? (
+              <Button asChild size="sm">
+                <Link href={`/compare?a=${compareIds[0]}&b=${compareIds[1]}`}>
+                  <GitCompare className="size-3.5" />
+                  Compare now
+                </Link>
+              </Button>
+            ) : null}
+          </div>
+        </div>
       ) : null}
 
-      <Card className="overflow-hidden">
-        <CardHeader className="border-b border-border/60 bg-muted/20">
-          <CardTitle>Recent analyses</CardTitle>
-          <CardDescription>
-            {sorted.length} of {rows.length} shown · select two rows to compare
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="p-0">
-          {sorted.length === 0 && minMatch > 0 ? (
-            <DashboardNoFilterResults minMatch={minMatch} onClear={() => setMinMatch(0)} />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="w-10" />
-                  <TableHead>Role</TableHead>
-                  <TableHead>Match</TableHead>
-                  <TableHead>Seniority</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead className="text-right">Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {sorted.map(({ analysis, jobPosting }, index) => {
-                  const selected = compareIds.includes(analysis._id)
-                  return (
-                    <motion.tr
-                      key={analysis._id}
+      <section className="mac-window overflow-hidden">
+        <div className="flex items-center justify-between gap-3 border-b border-border bg-[var(--mac-titlebar)] px-4 py-3 sm:px-5">
+          <div>
+            <h2 className="text-[15px] font-semibold tracking-tight">Recent analyses</h2>
+            <p className="text-xs text-muted-foreground">
+              {sorted.length} of {rows.length} shown
+              {compareIds.length === 0 ? " · tap ✓ to pick two for compare" : null}
+            </p>
+          </div>
+        </div>
+
+        {sorted.length === 0 && minMatch > 0 ? (
+          <DashboardNoFilterResults minMatch={minMatch} onClear={() => setMinMatch(0)} />
+        ) : (
+          <ul className="divide-y divide-border">
+            {sorted.map(({ analysis, jobPosting, resume }, index) => {
+              const selected = compareIds.includes(analysis._id)
+              const title = roleTitle(jobPosting, analysis)
+              const seniority = seniorityLabel(analysis.seniorityFit)
+              const topSkills = analysis.matchingSkills.slice(0, 3)
+
+              return (
+                <motion.li
+                  key={analysis._id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: Math.min(index, 8) * 0.03 }}
+                  className={cn(
+                    "group relative transition-colors hover:bg-muted/25",
+                    selected && "bg-primary/5",
+                  )}
+                >
+                  <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-5 sm:px-5 sm:py-4">
+                    <button
+                      type="button"
+                      onClick={() => toggleCompare(analysis._id)}
+                      aria-pressed={selected}
+                      aria-label={selected ? "Deselect for compare" : "Select for compare"}
                       className={cn(
-                        "group border-b transition-colors hover:bg-muted/30",
-                        selected && "bg-primary/5",
+                        "flex size-8 shrink-0 items-center justify-center rounded-lg border transition-colors",
+                        selected
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
                       )}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.04 }}
                     >
-                      <TableCell>
-                        <input
-                          type="checkbox"
-                          checked={selected}
-                          onChange={() => toggleCompare(analysis._id)}
-                          className="size-4 rounded border-border accent-primary"
-                          aria-label="Select for comparison"
-                        />
-                      </TableCell>
-                      <TableCell className="max-w-[200px]">
-                        <p className="truncate font-medium">
-                          {jobPosting?.title ?? "Untitled role"}
-                        </p>
-                        {jobPosting?.url ? (
-                          <p className="truncate text-xs text-muted-foreground">{jobPosting.url}</p>
-                        ) : null}
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex min-w-[100px] flex-col gap-2">
+                      {selected ? <Check className="size-3.5" strokeWidth={2.5} /> : null}
+                    </button>
+
+                    <div className="flex min-w-0 flex-1 items-start gap-3">
+                      <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                        <Briefcase className="size-4 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/analyses/${analysis._id}`}
+                            className="truncate text-[15px] font-semibold tracking-tight hover:text-primary"
+                          >
+                            {title}
+                          </Link>
                           <span
                             className={cn(
-                              "text-lg font-semibold tabular-nums",
-                              analysis.matchPercentage >= 85 && "text-success",
-                              analysis.matchPercentage >= 70 &&
-                                analysis.matchPercentage < 85 &&
-                                "text-primary",
-                              analysis.matchPercentage < 50 && "text-destructive",
+                              "inline-flex rounded-md px-1.5 py-0.5 text-[11px] font-medium",
+                              seniority.tone === "success" && "bg-success/15 text-success",
+                              seniority.tone === "warning" && "bg-warning/15 text-warning",
+                              seniority.tone === "primary" && "bg-primary/15 text-primary",
+                            )}
+                            title={seniority.hint}
+                          >
+                            {seniority.label}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[12px] text-muted-foreground">
+                          <span>
+                            {new Date(analysis.createdAt).toLocaleDateString(undefined, {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </span>
+                          {resume?.fileName ? (
+                            <>
+                              <span aria-hidden>·</span>
+                              <span className="max-w-[180px] truncate">{resume.fileName}</span>
+                            </>
+                          ) : null}
+                        </div>
+                        {topSkills.length > 0 ? (
+                          <div className="flex flex-wrap gap-1.5 pt-0.5">
+                            {topSkills.map((skill) => (
+                              <span
+                                key={skill}
+                                className="rounded-md bg-muted px-1.5 py-0.5 text-[11px] text-muted-foreground"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                            {analysis.matchingSkills.length > 3 ? (
+                              <span className="rounded-md px-1.5 py-0.5 text-[11px] text-muted-foreground">
+                                +{analysis.matchingSkills.length - 3}
+                              </span>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 sm:w-[200px] sm:shrink-0">
+                      <div className="min-w-0 flex-1 space-y-1.5">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span
+                            className={cn(
+                              "text-xl font-semibold tabular-nums tracking-tight",
+                              matchToneClass(analysis.matchPercentage),
                             )}
                           >
                             {analysis.matchPercentage}%
                           </span>
-                          <AnimatedProgress value={analysis.matchPercentage} />
+                          <span
+                            className={cn(
+                              "rounded-md px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide",
+                              matchBadgeClass(analysis.matchPercentage),
+                            )}
+                          >
+                            match
+                          </span>
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{analysis.seniorityFit}</Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {new Date(analysis.createdAt).toLocaleDateString(undefined, {
-                          month: "short",
-                          day: "numeric",
-                        })}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button asChild variant="ghost" size="sm">
-                          <Link href={`/analyses/${analysis._id}`}>View</Link>
-                        </Button>
-                      </TableCell>
-                    </motion.tr>
-                  )
-                })}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+                        <AnimatedProgress value={analysis.matchPercentage} />
+                      </div>
+                    </div>
+
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="w-full shrink-0 sm:w-auto"
+                    >
+                      <Link href={`/analyses/${analysis._id}`}>
+                        Open
+                        <ArrowRight className="size-3.5" />
+                      </Link>
+                    </Button>
+                  </div>
+                </motion.li>
+              )
+            })}
+          </ul>
+        )}
+      </section>
     </div>
   )
 }
 
 function DashboardSkeleton() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="space-y-2">
         <Skeleton className="h-9 w-52" />
         <Skeleton className="h-4 w-80 max-w-full" />
       </div>
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3">
         {[0, 1, 2].map((i) => (
-          <Skeleton key={i} className="h-24 rounded-xl" />
+          <Skeleton key={i} className="h-20 rounded-xl" />
         ))}
       </div>
       <Skeleton className="h-80 rounded-2xl" />

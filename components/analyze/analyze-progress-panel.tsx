@@ -86,8 +86,8 @@ export function AnalyzeProgressPanel({
   }
 
   return (
-    <section className="mac-window relative flex max-h-[calc(100dvh-100px)] min-h-[560px] flex-col overflow-hidden">
-      <div className="mac-titlebar">
+    <section className="mac-window flex w-full min-w-0 flex-col overflow-hidden">
+      <div className="mac-titlebar shrink-0">
         <div className="mac-traffic-lights" aria-hidden>
           <span />
           <span />
@@ -99,9 +99,12 @@ export function AnalyzeProgressPanel({
         <span className="w-[52px]" aria-hidden />
       </div>
 
-      <div ref={scrollRef} className="flex min-h-0 flex-1 flex-col overflow-y-auto p-5 sm:p-6">
-        <div className="mb-5 flex items-center justify-between gap-3">
-          <div>
+      <div
+        ref={scrollRef}
+        className="max-h-[min(720px,calc(100dvh-140px))] space-y-5 overflow-y-auto overscroll-contain p-5 sm:p-6"
+      >
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
             <h2 className="text-[15px] font-semibold">Match analysis</h2>
             <p className="text-xs text-muted-foreground">
               {stream.hasStarted
@@ -111,7 +114,7 @@ export function AnalyzeProgressPanel({
           </div>
           <span
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
+              "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
               badge.tone === "success" && "bg-success/15 text-success",
               badge.tone === "error" && "bg-destructive/15 text-destructive",
               badge.tone === "active" && "bg-primary/15 text-primary",
@@ -129,7 +132,7 @@ export function AnalyzeProgressPanel({
           {!stream.hasStarted ? (
             <motion.div
               key="empty"
-              className="flex flex-1 flex-col items-center justify-center gap-4 py-8 text-center"
+              className="flex flex-col items-center gap-4 py-10 text-center"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
@@ -138,8 +141,7 @@ export function AnalyzeProgressPanel({
               <div className="max-w-xs space-y-1">
                 <p className="text-sm font-medium">No analysis yet</p>
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  Paste a job description on the left and click Run analysis. You&apos;ll see a
-                  clear step-by-step breakdown instead of raw agent logs.
+                  Paste a job description on the left and click Run analysis.
                 </p>
               </div>
               <div className="grid w-full max-w-sm gap-2 text-left text-xs text-muted-foreground">
@@ -157,7 +159,7 @@ export function AnalyzeProgressPanel({
           ) : (
             <motion.div
               key="active"
-              className="flex min-h-0 flex-1 flex-col gap-5"
+              className="space-y-5"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
             >
@@ -173,7 +175,7 @@ export function AnalyzeProgressPanel({
                       step.status === "pending" && "border-border/50 bg-transparent opacity-60",
                     )}
                   >
-                    <div className="mt-0.5">
+                    <div className="mt-0.5 shrink-0">
                       <StepIcon status={step.status} />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -193,7 +195,7 @@ export function AnalyzeProgressPanel({
               {stream.hasError && stream.failedStep ? (
                 <div className="flex items-start gap-3 rounded-xl border border-destructive/25 bg-destructive/5 px-4 py-3">
                   <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
-                  <div className="space-y-1 text-sm">
+                  <div className="min-w-0 space-y-1 text-sm">
                     <p className="font-medium text-destructive">
                       {stream.failedStep.label} failed
                     </p>
@@ -209,7 +211,11 @@ export function AnalyzeProgressPanel({
                 <div className="rounded-xl border border-border bg-muted/15 p-4">
                   <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
                     {stream.matchPercentage !== undefined ? (
-                      <MatchScoreRing value={stream.matchPercentage} size={96} className="shrink-0" />
+                      <MatchScoreRing
+                        value={stream.matchPercentage}
+                        size={96}
+                        className="mx-auto shrink-0 sm:mx-0"
+                      />
                     ) : null}
                     <div className="min-w-0 flex-1 space-y-2">
                       <p className="text-sm font-semibold">
@@ -218,7 +224,7 @@ export function AnalyzeProgressPanel({
                           : "Preliminary results"}
                       </p>
                       {stream.assistantText ? (
-                        <div className="max-w-none text-[13px] leading-relaxed text-muted-foreground">
+                        <div className="overflow-x-hidden break-words text-[13px] leading-relaxed text-muted-foreground [&_*]:max-w-full [&_pre]:overflow-x-auto">
                           <MessageResponse>{stream.assistantText}</MessageResponse>
                         </div>
                       ) : isBusy ? (
@@ -239,39 +245,34 @@ export function AnalyzeProgressPanel({
                         <Link href="/">Open history</Link>
                       </Button>
                     </div>
-                  ) : stream.allDone && stream.hasError && stream.failedStep?.id === "save_analysis" ? (
+                  ) : stream.allDone &&
+                    stream.hasError &&
+                    stream.failedStep?.id === "save_analysis" ? (
                     <p className="mt-4 text-xs text-destructive">
                       Report was not saved — run the analysis again to add it to History.
                     </p>
                   ) : null}
                 </div>
               )}
+
+              {showScrollTop ? (
+                <div className="flex justify-end pt-1">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="h-8 gap-1.5 rounded-full"
+                    onClick={scrollToTop}
+                  >
+                    <ArrowUp className="size-3.5" />
+                    Top
+                  </Button>
+                </div>
+              ) : null}
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-
-      <AnimatePresence>
-        {showScrollTop ? (
-          <motion.div
-            className="pointer-events-none absolute right-5 bottom-5 z-10"
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-          >
-            <Button
-              type="button"
-              size="sm"
-              variant="outline"
-              className="pointer-events-auto h-9 gap-1.5 rounded-full border-border bg-card/95 px-3 shadow-md backdrop-blur-sm"
-              onClick={scrollToTop}
-            >
-              <ArrowUp className="size-3.5" />
-              Top
-            </Button>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
     </section>
   )
 }

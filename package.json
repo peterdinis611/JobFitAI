@@ -14,6 +14,8 @@
     "dev:docs": "npm run start --prefix website -- --port 3001 --host 0.0.0.0",
     "start": "next start",
     "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "ui:add": "npx shadcn@latest add",
     "build:eve": "eve build",
     "dev:eve": "eve dev",
@@ -67,12 +69,16 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@edge-runtime/vm": "^5.0.0",
     "@types/node": "^24.13.3",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
     "@types/sanitize-html": "^2.16.1",
+    "convex-test": "^0.0.54",
     "microsandbox": "^0.5.10",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "vite": "^8.1.5",
+    "vitest": "^4.1.10"
   },
   "overrides": {
     "ai": "^7.0.0"

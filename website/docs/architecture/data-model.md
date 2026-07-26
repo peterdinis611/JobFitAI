@@ -51,6 +51,8 @@ Auth profile + optional `externalId` for legacy migration. Indexes: `email`, `ph
 
 Match results + optional `previousAnalysisId` for re-scores. Indexes by user, created date, match %.
 
+When `analyses.create` runs (via `save_analysis`), it also inserts an `applications` row with status `saved` if one does not already exist for that analysis.
+
 ### `applications`
 
 Tracker kanban: `saved` | `applied` | `interview` | `offer`. One per analysis (unique by analysisId).

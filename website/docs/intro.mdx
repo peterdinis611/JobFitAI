@@ -13,7 +13,7 @@ Match your resume to any role — with honest scoring, actionable feedback, and 
 <div className="row margin-vert--lg">
   <div className="col col--4">
     <div className="card margin-bottom--md">
-      <div className="card__header"><h3>🚀 Getting Started</h3></div>
+      <div className="card__header"><h3>Getting started</h3></div>
       <div className="card__body">
         <p>Install locally and run your first analysis in minutes.</p>
       </div>
@@ -24,9 +24,9 @@ Match your resume to any role — with honest scoring, actionable feedback, and 
   </div>
   <div className="col col--4">
     <div className="card margin-bottom--md">
-      <div className="card__header"><h3>📖 User Guide</h3></div>
+      <div className="card__header"><h3>User guide</h3></div>
       <div className="card__body">
-        <p>Every screen: dashboard, analyze, tracker, career tools.</p>
+        <p>Every screen: history, analyze, tracker, career tools.</p>
       </div>
       <div className="card__footer">
         <Link className="button button--secondary button--block" to="/user-guide/dashboard">Explore →</Link>
@@ -35,7 +35,7 @@ Match your resume to any role — with honest scoring, actionable feedback, and 
   </div>
   <div className="col col--4">
     <div className="card margin-bottom--md">
-      <div className="card__header"><h3>⚙️ Reference</h3></div>
+      <div className="card__header"><h3>Reference</h3></div>
       <div className="card__body">
         <p>Agent tools, Convex API, env vars, deployment.</p>
       </div>
@@ -48,29 +48,62 @@ Match your resume to any role — with honest scoring, actionable feedback, and 
 
 ## What JobFit AI does
 
-- **Upload CVs** (PDF/DOCX) and score fit against any job posting
-- **Track history** with filters, comparison, and export
-- **Tailor bullets**, generate **cover letters**, build **learning plans**
-- **Track applications** on a kanban board (Saved → Offer)
-- **Re-score** after CV edits and see match % delta
+| Capability | What you get |
+|------------|--------------|
+| **Match analysis** | Resume vs job posting → match %, skills, red flags, recommendations |
+| **History** | Filterable list of every saved report with compare |
+| **Tracker** | Kanban (Saved → Offer) with drag-and-drop; auto-added on save |
+| **Career tools** | Tailored bullets, cover letter, learning plan |
+| **Re-score** | Upload a revised CV and see the match % delta |
+
+## How a match works
+
+```mermaid
+flowchart LR
+  A[Upload CV] --> B[Paste job or URL]
+  B --> C[Agent scores]
+  C --> D[Report saved]
+  D --> E[History + Tracker]
+  E --> F[Career tools]
+```
+
+1. Upload a PDF/DOCX resume  
+2. Paste a job description (or HTTPS URL) on **Analyze**  
+3. The eve agent parses, scores, and saves  
+4. Open the report from **History**; the role also lands in **Tracker**  
+5. Optionally tailor bullets, draft a cover letter, or re-score after edits  
+
+[Full walkthrough →](./getting-started/first-analysis) · [Recommended workflow →](./getting-started/recommended-workflow)
+
+## History vs Tracker
+
+| | **History** (`/`) | **Tracker** (`/tracker`) |
+|--|-------------------|--------------------------|
+| Purpose | All match reports | Application pipeline |
+| Data | `analyses` | `applications` |
+| When filled | Every successful `save_analysis` | Auto-created on save (Saved column) |
+
+[History vs Tracker explained →](./concepts/history-vs-tracker)
 
 ## Stack
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Next.js 16, shadcn/ui, Tailwind v4 |
-| Agent | [eve](https://eve.dev) + Claude Sonnet |
+| Frontend | Next.js 16, shadcn/ui, Tailwind v4, TipTap |
+| Agent | [eve](https://eve.dev) + OpenAI GPT-4.1 |
 | Backend | [Convex](https://convex.dev) (auth, storage, realtime) |
-| Docs | [Docusaurus](https://docusaurus.io/) 3.10 |
+| Docs | [Docusaurus](https://docusaurus.io/) 3 |
 
 ## Quick links
 
 | Topic | Link |
 |-------|------|
-| First analysis walkthrough | [Getting started →](./getting-started/first-analysis) |
+| First analysis | [Getting started →](./getting-started/first-analysis) |
 | How scoring works | [Matching scores →](./concepts/matching-scores) |
+| Why “Untitled role”? | [Role titles →](./concepts/role-titles) |
 | System architecture | [Overview →](./architecture/overview) |
-| Deploy to production | [Production →](./deployment/production) |
+| Environment variables | [Reference →](./reference/environment-variables) |
+| Deploy | [Production →](./deployment/production) |
 | FAQ | [Help →](./help/faq) |
 
 <a className="button button--primary button--lg margin-top--md" href="/">Open JobFit AI App →</a>

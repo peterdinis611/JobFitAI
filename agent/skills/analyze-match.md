@@ -23,8 +23,10 @@ Use this playbook when the user requests a **full resume vs. job posting analysi
 - Review output for plausibility; if match % seems off vs. obvious gaps, note uncertainty in narrative.
 
 ### 5. Persist
-- Call `save_analysis` with all score fields + context IDs + `eveSessionId` if available.
-- **Do not** pass `previousAnalysisId` unless this is an explicit re-score flow.
+- Call `save_analysis` with: `userId`, `resumeId`, `jobPostingId` from context, plus all score fields from `score_match`.
+- **Omit** `previousAnalysisId` entirely (do not send `""` or `null`) unless this is an explicit re-score.
+- **Omit** `eveSessionId` unless you have a real session id.
+- If `save_analysis` fails, retry once without optional fields.
 
 ### 6. Report
 - Summarize for the user using the format in `instructions.md`.

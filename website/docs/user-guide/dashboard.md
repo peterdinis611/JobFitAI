@@ -6,7 +6,11 @@ sidebar_position: 1
 
 Route: `/`
 
-The dashboard is your analysis history — every match you've run, sortable and filterable.
+History is every match you've saved — filterable, sortable, and ready to compare.
+
+:::info History ≠ Tracker
+History lists **analyses** (reports). The **Tracker** lists **applications** (pipeline stages). Saving an analysis fills both. See [History vs Tracker](../concepts/history-vs-tracker).
+:::
 
 ## Stat cards
 
@@ -16,31 +20,44 @@ The dashboard is your analysis history — every match you've run, sortable and 
 | **Average match** | Mean match % across history |
 | **Best score** | Highest match % achieved |
 
-## Filters
+## Filters and sort
 
 Quick filters by minimum match: **All**, **≥ 50%**, **≥ 70%**, **≥ 85%**.
 
-Use **Match high → low** (or reverse) to reorder the table.
+Toggle **Match high → low** (or reverse) to reorder the list.
 
-## Table columns
+## Analysis cards
 
-| Column | Description |
-|--------|-------------|
+Each saved analysis appears as a card (not a dense table row):
+
+| Element | Description |
+|---------|-------------|
 | ☐ | Select for comparison (pick two) |
-| **Role** | Auto-extracted job title (or "Untitled role") |
-| **Match** | Percentage with mini progress bar |
-| **Seniority** | `under` / `match` / `over` |
+| **Role** | Best available title — see [Role titles](../concepts/role-titles) |
+| **Match** | Percentage with progress bar and color tone |
+| **Seniority** | Human label: Right level / Below target / Above target |
+| **Skills** | Chips for top matching skills |
 | **Date** | When the analysis was saved |
 | **View** | Open full report |
 
 ## Compare analyses
 
-1. Check two rows
-2. Click **Compare selected** in the header
-3. Side-by-side scores, skills, and delta on `/compare`
+1. Check two cards  
+2. Click **Compare selected** in the header  
+3. Side-by-side scores and skills on `/compare`  
 
-## Empty state
+## Empty and filtered states
 
-New users see a **Getting started** guide with steps: upload CV → add job → run analysis.
+| State | What you see |
+|-------|----------------|
+| No analyses yet | Getting started guide: upload CV → add job → run analysis |
+| Filter matches nothing | Prompt to clear filters |
+| No active resume | Nudge to upload on Resumes |
 
-[Compare page →](./compare)
+## Tips
+
+- Prefer filters over scrolling when you have many reports  
+- Strong fits (≥ 85%) are good candidates to move forward in Tracker  
+- If a card says **Untitled role**, the posting likely lacked a clear title — open the report and check the job text  
+
+[Compare page →](./compare) · [Analyze →](./analyze)

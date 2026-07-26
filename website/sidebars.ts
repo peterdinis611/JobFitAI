@@ -7,7 +7,11 @@ const sidebars: SidebarsConfig = {
       type: 'category',
       label: 'Getting Started',
       link: { type: 'generated-index' },
-      items: ['getting-started/installation', 'getting-started/first-analysis'],
+      items: [
+        'getting-started/installation',
+        'getting-started/first-analysis',
+        'getting-started/recommended-workflow',
+      ],
     },
     {
       type: 'category',
@@ -29,8 +33,11 @@ const sidebars: SidebarsConfig = {
       link: { type: 'generated-index' },
       items: [
         'concepts/matching-scores',
+        'concepts/history-vs-tracker',
+        'concepts/role-titles',
         'concepts/authentication',
         'concepts/rate-limits',
+        'concepts/glossary',
       ],
     },
     {

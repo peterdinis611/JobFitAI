@@ -18,6 +18,7 @@ Ensure production env vars match your Vercel (or host) deployment.
 2. Set environment variables:
    - `NEXT_PUBLIC_CONVEX_URL`
    - `CONVEX_URL`
+   - `OPENAI_API_KEY`
 3. Build command: `npm run build` (includes `build:docs`)
 4. `withEve()` in `next.config.ts` handles eve integration
 
@@ -41,8 +42,9 @@ No separate Docusaurus server in production.
 - [ ] Convex deployed with latest schema
 - [ ] Auth working on production URL
 - [ ] Convex env vars on Vercel
+- [ ] `OPENAI_API_KEY` set on the host running eve/Next
 - [ ] `npm run build` succeeds locally
 - [ ] `/docs` loads after deploy
-- [ ] Analysis run completes end-to-end
+- [ ] Analysis run completes end-to-end (History + Tracker populated)
 
 [Docs site development →](./docs-site)

@@ -8,10 +8,10 @@ How JobFit AI calculates and interprets match percentages.
 
 ## Scoring pipeline
 
-1. **Parse** resume text from PDF/DOCX
-2. **Extract** job requirements (explicit or via `extract-job-requirements` skill)
-3. **Score** via `score_match` — Claude Sonnet with structured Zod output
-4. **Heuristic hints** — keyword overlap for common tech skills (verified by LLM, not copied blindly)
+1. **Parse** resume text from PDF/DOCX  
+2. **Extract** job requirements (explicit in the posting or via agent skills)  
+3. **Score** via `score_match` — OpenAI GPT-4.1 with structured Zod output  
+4. **Heuristic hints** — keyword overlap for common tech skills (verified by the LLM, not copied blindly)  
 
 ## Match percentage bands
 
@@ -26,11 +26,11 @@ Must-have skills weigh more than nice-to-haves in the model prompt.
 
 ## Seniority fit
 
-| Value | Meaning |
-|-------|---------|
-| `under` | Candidate below required level |
-| `match` | Aligned with role level |
-| `over` | Potentially overqualified |
+| Agent value | UI label | Meaning |
+|-------------|----------|---------|
+| `under` | Below target | Candidate below required level |
+| `match` | Right level | Aligned with role level |
+| `over` | Above target | Potentially overqualified |
 
 ## Skill categories
 
@@ -40,10 +40,10 @@ When available, the radar chart breaks scores into categories (e.g. technical, s
 
 Evidence-based concerns, such as:
 
-- Missing must-have technologies
-- Seniority mismatch
-- Employment gaps vs. role expectations
-- Title inflation without supporting experience
+- Missing must-have technologies  
+- Seniority mismatch  
+- Employment gaps vs. role expectations  
+- Title inflation without supporting experience  
 
 ## Recommendations
 
@@ -52,3 +52,12 @@ Actionable CV edits — keywords to add, projects to highlight, bullets to rewri
 ## Honesty principle
 
 The agent instructions require fair scoring. Inflated percentages hurt more than honest gaps — use recommendations and career tools to close them.
+
+## Improving a score
+
+1. Read **Missing skills** and **Red flags**  
+2. Run **Tailor bullets** and update your CV honestly  
+3. **Re-score** to measure the delta  
+4. Optionally generate a **Learning plan** for real skill gaps  
+
+[Career tools →](../user-guide/career-tools) · [Recommended workflow →](../getting-started/recommended-workflow)

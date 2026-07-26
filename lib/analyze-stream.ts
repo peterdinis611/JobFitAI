@@ -77,8 +77,26 @@ export function parseAnalysisStream(messages: readonly EveMessage[]): AnalysisSt
         })
 
         if (part.toolName === "save_analysis" && status === "completed" && part.output) {
-          const out = part.output as { analysisId?: string }
-          if (out.analysisId) analysisId = out.analysisId
+          const out = part.output as
+            | { analysisId?: string }
+            | { value?: { analysisId?: string } }
+            | string
+          if (typeof out === "string") {
+            try {
+              const parsed = JSON.parse(out) as { analysisId?: string }
+              if (parsed.analysisId) analysisId = parsed.analysisId
+            } catch {
+              /* ignore */
+            }
+          } else if (out && typeof out === "object") {
+            const id =
+              "analysisId" in out
+                ? out.analysisId
+                : "value" in out
+                  ? out.value?.analysisId
+                  : undefined
+            if (id) analysisId = id
+          }
         }
 
         if (part.toolName === "score_match" && status === "completed" && part.output) {

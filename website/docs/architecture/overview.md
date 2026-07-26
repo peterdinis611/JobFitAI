@@ -32,6 +32,7 @@ flowchart TB
 |-------|------|
 | **Next.js** | UI, auth gate, real-time Convex subscriptions |
 | **eve** | Agent orchestration, tool execution, streaming |
+| **OpenAI** | GPT-4.1 for scoring and career-tool generation |
 | **Convex** | Auth, file storage, analyses, tracker, artifacts |
 | **Docusaurus** | Static documentation at `/docs` |
 

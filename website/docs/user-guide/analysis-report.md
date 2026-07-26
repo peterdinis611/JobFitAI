@@ -10,10 +10,10 @@ The full match report for a single resume + job pairing.
 
 ## Header
 
-- **Job title** (from posting or auto-extract)
+- **Job title** (from posting or [role-label fallbacks](../concepts/role-titles))
 - **Resume filename** and analysis date
 - **Copy report** — exports Markdown to clipboard
-- **Match score ring** and seniority badge
+- **Match score ring** and seniority badge (Right level / Below target / Above target)
 
 ## Re-score delta
 
