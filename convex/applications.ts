@@ -1,7 +1,6 @@
-import { mutation, query } from "./_generated/server"
 import { v } from "convex/values"
-import type { Id } from "./_generated/dataModel"
-import { requireUser, requireUserId } from "./lib/auth"
+import { mutation, query } from "./_generated/server"
+import { requireUserId } from "./lib/auth"
 
 const applicationStatus = v.union(
   v.literal("saved"),

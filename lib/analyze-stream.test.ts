@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest"
 import type { EveMessage } from "eve/react"
+import { describe, expect, it } from "vitest"
 import { parseAnalysisStream } from "./analyze-stream"
 
 function assistant(parts: EveMessage["parts"]): EveMessage {
@@ -46,11 +46,7 @@ describe("parseAnalysisStream", () => {
     expect(state.matchPercentage).toBe(88)
     expect(state.analysisId).toBe("a123")
     expect(state.assistantText).toBe("Scoring…")
-    expect(state.steps.map((s) => s.id)).toEqual([
-      "parse_resume",
-      "score_match",
-      "save_analysis",
-    ])
+    expect(state.steps.map((s) => s.id)).toEqual(["parse_resume", "score_match", "save_analysis"])
   })
 
   it("marks errors and running states", () => {

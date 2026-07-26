@@ -1,19 +1,15 @@
-import { defineTool } from "eve/tools"
 import { Effect } from "effect"
-import { api } from "../../convex/_generated/api.js"
-import {
-  loadJobPostingInputSchema,
-  loadJobPostingOutputSchema,
-} from "../../lib/schemas/tools"
+import { defineTool } from "eve/tools"
 import { convexQuery } from "#lib/convex"
 import { runEffect } from "#lib/effect"
 import { ConvexError } from "#lib/errors"
 import { wordCount } from "#lib/parse-document"
+import { api } from "../../convex/_generated/api.js"
 import type { Id } from "../../convex/_generated/dataModel"
+import { loadJobPostingInputSchema, loadJobPostingOutputSchema } from "../../lib/schemas/tools"
 
 export default defineTool({
-  description:
-    "Load a saved job posting from Convex (title + cleaned text) for analysis tools.",
+  description: "Load a saved job posting from Convex (title + cleaned text) for analysis tools.",
   inputSchema: loadJobPostingInputSchema,
   async execute({ userId, jobPostingId }) {
     const program = Effect.gen(function* () {

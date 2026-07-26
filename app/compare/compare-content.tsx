@@ -1,13 +1,11 @@
 "use client"
 
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 import { useQuery } from "convex/react"
 import { ArrowLeft, Minus, Plus } from "lucide-react"
 import { motion } from "motion/react"
+import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { useMemo, useState } from "react"
-import { api } from "@/convex/_generated/api"
-import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { MatchScoreRing } from "@/components/ui/animated-progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -19,8 +17,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
+import { api } from "@/convex/_generated/api"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { roleTitle, seniorityLabel } from "@/lib/role-label"
+import { cn } from "@/lib/utils"
 
 type AnalysisRow = {
   analysis: Doc<"analyses">
@@ -151,7 +151,11 @@ export function CompareContent() {
             delta === 0 && "border-border bg-muted/30",
           )}
         >
-          {delta > 0 ? <Plus className="size-4" /> : delta < 0 ? <Minus className="size-4" /> : null}
+          {delta > 0 ? (
+            <Plus className="size-4" />
+          ) : delta < 0 ? (
+            <Minus className="size-4" />
+          ) : null}
           {delta === 0
             ? "Same match score"
             : `${Math.abs(delta)} point${Math.abs(delta) === 1 ? "" : "s"} ${delta > 0 ? "higher" : "lower"} on the right`}

@@ -1,15 +1,14 @@
-import sanitizeHtml from "sanitize-html"
 import { Effect } from "effect"
-import { FetchError } from "#lib/errors"
+import sanitizeHtml from "sanitize-html"
 import { defaultRetry, networkTimeout } from "#lib/effect"
+import { FetchError } from "#lib/errors"
 
 const ALLOWED_TAGS: string[] = []
 const ALLOWED_ATTR: Record<string, string[]> = {}
 
-export function fetchAndCleanJobPage(url: string): Effect.Effect<
-  { title: string | undefined; cleanedText: string },
-  FetchError
-> {
+export function fetchAndCleanJobPage(
+  url: string,
+): Effect.Effect<{ title: string | undefined; cleanedText: string }, FetchError> {
   const attempt = Effect.tryPromise({
     try: async () => {
       const response = await fetch(url, {

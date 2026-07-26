@@ -1,7 +1,7 @@
 "use client"
 
+import { FileText, Link2, Loader2, Sparkles } from "lucide-react"
 import Link from "next/link"
-import { FileText, Link2, Sparkles, Loader2 } from "lucide-react"
 import { JobPostingEditor } from "@/components/analyze/job-posting-editor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -33,9 +33,7 @@ export function AnalyzeSetupPanel({
   onRun,
 }: AnalyzeSetupPanelProps) {
   const canRun =
-    hasResume &&
-    !isBusy &&
-    (tab === "text" ? jobText.trim().length > 0 : jobUrl.trim().length > 0)
+    hasResume && !isBusy && (tab === "text" ? jobText.trim().length > 0 : jobUrl.trim().length > 0)
 
   return (
     <section className="mac-window w-full min-w-0 overflow-hidden">
@@ -54,7 +52,9 @@ export function AnalyzeSetupPanel({
       <div className="space-y-5 p-5 sm:p-6">
         <div className="space-y-1">
           <h2 className="text-[15px] font-semibold">Your resume</h2>
-          <p className="text-xs text-muted-foreground">We compare this CV against the job posting.</p>
+          <p className="text-xs text-muted-foreground">
+            We compare this CV against the job posting.
+          </p>
         </div>
 
         <div
@@ -85,15 +85,14 @@ export function AnalyzeSetupPanel({
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <h2 className="text-[15px] font-semibold">Job posting</h2>
-              <p className="text-xs text-muted-foreground">Paste text or paste a careers page URL.</p>
+              <p className="text-xs text-muted-foreground">
+                Paste text or paste a careers page URL.
+              </p>
             </div>
             <div className="mac-segmented w-fit shrink-0">
               <button
                 type="button"
-                className={cn(
-                  "mac-segmented-item",
-                  tab === "text" && "mac-segmented-item-active",
-                )}
+                className={cn("mac-segmented-item", tab === "text" && "mac-segmented-item-active")}
                 onClick={() => onTabChange("text")}
               >
                 Paste text
@@ -136,16 +135,8 @@ export function AnalyzeSetupPanel({
           )}
         </div>
 
-        <Button
-          className="h-10 w-full text-[15px]"
-          disabled={!canRun}
-          onClick={onRun}
-        >
-          {isBusy ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Sparkles className="size-4" />
-          )}
+        <Button className="h-10 w-full text-[15px]" disabled={!canRun} onClick={onRun}>
+          {isBusy ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
           {isBusy ? "Analyzing…" : "Run analysis"}
         </Button>
       </div>

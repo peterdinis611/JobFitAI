@@ -1,11 +1,11 @@
 "use client"
 
-import { Copy, Check } from "lucide-react"
+import { Check, Copy } from "lucide-react"
 import { useState } from "react"
 import { toast } from "sonner"
-import { analysisToMarkdown } from "@/lib/analysis-export"
-import type { Doc } from "@/convex/_generated/dataModel"
 import { Button } from "@/components/ui/button"
+import type { Doc } from "@/convex/_generated/dataModel"
+import { analysisToMarkdown } from "@/lib/analysis-export"
 
 export function ExportReportButton({
   analysis,

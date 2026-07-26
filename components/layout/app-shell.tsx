@@ -1,15 +1,15 @@
 "use client"
 
+import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react"
+import { BookOpen, Briefcase, FileText, History, Kanban, LogOut } from "lucide-react"
+import { motion } from "motion/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useAuthActions, useConvexAuth } from "@convex-dev/auth/react"
-import { Briefcase, BookOpen, FileText, History, Kanban, LogOut } from "lucide-react"
-import { motion } from "motion/react"
 import { AuthScreen } from "@/components/auth/auth-screen"
 import { RobotLogo, RobotLogoMark } from "@/components/brand/robot-logo"
-import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { cn } from "@/lib/utils"
 
 const links = [
@@ -58,18 +58,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-dvh flex-col text-foreground">
       <header className="mac-toolbar sticky top-0 z-40">
         <div className="mx-auto flex h-[52px] max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-          <Link
-            href="/"
-            className="flex shrink-0 items-center gap-2 font-semibold tracking-tight"
-          >
+          <Link href="/" className="flex shrink-0 items-center gap-2 font-semibold tracking-tight">
             <RobotLogoMark />
             <span className="hidden text-[15px] sm:inline">JobFit AI</span>
           </Link>
 
           <nav className="mac-segmented hidden overflow-x-auto sm:flex">
             {links.map(({ href, label, icon: Icon, static: isStatic }) => {
-              const active =
-                href.startsWith("/docs") ? pathname.startsWith("/docs") : pathname === href
+              const active = href.startsWith("/docs")
+                ? pathname.startsWith("/docs")
+                : pathname === href
               const className = cn(
                 "mac-segmented-item whitespace-nowrap",
                 active && "mac-segmented-item-active",
@@ -99,7 +97,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </span>
             ) : null}
             <ThemeToggle />
-            <Button variant="ghost" size="icon-sm" aria-label="Sign out" onClick={() => void signOut()}>
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              aria-label="Sign out"
+              onClick={() => void signOut()}
+            >
               <LogOut className="size-4" />
             </Button>
           </div>
@@ -108,8 +111,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Mobile nav */}
         <div className="flex gap-1 overflow-x-auto border-t border-border/60 px-3 py-2 sm:hidden">
           {links.map(({ href, label, icon: Icon, static: isStatic }) => {
-            const active =
-              href.startsWith("/docs") ? pathname.startsWith("/docs") : pathname === href
+            const active = href.startsWith("/docs")
+              ? pathname.startsWith("/docs")
+              : pathname === href
             const className = cn(
               "flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-medium",
               active

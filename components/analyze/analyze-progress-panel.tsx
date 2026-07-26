@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import type { EveMessage } from "eve/react"
 import {
   AlertCircle,
@@ -11,12 +10,13 @@ import {
   Sparkles,
   XCircle,
 } from "lucide-react"
-import { motion, AnimatePresence } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
+import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
+import { MessageResponse } from "@/components/ai-elements/message"
 import { AnalyzingIllustration } from "@/components/illustrations/jobfit-illustrations"
 import { MatchScoreRing } from "@/components/ui/animated-progress"
 import { Button } from "@/components/ui/button"
-import { MessageResponse } from "@/components/ai-elements/message"
 import { parseAnalysisStream } from "@/lib/analyze-stream"
 import { cn } from "@/lib/utils"
 
@@ -56,10 +56,7 @@ function statusLabel({
   return { text: "In progress", tone: "active" as const }
 }
 
-export function AnalyzeProgressPanel({
-  messages,
-  isBusy,
-}: AnalyzeProgressPanelProps) {
+export function AnalyzeProgressPanel({ messages, isBusy }: AnalyzeProgressPanelProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [showScrollTop, setShowScrollTop] = useState(false)
   const stream = useMemo(() => parseAnalysisStream(messages), [messages])
@@ -79,7 +76,7 @@ export function AnalyzeProgressPanel({
     onScroll()
 
     return () => el.removeEventListener("scroll", onScroll)
-  }, [stream.hasStarted])
+  }, [])
 
   function scrollToTop() {
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" })
@@ -181,7 +178,9 @@ export function AnalyzeProgressPanel({
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium">{step.label}</p>
                       {step.error ? (
-                        <p className="mt-1 text-xs leading-relaxed text-destructive">{step.error}</p>
+                        <p className="mt-1 text-xs leading-relaxed text-destructive">
+                          {step.error}
+                        </p>
                       ) : (
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           Step {index + 1} of {stream.steps.length}
@@ -196,9 +195,7 @@ export function AnalyzeProgressPanel({
                 <div className="flex items-start gap-3 rounded-xl border border-destructive/25 bg-destructive/5 px-4 py-3">
                   <AlertCircle className="mt-0.5 size-4 shrink-0 text-destructive" />
                   <div className="min-w-0 space-y-1 text-sm">
-                    <p className="font-medium text-destructive">
-                      {stream.failedStep.label} failed
-                    </p>
+                    <p className="font-medium text-destructive">{stream.failedStep.label} failed</p>
                     <p className="text-xs leading-relaxed text-muted-foreground">
                       {stream.failedStep.error ??
                         "Something went wrong. Try running the analysis again."}

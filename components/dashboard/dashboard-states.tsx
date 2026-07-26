@@ -1,8 +1,8 @@
 "use client"
 
-import Link from "next/link"
 import { Briefcase, FileText, Sparkles, Upload } from "lucide-react"
 import { motion } from "motion/react"
+import Link from "next/link"
 import { AuthHeroIllustration } from "@/components/illustrations/jobfit-illustrations"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
@@ -55,9 +55,7 @@ export function DashboardGettingStarted({
               Getting started
             </p>
             <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              {hasResume
-                ? "Ready to see how you match?"
-                : "Let’s set up your first match"}
+              {hasResume ? "Ready to see how you match?" : "Let’s set up your first match"}
             </h2>
             <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
               {hasResume

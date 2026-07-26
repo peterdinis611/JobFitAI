@@ -21,8 +21,7 @@ export function extractTextFromBuffer(
       }
 
       if (
-        mimeType ===
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+        mimeType === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
         fileName.toLowerCase().endsWith(".docx")
       ) {
         const result = await mammoth.extractRawText({ buffer })

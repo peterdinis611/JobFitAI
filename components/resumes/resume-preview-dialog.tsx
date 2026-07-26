@@ -1,8 +1,6 @@
 "use client"
 
 import { FileText } from "lucide-react"
-import type { Doc } from "@/convex/_generated/dataModel"
-import { wordCount } from "@/lib/extract-job-title"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,6 +12,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import type { Doc } from "@/convex/_generated/dataModel"
+import { wordCount } from "@/lib/extract-job-title"
 
 export function ResumePreviewDialog({ resume }: { resume: Doc<"resumes"> }) {
   const parsed = resume.parsedText?.trim()

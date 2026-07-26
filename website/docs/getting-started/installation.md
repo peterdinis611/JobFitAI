@@ -72,6 +72,7 @@ Open [http://localhost:3000](http://localhost:3000). Create an account on first 
 | Convex connected | No “Convex URL missing” errors in terminal |
 | Agent can score | Run an analysis; stream shows parse → score → save |
 | Unit + Convex tests | `npm test` / `bun run test` |
+| Lint / format | `npm run lint` / `npm run lint:fix` |
 | Docs | `npm run build:docs` then open `/docs` |
 
 ## Build documentation locally

@@ -1,43 +1,43 @@
-"use client";
+"use client"
 
-import { useEveAgent } from "eve/react";
-import { AlertCircleIcon } from "lucide-react";
+import { useEveAgent } from "eve/react"
+import { AlertCircleIcon } from "lucide-react"
 import {
   Conversation,
   ConversationContent,
   ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
+} from "@/components/ai-elements/conversation"
 import {
   PromptInput,
   type PromptInputMessage,
   PromptInputSubmit,
   PromptInputTextarea,
-} from "@/components/ai-elements/prompt-input";
-import { cn } from "@/lib/utils";
-import { AgentMessage } from "./agent-message";
+} from "@/components/ai-elements/prompt-input"
+import { cn } from "@/lib/utils"
+import { AgentMessage } from "./agent-message"
 
-const AGENT_NAME = "jobfit-ai";
+const AGENT_NAME = "jobfit-ai"
 
-type AgentStatus = ReturnType<typeof useEveAgent>["status"];
+type AgentStatus = ReturnType<typeof useEveAgent>["status"]
 
 export function AgentChat() {
-  const agent = useEveAgent();
-  const isBusy = agent.status === "submitted" || agent.status === "streaming";
-  const isEmpty = agent.data.messages.length === 0;
+  const agent = useEveAgent()
+  const isBusy = agent.status === "submitted" || agent.status === "streaming"
+  const isEmpty = agent.data.messages.length === 0
 
   const handleSubmit = async (message: PromptInputMessage) => {
-    const text = message.text.trim();
-    if (!text || isBusy) return;
+    const text = message.text.trim()
+    if (!text || isBusy) return
 
-    await agent.send({ message: text });
-  };
+    await agent.send({ message: text })
+  }
 
   const composer = (
     <PromptInput onSubmit={handleSubmit}>
       <PromptInputTextarea placeholder="Send a message…" />
       <PromptInputSubmit onStop={agent.stop} status={agent.status} />
     </PromptInput>
-  );
+  )
 
   return (
     <main className="flex h-dvh flex-col overflow-hidden bg-background text-foreground">
@@ -97,11 +97,11 @@ export function AgentChat() {
         <div className="w-full">{composer}</div>
       </div>
     </main>
-  );
+  )
 }
 
 function StatusDot({ status }: { readonly status: AgentStatus }) {
-  const isLive = status === "submitted" || status === "streaming";
+  const isLive = status === "submitted" || status === "streaming"
   const tone =
     status === "error"
       ? "bg-destructive"
@@ -109,7 +109,7 @@ function StatusDot({ status }: { readonly status: AgentStatus }) {
         ? "bg-success"
         : status === "ready"
           ? "bg-muted-foreground"
-          : "bg-muted-foreground/50";
+          : "bg-muted-foreground/50"
 
   return (
     <span className="relative flex size-1">
@@ -123,5 +123,5 @@ function StatusDot({ status }: { readonly status: AgentStatus }) {
       ) : null}
       <span className={cn("relative inline-flex size-1 rounded-full transition-colors", tone)} />
     </span>
-  );
+  )
 }

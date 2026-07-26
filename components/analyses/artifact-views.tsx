@@ -91,8 +91,7 @@ export function RescoreDeltaBanner({
       )}
     >
       <span>
-        Re-scored vs previous:{" "}
-        <strong className="tabular-nums">{delta.previous}%</strong>
+        Re-scored vs previous: <strong className="tabular-nums">{delta.previous}%</strong>
         {" → "}
         <strong className="tabular-nums">{delta.current}%</strong>
       </span>

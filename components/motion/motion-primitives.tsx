@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, type HTMLMotionProps, type Variants } from "motion/react"
+import { type HTMLMotionProps, motion, type Variants } from "motion/react"
 import { cn } from "@/lib/utils"
 
 export const fadeInUp: Variants = {
@@ -25,10 +25,7 @@ export const staggerContainer: Variants = {
   },
 }
 
-export function MotionDiv({
-  className,
-  ...props
-}: HTMLMotionProps<"div">) {
+export function MotionDiv({ className, ...props }: HTMLMotionProps<"div">) {
   return <motion.div className={cn(className)} {...props} />
 }
 

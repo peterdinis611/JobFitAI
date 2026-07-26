@@ -1,12 +1,9 @@
-import { defineTool } from "eve/tools"
 import { Effect } from "effect"
-import {
-  fetchJobPostingInputSchema,
-  fetchJobPostingOutputSchema,
-} from "../../lib/schemas/tools"
+import { defineTool } from "eve/tools"
 import { runEffect } from "#lib/effect"
 import { fetchAndCleanJobPage } from "#lib/fetch-job"
 import { wordCount } from "#lib/parse-document"
+import { fetchJobPostingInputSchema, fetchJobPostingOutputSchema } from "../../lib/schemas/tools"
 
 export default defineTool({
   description:

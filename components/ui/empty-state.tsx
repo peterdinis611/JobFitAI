@@ -1,9 +1,9 @@
 "use client"
 
-import Link from "next/link"
 import { motion } from "motion/react"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { EmptySearchIllustration } from "@/components/illustrations/jobfit-illustrations"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 type EmptyStateProps = {

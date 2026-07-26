@@ -1,19 +1,19 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
 import { useMutation, useQuery } from "convex/react"
 import { useEveAgent } from "eve/react"
+import { useRouter } from "next/navigation"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
-import { api } from "@/convex/_generated/api"
-import { useJobFitUser } from "@/hooks/use-jobfit-user"
-import { DashboardGettingStarted } from "@/components/dashboard/dashboard-states"
-import { AnalyzeSetupPanel } from "@/components/analyze/analyze-setup-panel"
 import { AnalyzeProgressPanel } from "@/components/analyze/analyze-progress-panel"
+import { AnalyzeSetupPanel } from "@/components/analyze/analyze-setup-panel"
+import { DashboardGettingStarted } from "@/components/dashboard/dashboard-states"
 import { PageHeader } from "@/components/ui/page-header"
+import { api } from "@/convex/_generated/api"
+import type { Doc } from "@/convex/_generated/dataModel"
+import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
 import { parseAnalysisStream } from "@/lib/analyze-stream"
-import type { Doc } from "@/convex/_generated/dataModel"
 
 export default function AnalyzePage() {
   const router = useRouter()
@@ -28,10 +28,7 @@ export default function AnalyzePage() {
   const [running, setRunning] = useState(false)
 
   const agent = useEveAgent()
-  const activeResume = useMemo(
-    () => resumes?.find((r: Doc<"resumes">) => r.isActive),
-    [resumes],
-  )
+  const activeResume = useMemo(() => resumes?.find((r: Doc<"resumes">) => r.isActive), [resumes])
   const isBusy = agent.status === "submitted" || agent.status === "streaming" || running
   const stream = useMemo(() => parseAnalysisStream(agent.data.messages), [agent.data.messages])
   const notifiedId = useRef<string | null>(null)

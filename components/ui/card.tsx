@@ -1,13 +1,8 @@
-import * as React from "react"
+import type * as React from "react"
 import { cn } from "@/lib/utils"
 
 export function Card({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      className={cn("mac-panel text-card-foreground", className)}
-      {...props}
-    />
-  )
+  return <div className={cn("mac-panel text-card-foreground", className)} {...props} />
 }
 
 export function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
@@ -15,7 +10,12 @@ export function CardHeader({ className, ...props }: React.ComponentProps<"div">)
 }
 
 export function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
-  return <h3 className={cn("text-[15px] font-semibold leading-snug tracking-tight", className)} {...props} />
+  return (
+    <h3
+      className={cn("text-[15px] font-semibold leading-snug tracking-tight", className)}
+      {...props}
+    />
+  )
 }
 
 export function CardDescription({ className, ...props }: React.ComponentProps<"p">) {

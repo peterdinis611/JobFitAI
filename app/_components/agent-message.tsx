@@ -1,29 +1,23 @@
-"use client";
+"use client"
 
 import type {
   EveAuthorizationPart,
   EveDynamicToolPart,
   EveMessage,
   EveMessagePart,
-} from "eve/react";
-import { CheckCircleIcon, ExternalLinkIcon, KeyRoundIcon, XCircleIcon } from "lucide-react";
-import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
-import { Reasoning, ReasoningContent, ReasoningTrigger } from "@/components/ai-elements/reasoning";
-import {
-  Tool,
-  ToolContent,
-  ToolHeader,
-  ToolInput,
-  ToolOutput,
-} from "@/components/ai-elements/tool";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+} from "eve/react"
+import { CheckCircleIcon, ExternalLinkIcon, KeyRoundIcon, XCircleIcon } from "lucide-react"
+import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message"
+import { Reasoning, ReasoningContent, ReasoningTrigger } from "@/components/ai-elements/reasoning"
+import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput } from "@/components/ai-elements/tool"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 export type AgentInputResponse = {
-  readonly optionId?: string;
-  readonly requestId: string;
-  readonly text?: string;
-};
+  readonly optionId?: string
+  readonly requestId: string
+  readonly text?: string
+}
 
 export function AgentMessage({
   canRespond,
@@ -31,15 +25,15 @@ export function AgentMessage({
   message,
   onInputResponses,
 }: {
-  readonly canRespond: boolean;
-  readonly isStreaming: boolean;
-  readonly message: EveMessage;
-  readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>;
+  readonly canRespond: boolean
+  readonly isStreaming: boolean
+  readonly message: EveMessage
+  readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>
 }) {
   const lastTextIndex = message.parts.reduce(
     (last, part, index) => (part.type === "text" ? index : last),
     -1,
-  );
+  )
 
   return (
     <Message
@@ -58,7 +52,7 @@ export function AgentMessage({
         ))}
       </MessageContent>
     </Message>
-  );
+  )
 }
 
 function AgentMessagePart({
@@ -67,29 +61,29 @@ function AgentMessagePart({
   part,
   showCaret,
 }: {
-  readonly canRespond: boolean;
-  readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>;
-  readonly part: EveMessagePart;
-  readonly showCaret: boolean;
+  readonly canRespond: boolean
+  readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>
+  readonly part: EveMessagePart
+  readonly showCaret: boolean
 }) {
   switch (part.type) {
     case "step-start":
-      return null;
+      return null
     case "text":
       return (
         <MessageResponse caret="block" isAnimating={showCaret}>
           {part.text}
         </MessageResponse>
-      );
+      )
     case "reasoning":
       return (
         <Reasoning defaultOpen isStreaming={part.state === "streaming"}>
           <ReasoningTrigger />
           <ReasoningContent>{part.text}</ReasoningContent>
         </Reasoning>
-      );
+      )
     case "authorization":
-      return <AuthorizationPrompt part={part} />;
+      return <AuthorizationPrompt part={part} />
     case "dynamic-tool":
       return (
         <Tool
@@ -111,16 +105,16 @@ function AgentMessagePart({
             <ToolOutput errorText={part.errorText} output={part.output} />
           </ToolContent>
         </Tool>
-      );
+      )
   }
 }
 
 function AuthorizationPrompt({ part }: { readonly part: EveAuthorizationPart }) {
-  const isAuthorized = part.state === "completed" && part.outcome === "authorized";
-  const isCompleted = part.state === "completed";
-  const Icon = isAuthorized ? CheckCircleIcon : isCompleted ? XCircleIcon : KeyRoundIcon;
-  const instructions = part.authorization?.instructions;
-  const shouldShowInstructions = instructions !== undefined && instructions !== part.description;
+  const isAuthorized = part.state === "completed" && part.outcome === "authorized"
+  const isCompleted = part.state === "completed"
+  const Icon = isAuthorized ? CheckCircleIcon : isCompleted ? XCircleIcon : KeyRoundIcon
+  const instructions = part.authorization?.instructions
+  const shouldShowInstructions = instructions !== undefined && instructions !== part.description
 
   return (
     <div
@@ -171,40 +165,40 @@ function AuthorizationPrompt({ part }: { readonly part: EveAuthorizationPart }) 
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 function authorizationTitle(part: EveAuthorizationPart): string {
   if (part.state === "required") {
-    return `Connect ${part.displayName}`;
+    return `Connect ${part.displayName}`
   }
   if (part.outcome === "authorized") {
-    return `${part.displayName} connected`;
+    return `${part.displayName} connected`
   }
-  return `${part.displayName} authorization ${formatAuthorizationOutcome(part.outcome)}`;
+  return `${part.displayName} authorization ${formatAuthorizationOutcome(part.outcome)}`
 }
 
 function authorizationDescription(part: EveAuthorizationPart): string {
   if (part.state === "required") {
-    return part.description;
+    return part.description
   }
   if (part.outcome === "authorized") {
-    return `${part.displayName} connected.`;
+    return `${part.displayName} connected.`
   }
-  const tail = part.reason !== undefined ? ` (${part.reason})` : "";
-  return `${part.displayName} authorization ${formatAuthorizationOutcome(part.outcome)}${tail}.`;
+  const tail = part.reason !== undefined ? ` (${part.reason})` : ""
+  return `${part.displayName} authorization ${formatAuthorizationOutcome(part.outcome)}${tail}.`
 }
 
 function formatAuthorizationOutcome(outcome: NonNullable<EveAuthorizationPart["outcome"]>): string {
   switch (outcome) {
     case "authorized":
-      return "authorized";
+      return "authorized"
     case "declined":
-      return "declined";
+      return "declined"
     case "failed":
-      return "failed";
+      return "failed"
     case "timed-out":
-      return "timed out";
+      return "timed out"
   }
 }
 
@@ -213,19 +207,19 @@ function InputRequestActions({
   onInputResponses,
   part,
 }: {
-  readonly canRespond: boolean;
-  readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>;
-  readonly part: EveDynamicToolPart;
+  readonly canRespond: boolean
+  readonly onInputResponses: (responses: readonly AgentInputResponse[]) => void | Promise<void>
+  readonly part: EveDynamicToolPart
 }) {
-  const inputRequest = part.toolMetadata?.eve?.inputRequest;
+  const inputRequest = part.toolMetadata?.eve?.inputRequest
   if (!inputRequest) {
-    return null;
+    return null
   }
 
-  const inputResponse = part.toolMetadata?.eve?.inputResponse;
+  const inputResponse = part.toolMetadata?.eve?.inputResponse
   const selectedOption = inputRequest.options?.find(
     (option) => option.id === inputResponse?.optionId,
-  );
+  )
 
   return (
     <div className="space-y-3 rounded-xl border border-warning/25 bg-warning/5 p-3">
@@ -246,7 +240,7 @@ function InputRequestActions({
                     optionId: option.id,
                     requestId: inputRequest.requestId,
                   },
-                ]);
+                ])
               }}
               size="sm"
               type="button"
@@ -258,16 +252,16 @@ function InputRequestActions({
         </div>
       )}
     </div>
-  );
+  )
 }
 
 function partKey(part: EveMessagePart, index: number): string {
   switch (part.type) {
     case "authorization":
-      return `authorization:${part.turnId}:${part.stepIndex}:${part.name}`;
+      return `authorization:${part.turnId}:${part.stepIndex}:${part.name}`
     case "dynamic-tool":
-      return part.toolCallId;
+      return part.toolCallId
     default:
-      return `${part.type}:${index}`;
+      return `${part.type}:${index}`
   }
 }

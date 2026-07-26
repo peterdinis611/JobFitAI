@@ -74,7 +74,13 @@ export function AuthHeroIllustration({ className }: { className?: string }) {
         animate={{ scale: [1, 1.12, 1] }}
         transition={{ duration: 2, repeat: Infinity }}
       />
-      <text x="220" y="185" textAnchor="middle" className="fill-teal-700 text-[11px] font-bold" fontSize="11">
+      <text
+        x="220"
+        y="185"
+        textAnchor="middle"
+        className="fill-teal-700 text-[11px] font-bold"
+        fontSize="11"
+      >
         AI
       </text>
     </svg>
@@ -85,9 +91,32 @@ export function EmptySearchIllustration({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 200 160" className={cn("h-36 w-36", className)} aria-hidden>
       <motion.g animate={{ y: [0, -5, 0] }} transition={{ duration: 3, repeat: Infinity }}>
-        <rect x="50" y="40" width="80" height="64" rx="10" className="fill-muted stroke-border" strokeWidth="1.5" />
-        <circle cx="90" cy="72" r="18" className="stroke-teal-600 fill-teal-500/10" strokeWidth="2" fill="none" />
-        <line x1="102" y1="84" x2="114" y2="96" className="stroke-teal-600" strokeWidth="2.5" strokeLinecap="round" />
+        <rect
+          x="50"
+          y="40"
+          width="80"
+          height="64"
+          rx="10"
+          className="fill-muted stroke-border"
+          strokeWidth="1.5"
+        />
+        <circle
+          cx="90"
+          cy="72"
+          r="18"
+          className="stroke-teal-600 fill-teal-500/10"
+          strokeWidth="2"
+          fill="none"
+        />
+        <line
+          x1="102"
+          y1="84"
+          x2="114"
+          y2="96"
+          className="stroke-teal-600"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
       </motion.g>
       <motion.path
         d="M30 120 Q100 100 170 120"
@@ -105,7 +134,15 @@ export function EmptySearchIllustration({ className }: { className?: string }) {
 export function AnalyzingIllustration({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 200 160" className={cn("h-36 w-36", className)} aria-hidden>
-      <rect x="40" y="30" width="120" height="90" rx="12" className="fill-muted/80 stroke-border" strokeWidth="1.5" />
+      <rect
+        x="40"
+        y="30"
+        width="120"
+        height="90"
+        rx="12"
+        className="fill-muted/80 stroke-border"
+        strokeWidth="1.5"
+      />
       {[0, 1, 2, 3].map((i) => (
         <motion.rect
           key={i}
@@ -169,7 +206,13 @@ export function UploadIllustration({ className }: { className?: string }) {
   )
 }
 
-export function MatchPulseIllustration({ score, className }: { score: number; className?: string }) {
+export function MatchPulseIllustration({
+  score,
+  className,
+}: {
+  score: number
+  className?: string
+}) {
   const color =
     score >= 85 ? "#10b981" : score >= 70 ? "#0d9488" : score >= 50 ? "#d97706" : "#e11d48"
 

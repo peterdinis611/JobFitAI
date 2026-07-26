@@ -1,12 +1,12 @@
 "use client"
 
-import Link from "next/link"
-import { motion, type Variants } from "motion/react"
 import { ArrowLeft, Home, Sparkles } from "lucide-react"
+import { motion, type Variants } from "motion/react"
+import Link from "next/link"
 import { RobotLogo } from "@/components/brand/robot-logo"
 import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
-import { Button } from "@/components/ui/button"
 import { NotFoundIllustration } from "@/components/not-found/not-found-illustration"
+import { Button } from "@/components/ui/button"
 
 const digitVariants: Variants = {
   hidden: { opacity: 0, y: 28, rotateX: -40 },

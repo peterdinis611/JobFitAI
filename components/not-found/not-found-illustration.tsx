@@ -123,11 +123,33 @@ export function NotFoundIllustration({ className }: { className?: string }) {
         animate={{ x: [0, 6, 0], y: [0, -3, 0] }}
         transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
       >
-        <rect x="72" y="168" width="44" height="52" rx="10" className="fill-primary/10 stroke-primary/30" strokeWidth="1.5" />
+        <rect
+          x="72"
+          y="168"
+          width="44"
+          height="52"
+          rx="10"
+          className="fill-primary/10 stroke-primary/30"
+          strokeWidth="1.5"
+        />
         <circle cx="94" cy="186" r="5" className="fill-primary/25" />
         <circle cx="106" cy="186" r="5" className="fill-primary/25" />
-        <path d="M88 202 Q94 208 100 202" className="stroke-primary/40" strokeWidth="1.5" strokeLinecap="round" fill="none" />
-        <line x1="94" y1="168" x2="94" y2="158" className="stroke-primary" strokeWidth="1.5" strokeLinecap="round" />
+        <path
+          d="M88 202 Q94 208 100 202"
+          className="stroke-primary/40"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <line
+          x1="94"
+          y1="168"
+          x2="94"
+          y2="158"
+          className="stroke-primary"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+        />
         <motion.circle
           cx="94"
           cy="154"
@@ -144,8 +166,23 @@ export function NotFoundIllustration({ className }: { className?: string }) {
         style={{ originX: "318px", originY: "198px" }}
       >
         <circle cx="318" cy="198" r="22" className="fill-card stroke-border" strokeWidth="1.5" />
-        <circle cx="318" cy="198" r="14" className="stroke-primary/50" strokeWidth="2" fill="none" />
-        <line x1="334" y1="214" x2="348" y2="228" className="stroke-border" strokeWidth="3" strokeLinecap="round" />
+        <circle
+          cx="318"
+          cy="198"
+          r="14"
+          className="stroke-primary/50"
+          strokeWidth="2"
+          fill="none"
+        />
+        <line
+          x1="334"
+          y1="214"
+          x2="348"
+          y2="228"
+          className="stroke-border"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
       </motion.g>
 
       <motion.path

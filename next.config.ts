@@ -1,5 +1,5 @@
-import type { NextConfig } from "next";
-import { withEve } from "eve/next";
+import { withEve } from "eve/next"
+import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   async redirects() {
@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
         destination: "/docs/index.html",
         permanent: false,
       },
-    ];
+    ]
   },
   async rewrites() {
     return {
@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
           destination: "/docs/:path/index.html",
         },
       ],
-    };
+    }
   },
-};
+}
 
-export default withEve(nextConfig);
+export default withEve(nextConfig)

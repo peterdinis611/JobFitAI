@@ -1,15 +1,11 @@
-import { mutation, query } from "./_generated/server"
 import { v } from "convex/values"
+import { mutation, query } from "./_generated/server"
 import { requireUserId } from "./lib/auth"
 
 function extractJobTitleFromText(text: string): string | undefined {
   const lines = text
     .split(/\r?\n/)
-    .map((l) =>
-      l
-        .replace(/^[\s\p{Emoji_Presentation}\p{Extended_Pictographic}•\-*]+/u, "")
-        .trim(),
-    )
+    .map((l) => l.replace(/^[\s\p{Emoji_Presentation}\p{Extended_Pictographic}•\-*]+/u, "").trim())
     .filter(Boolean)
   if (lines.length === 0) return undefined
 
@@ -57,8 +53,7 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const userId = await requireUserId(ctx)
     const title =
-      args.title ??
-      (args.source === "text" ? extractJobTitleFromText(args.cleanedText) : undefined)
+      args.title ?? (args.source === "text" ? extractJobTitleFromText(args.cleanedText) : undefined)
     return await ctx.db.insert("jobPostings", {
       userId,
       source: args.source,
@@ -94,8 +89,7 @@ export const updateFromFetch = mutation({
   handler: async (ctx, args) => {
     const job = await ctx.db.get(args.jobPostingId)
     if (!job || job.userId !== args.userId) throw new Error("Job posting not found")
-    const title =
-      args.title ?? extractJobTitleFromText(args.cleanedText) ?? job.title
+    const title = args.title ?? extractJobTitleFromText(args.cleanedText) ?? job.title
     await ctx.db.patch(args.jobPostingId, {
       cleanedText: args.cleanedText,
       title,

@@ -1,12 +1,9 @@
-import { defineTool } from "eve/tools"
 import { generateObject } from "ai"
 import { Effect } from "effect"
-import {
-  coverLetterInputSchema,
-  coverLetterOutputSchema,
-} from "../../lib/schemas/tools"
+import { defineTool } from "eve/tools"
 import { runEffect } from "#lib/effect"
 import { agentModel } from "#lib/model"
+import { coverLetterInputSchema, coverLetterOutputSchema } from "../../lib/schemas/tools"
 
 export default defineTool({
   description: "Draft a tailored cover letter from resume + job analysis context.",

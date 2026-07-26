@@ -29,12 +29,7 @@ export function AnimatedProgress({
   }, [pct, spring])
 
   return (
-    <div
-      className={cn(
-        "relative h-2 w-full overflow-hidden rounded-full bg-muted",
-        className,
-      )}
-    >
+    <div className={cn("relative h-2 w-full overflow-hidden rounded-full bg-muted", className)}>
       <motion.div
         className={cn(
           "h-full rounded-full",
@@ -66,8 +61,7 @@ export function MatchScoreRing({
     spring.set(pct)
   }, [pct, spring])
 
-  const stroke =
-    pct >= 85 ? "#10b981" : pct >= 70 ? "#0d9488" : pct >= 50 ? "#d97706" : "#e11d48"
+  const stroke = pct >= 85 ? "#10b981" : pct >= 70 ? "#0d9488" : pct >= 50 ? "#d97706" : "#e11d48"
 
   return (
     <div className={cn("relative inline-flex items-center justify-center", className)}>

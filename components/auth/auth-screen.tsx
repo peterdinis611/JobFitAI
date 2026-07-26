@@ -1,12 +1,12 @@
 "use client"
 
-import { useState } from "react"
 import { useAuthActions } from "@convex-dev/auth/react"
+import { AlertCircle, Loader2, Lock, Mail } from "lucide-react"
 import { motion } from "motion/react"
-import { Loader2, Lock, Mail, AlertCircle } from "lucide-react"
+import { useState } from "react"
 import { toast } from "sonner"
-import { AuthHeroIllustration } from "@/components/illustrations/jobfit-illustrations"
 import { RobotLogoMark } from "@/components/brand/robot-logo"
+import { AuthHeroIllustration } from "@/components/illustrations/jobfit-illustrations"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -26,7 +26,10 @@ function friendlyAuthError(error: unknown): string {
   if (raw.includes("InvalidAccountId") || raw.includes("Invalid credentials")) {
     return "Incorrect email or password."
   }
-  const cleaned = raw.replace(/\[CONVEX[^\]]*\]\s*/g, "").split("\n")[0]?.trim()
+  const cleaned = raw
+    .replace(/\[CONVEX[^\]]*\]\s*/g, "")
+    .split("\n")[0]
+    ?.trim()
   return cleaned && cleaned.length < 120 ? cleaned : "Authentication failed. Please try again."
 }
 

@@ -1,25 +1,19 @@
 "use client"
 
-import Link from "next/link"
-import { useParams } from "next/navigation"
 import { useQuery } from "convex/react"
-import {
-  PolarAngleAxis,
-  PolarGrid,
-  Radar,
-  RadarChart,
-  ResponsiveContainer,
-} from "recharts"
 import { AlertTriangle, ArrowLeft, CheckCircle2, Lightbulb } from "lucide-react"
 import { motion } from "motion/react"
-import { api } from "@/convex/_generated/api"
-import { ExportReportButton } from "@/components/analyses/export-report-button"
+import Link from "next/link"
+import { useParams } from "next/navigation"
+import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } from "recharts"
 import { AnalysisActionsPanel } from "@/components/analyses/analysis-actions-panel"
 import { RescoreDeltaBanner } from "@/components/analyses/artifact-views"
+import { ExportReportButton } from "@/components/analyses/export-report-button"
+import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
 import { AnimatedProgress, MatchScoreRing } from "@/components/ui/animated-progress"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
+import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
 
 export default function AnalysisDetailPage() {

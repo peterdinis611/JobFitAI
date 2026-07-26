@@ -28,7 +28,11 @@ const STEP_ORDER = [
 ]
 
 function mapToolState(state: string): PipelineStepStatus {
-  if (state === "input-streaming" || state === "input-available" || state === "approval-requested") {
+  if (
+    state === "input-streaming" ||
+    state === "input-available" ||
+    state === "approval-requested"
+  ) {
     return "running"
   }
   if (state === "output-available" || state === "approval-responded") {

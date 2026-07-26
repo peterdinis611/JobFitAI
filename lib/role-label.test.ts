@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest"
-import {
-  matchBadgeClass,
-  matchToneClass,
-  roleTitle,
-  seniorityLabel,
-} from "./role-label"
+import { matchBadgeClass, matchToneClass, roleTitle, seniorityLabel } from "./role-label"
 
 describe("roleTitle", () => {
   it("prefers explicit job title", () => {
@@ -34,9 +29,9 @@ describe("roleTitle", () => {
   })
 
   it("uses matching skills when nothing else works", () => {
-    expect(
-      roleTitle(null, { matchingSkills: ["React", "TypeScript", "Go"] }),
-    ).toBe("React · TypeScript role")
+    expect(roleTitle(null, { matchingSkills: ["React", "TypeScript", "Go"] })).toBe(
+      "React · TypeScript role",
+    )
   })
 
   it("returns Untitled role as last resort", () => {

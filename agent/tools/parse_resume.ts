@@ -1,19 +1,15 @@
-import { defineTool } from "eve/tools"
 import { Effect } from "effect"
-import { api } from "../../convex/_generated/api.js"
-import {
-  parseResumeInputSchema,
-  parseResumeOutputSchema,
-} from "../../lib/schemas/tools"
+import { defineTool } from "eve/tools"
 import { convexMutation, convexQuery } from "#lib/convex"
-import { runEffect, parseTimeout } from "#lib/effect"
-import { extractTextFromBuffer, wordCount } from "#lib/parse-document"
+import { parseTimeout, runEffect } from "#lib/effect"
 import { ConvexError } from "#lib/errors"
+import { extractTextFromBuffer, wordCount } from "#lib/parse-document"
+import { api } from "../../convex/_generated/api.js"
 import type { Id } from "../../convex/_generated/dataModel"
+import { parseResumeInputSchema, parseResumeOutputSchema } from "../../lib/schemas/tools"
 
 export default defineTool({
-  description:
-    "Load a resume from Convex storage and extract plain text from PDF or DOCX.",
+  description: "Load a resume from Convex storage and extract plain text from PDF or DOCX.",
   inputSchema: parseResumeInputSchema,
   async execute({ userId, resumeId }) {
     const program = Effect.gen(function* () {

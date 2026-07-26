@@ -22,10 +22,7 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "node",
-          include: [
-            "lib/**/*.test.ts",
-            "agent/**/*.test.ts",
-          ],
+          include: ["lib/**/*.test.ts", "agent/**/*.test.ts"],
           exclude: ["node_modules", "website", ".next", "public"],
         },
       },

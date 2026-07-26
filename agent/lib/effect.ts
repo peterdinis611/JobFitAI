@@ -1,4 +1,4 @@
-import { Effect, Duration, Schedule } from "effect"
+import { Duration, type Effect, Schedule } from "effect"
 import { runPromise } from "effect/Effect"
 
 export const defaultRetry = Schedule.intersect(

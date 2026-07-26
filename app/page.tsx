@@ -1,7 +1,5 @@
 "use client"
 
-import Link from "next/link"
-import { useMemo, useState } from "react"
 import { useQuery } from "convex/react"
 import {
   ArrowRight,
@@ -15,9 +13,8 @@ import {
   TrendingUp,
 } from "lucide-react"
 import { motion } from "motion/react"
-import { api } from "@/convex/_generated/api"
-import type { Id } from "@/convex/_generated/dataModel"
-import { useJobFitUser } from "@/hooks/use-jobfit-user"
+import Link from "next/link"
+import { useMemo, useState } from "react"
 import {
   DashboardEmptyHistory,
   DashboardGettingStarted,
@@ -28,12 +25,10 @@ import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/page-header"
 import { Skeleton } from "@/components/ui/skeleton"
 import { StatCard } from "@/components/ui/stat-card"
-import {
-  matchBadgeClass,
-  matchToneClass,
-  roleTitle,
-  seniorityLabel,
-} from "@/lib/role-label"
+import { api } from "@/convex/_generated/api"
+import type { Id } from "@/convex/_generated/dataModel"
+import { useJobFitUser } from "@/hooks/use-jobfit-user"
+import { matchBadgeClass, matchToneClass, roleTitle, seniorityLabel } from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
 const filters = [
@@ -92,11 +87,7 @@ export default function DashboardPage() {
           title="Analysis history"
           description="Track how well your resume matches each job posting over time."
         />
-        {hasResume ? (
-          <DashboardEmptyHistory />
-        ) : (
-          <DashboardGettingStarted hasResume={false} />
-        )}
+        {hasResume ? <DashboardEmptyHistory /> : <DashboardGettingStarted hasResume={false} />}
       </div>
     )
   }

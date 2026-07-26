@@ -1,12 +1,9 @@
-import { defineTool } from "eve/tools"
 import { generateObject } from "ai"
 import { Effect } from "effect"
-import {
-  learningPlanInputSchema,
-  learningPlanOutputSchema,
-} from "../../lib/schemas/tools"
+import { defineTool } from "eve/tools"
 import { runEffect } from "#lib/effect"
 import { agentModel } from "#lib/model"
+import { learningPlanInputSchema, learningPlanOutputSchema } from "../../lib/schemas/tools"
 
 export default defineTool({
   description:

@@ -1,12 +1,9 @@
-import { defineTool } from "eve/tools"
 import { generateObject } from "ai"
 import { Effect } from "effect"
-import {
-  scoreMatchInputSchema,
-  scoreMatchOutputSchema,
-} from "../../lib/schemas/tools"
+import { defineTool } from "eve/tools"
 import { runEffect } from "#lib/effect"
 import { agentModel } from "#lib/model"
+import { scoreMatchInputSchema, scoreMatchOutputSchema } from "../../lib/schemas/tools"
 
 const SKILL_HINTS = [
   "typescript",
@@ -81,7 +78,8 @@ Return structured scoring. Be honest about gaps. seniorityFit: under | match | o
             matchingSkills: heuristic.matching,
             missingSkills: heuristic.missing,
             seniorityFit: "match",
-            redFlags: heuristic.missing.length > 5 ? ["Several required skills appear missing"] : [],
+            redFlags:
+              heuristic.missing.length > 5 ? ["Several required skills appear missing"] : [],
             recommendations: [
               "Tailor your summary to mirror the job title and top requirements.",
               "Add measurable outcomes for projects matching the posting.",

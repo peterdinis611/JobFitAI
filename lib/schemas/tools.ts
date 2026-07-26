@@ -23,9 +23,13 @@ export const parseResumeOutputSchema = z.object({
 })
 
 export const fetchJobPostingInputSchema = z.object({
-  url: z.string().url().max(2048).refine((u) => u.startsWith("https://"), {
-    message: "Only HTTPS URLs are allowed",
-  }),
+  url: z
+    .string()
+    .url()
+    .max(2048)
+    .refine((u) => u.startsWith("https://"), {
+      message: "Only HTTPS URLs are allowed",
+    }),
 })
 
 export const fetchJobPostingOutputSchema = z.object({

@@ -7,9 +7,7 @@ export function extractJobTitle(text: string): string | undefined {
 
   if (lines.length === 0) return undefined
 
-  const labeled = lines.find((l) =>
-    /^(job title|role|position|title)\s*[:–-]\s*/i.test(l),
-  )
+  const labeled = lines.find((l) => /^(job title|role|position|title)\s*[:–-]\s*/i.test(l))
   if (labeled) {
     const title = labeled.replace(/^(job title|role|position|title)\s*[:–-]\s*/i, "").trim()
     if (title.length >= 3 && title.length <= 120) return title

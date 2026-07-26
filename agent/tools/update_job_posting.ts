@@ -1,14 +1,11 @@
-import { defineTool } from "eve/tools"
 import { Effect } from "effect"
-import { api } from "../../convex/_generated/api.js"
-import {
-  updateJobPostingInputSchema,
-  updateJobPostingOutputSchema,
-} from "../../lib/schemas/tools"
+import { defineTool } from "eve/tools"
 import { convexMutation } from "#lib/convex"
 import { runEffect } from "#lib/effect"
 import { ConvexError } from "#lib/errors"
+import { api } from "../../convex/_generated/api.js"
 import type { Id } from "../../convex/_generated/dataModel"
+import { updateJobPostingInputSchema, updateJobPostingOutputSchema } from "../../lib/schemas/tools"
 
 export default defineTool({
   description:

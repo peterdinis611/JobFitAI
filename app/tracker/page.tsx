@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useMutation, useQuery } from "convex/react"
 import {
   Briefcase,
@@ -11,15 +10,9 @@ import {
   Kanban,
   Sparkles,
 } from "lucide-react"
-import {
-  type DragEvent,
-  useCallback,
-  useRef,
-  useState,
-} from "react"
+import Link from "next/link"
+import { type DragEvent, useCallback, useRef, useState } from "react"
 import { toast } from "sonner"
-import { api } from "@/convex/_generated/api"
-import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { Button } from "@/components/ui/button"
 import { PageHeader } from "@/components/ui/page-header"
 import {
@@ -29,6 +22,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { api } from "@/convex/_generated/api"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { roleTitle } from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
@@ -288,9 +283,7 @@ function DropColumn({
                 : "border-border/80 text-muted-foreground",
             )}
           >
-            <p className="text-[12px]">
-              {isOver && isDragging ? "Drop here" : "No roles here"}
-            </p>
+            <p className="text-[12px]">{isOver && isDragging ? "Drop here" : "No roles here"}</p>
           </div>
         ) : isOver && isDragging ? (
           <div className="rounded-xl border border-dashed border-primary/40 bg-primary/5 px-3 py-3 text-center text-[11px] font-medium text-primary">
@@ -357,8 +350,7 @@ export default function TrackerPage() {
 
   async function handleDrop(status: Status, e: DragEvent) {
     e.preventDefault()
-    const raw =
-      e.dataTransfer.getData(DRAG_MIME) || e.dataTransfer.getData("text/plain")
+    const raw = e.dataTransfer.getData(DRAG_MIME) || e.dataTransfer.getData("text/plain")
     const applicationId = raw as Id<"applications">
     const from = dragFromRef.current
     handleDragEnd()

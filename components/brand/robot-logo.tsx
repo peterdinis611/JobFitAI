@@ -12,21 +12,35 @@ type RobotLogoProps = {
   inverted?: boolean
 }
 
-export function RobotLogo({ className, size = 32, animated = true, inverted = false }: RobotLogoProps) {
+export function RobotLogo({
+  className,
+  size = 32,
+  animated = true,
+  inverted = false,
+}: RobotLogoProps) {
   const stroke = inverted ? "stroke-primary-foreground" : "stroke-primary"
   const fill = inverted ? "fill-primary-foreground" : "fill-primary"
   const fillSoft = inverted ? "fill-primary-foreground/15" : "fill-primary/15"
   const fillBody = inverted ? "fill-primary-foreground/10" : "fill-primary/10"
   const eyeBlink = animated
-    ? { scaleY: [1, 1, 0.12, 1, 1], transition: { duration: 3.2, repeat: Infinity, times: [0, 0.88, 0.92, 0.96, 1] } }
+    ? {
+        scaleY: [1, 1, 0.12, 1, 1],
+        transition: { duration: 3.2, repeat: Infinity, times: [0, 0.88, 0.92, 0.96, 1] },
+      }
     : undefined
 
   const antennaWiggle = animated
-    ? { rotate: [-8, 8, -8], transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" as const } }
+    ? {
+        rotate: [-8, 8, -8],
+        transition: { duration: 2.4, repeat: Infinity, ease: "easeInOut" as const },
+      }
     : undefined
 
   const bodyBob = animated
-    ? { y: [0, -1.5, 0], transition: { duration: 2.8, repeat: Infinity, ease: "easeInOut" as const } }
+    ? {
+        y: [0, -1.5, 0],
+        transition: { duration: 2.8, repeat: Infinity, ease: "easeInOut" as const },
+      }
     : undefined
 
   return (
@@ -40,11 +54,16 @@ export function RobotLogo({ className, size = 32, animated = true, inverted = fa
       aria-hidden
     >
       {/* Antenna */}
-      <motion.g
-        style={{ originX: "16px", originY: "6px" }}
-        animate={antennaWiggle}
-      >
-        <line x1="16" y1="8" x2="16" y2="3" className={stroke} strokeWidth="1.75" strokeLinecap="round" />
+      <motion.g style={{ originX: "16px", originY: "6px" }} animate={antennaWiggle}>
+        <line
+          x1="16"
+          y1="8"
+          x2="16"
+          y2="3"
+          className={stroke}
+          strokeWidth="1.75"
+          strokeLinecap="round"
+        />
         <motion.circle
           cx="16"
           cy="2.5"
@@ -125,14 +144,30 @@ export function RobotLogo({ className, size = 32, animated = true, inverted = fa
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
           style={{ originX: "7px", originY: "25px" }}
         >
-          <line x1="7" y1="24" x2="4" y2="27" className={stroke} strokeWidth="1.75" strokeLinecap="round" />
+          <line
+            x1="7"
+            y1="24"
+            x2="4"
+            y2="27"
+            className={stroke}
+            strokeWidth="1.75"
+            strokeLinecap="round"
+          />
         </motion.g>
         <motion.g
           animate={animated ? { rotate: [6, -6, 6] } : undefined}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
           style={{ originX: "25px", originY: "25px" }}
         >
-          <line x1="25" y1="24" x2="28" y2="27" className={stroke} strokeWidth="1.75" strokeLinecap="round" />
+          <line
+            x1="25"
+            y1="24"
+            x2="28"
+            y2="27"
+            className={stroke}
+            strokeWidth="1.75"
+            strokeLinecap="round"
+          />
         </motion.g>
       </motion.g>
     </svg>

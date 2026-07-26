@@ -1,26 +1,27 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
 import { useMutation, useQuery } from "convex/react"
 import { Check, FileUp, Star } from "lucide-react"
-import { motion, AnimatePresence } from "motion/react"
+import { AnimatePresence, motion } from "motion/react"
+import { useCallback, useRef, useState } from "react"
 import { toast } from "sonner"
-import { api } from "@/convex/_generated/api"
-import { useJobFitUser } from "@/hooks/use-jobfit-user"
-import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
 import { DashboardGettingStarted } from "@/components/dashboard/dashboard-states"
-import { ResumePreviewDialog } from "@/components/resumes/resume-preview-dialog"
 import { UploadIllustration } from "@/components/illustrations/jobfit-illustrations"
-import { wordCount } from "@/lib/extract-job-title"
+import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
+import { ResumePreviewDialog } from "@/components/resumes/resume-preview-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import { cn } from "@/lib/utils"
+import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { useJobFitUser } from "@/hooks/use-jobfit-user"
+import { wordCount } from "@/lib/extract-job-title"
+import { cn } from "@/lib/utils"
 
 const MAX_BYTES = 10 * 1024 * 1024
-const ACCEPT = ".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+const ACCEPT =
+  ".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
 export default function ResumesPage() {
   const { ready } = useJobFitUser()
@@ -163,7 +164,10 @@ export default function ResumesPage() {
         <StaggerList className="grid gap-4 sm:grid-cols-2">
           {resumes?.map((resume: Doc<"resumes">) => (
             <StaggerItem key={resume._id}>
-              <motion.div whileHover={{ y: -3 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+              <motion.div
+                whileHover={{ y: -3 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              >
                 <Card
                   className={cn(
                     "transition-shadow hover:shadow-md",

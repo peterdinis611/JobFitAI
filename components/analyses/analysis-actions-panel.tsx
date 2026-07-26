@@ -1,22 +1,17 @@
 "use client"
 
-import Link from "next/link"
 import { useMutation, useQuery } from "convex/react"
 import { useEveAgent } from "eve/react"
-import {
-  BookOpen,
-  FileText,
-  Kanban,
-  Loader2,
-  PenLine,
-  RefreshCw,
-  Sparkles,
-} from "lucide-react"
+import { BookOpen, FileText, Kanban, Loader2, PenLine, RefreshCw, Sparkles } from "lucide-react"
+import Link from "next/link"
 import { useRef, useState } from "react"
 import { toast } from "sonner"
-import { api } from "@/convex/_generated/api"
-import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { AgentMessage } from "@/app/_components/agent-message"
+import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation"
 import {
   CoverLetterView,
   LearningPlanView,
@@ -24,12 +19,9 @@ import {
 } from "@/components/analyses/artifact-views"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { api } from "@/convex/_generated/api"
+import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
 
@@ -90,11 +82,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
     agent.status === "submitted" ||
     agent.status === "streaming"
 
-  async function runSkill(
-    skill: string,
-    steps: string,
-    tab: string,
-  ) {
+  async function runSkill(skill: string, steps: string, tab: string) {
     if (!userId) return
     setRunning(skill)
     setActiveTab(tab)
@@ -149,7 +137,8 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
         message: formatAgentSkillMessage({
           skill: "rescore-after-edit",
           context,
-          steps: "parse_resume → load_job_posting → score_match → save_analysis (include previousAnalysisId).",
+          steps:
+            "parse_resume → load_job_posting → score_match → save_analysis (include previousAnalysisId).",
         }),
       })
       toast.success("Re-score started — check the stream for the new analysis ID")
@@ -271,7 +260,12 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
               </Link>
             </Button>
           ) : (
-            <Button size="sm" variant="secondary" disabled={isBusy} onClick={() => void saveToTracker()}>
+            <Button
+              size="sm"
+              variant="secondary"
+              disabled={isBusy}
+              onClick={() => void saveToTracker()}
+            >
               <Kanban className="size-4" /> Save to tracker
             </Button>
           )}
@@ -291,7 +285,13 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
         <TabsContent value="tailored_bullets" className="mt-4">
           {tailoredContent?.bullets?.length ? (
             <TailoredBulletsView
-              bullets={tailoredContent.bullets as { original: string; rewritten: string; rationale?: string }[]}
+              bullets={
+                tailoredContent.bullets as {
+                  original: string
+                  rewritten: string
+                  rationale?: string
+                }[]
+              }
             />
           ) : (
             <EmptyArtifact hint="Click Tailor bullets to rewrite 3–5 resume bullets for this role" />
@@ -333,8 +333,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
                         key={message.id}
                         canRespond={!isBusy}
                         isStreaming={
-                          agent.status === "streaming" &&
-                          index === agent.data.messages.length - 1
+                          agent.status === "streaming" && index === agent.data.messages.length - 1
                         }
                         message={message}
                         onInputResponses={(inputResponses) => agent.send({ inputResponses })}

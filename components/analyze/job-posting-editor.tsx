@@ -1,17 +1,8 @@
 "use client"
 
-import { useEditor, EditorContent } from "@tiptap/react"
+import { EditorContent, useEditor } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit"
-import {
-  Bold,
-  Italic,
-  List,
-  ListOrdered,
-  Heading2,
-  Undo2,
-  Redo2,
-  Eraser,
-} from "lucide-react"
+import { Bold, Eraser, Heading2, Italic, List, ListOrdered, Redo2, Undo2 } from "lucide-react"
 import { useEffect } from "react"
 import { cn } from "@/lib/utils"
 
