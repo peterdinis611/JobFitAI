@@ -194,10 +194,10 @@ export default function AnalyzePage() {
 
   if (!activeResume && resumes?.length === 0) {
     return (
-      <div className="mx-auto max-w-3xl space-y-8">
+      <div className="mx-auto max-w-3xl space-y-6">
         <PageHeader
-          title="Analyze match"
-          description="Compare your active CV against a job posting and get AI-powered insights."
+          title="Analyze"
+          description="Match your CV to a job posting. Upload a resume to get started."
         />
         <DashboardGettingStarted hasResume={false} />
       </div>
@@ -205,14 +205,14 @@ export default function AnalyzePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
-        title="Analyze match"
-        description="Compare your active CV against a job posting and get AI-powered insights."
+        title="Analyze"
+        description="Paste a job or drop a URL — JobFit scores fit and saves a report to History."
       />
 
-      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <aside className="w-full shrink-0 lg:w-[360px]">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
+        <aside className="w-full shrink-0 lg:sticky lg:top-4 lg:w-[340px]">
           <AnalyzeSetupPanel
             activeResumeName={activeResume?.fileName}
             hasResume={Boolean(activeResume)}

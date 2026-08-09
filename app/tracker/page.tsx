@@ -17,6 +17,7 @@ import Link from "next/link"
 import { type DragEvent, useCallback, useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
+import { MetricStrip } from "@/components/ui/metric-strip"
 import { PageHeader } from "@/components/ui/page-header"
 import {
   Select,
@@ -404,10 +405,10 @@ function DropColumn({
   return (
     <section
       className={cn(
-        "flex min-h-[280px] flex-col rounded-2xl border bg-muted/20 transition-[border-color,background-color,box-shadow]",
+        "mac-window flex min-h-[280px] flex-col overflow-hidden transition-[border-color,background-color,box-shadow]",
         isOver && isDragging
           ? "border-primary bg-primary/8 shadow-[inset_0_0_0_1px] shadow-primary/30"
-          : "border-border",
+          : "",
       )}
       onDragEnter={(e) => {
         e.preventDefault()
@@ -425,7 +426,7 @@ function DropColumn({
       }}
       onDrop={(e) => onDrop(column.id, e)}
     >
-      <header className="flex items-center justify-between gap-2 border-b border-border/70 px-3.5 py-3">
+      <header className="flex items-center justify-between gap-2 border-b border-border bg-[var(--mac-titlebar)] px-3.5 py-2.5">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className={cn("size-2 shrink-0 rounded-full", column.accent)} />
@@ -433,7 +434,7 @@ function DropColumn({
           </div>
           <p className="mt-0.5 pl-4 text-[11px] text-muted-foreground">{column.hint}</p>
         </div>
-        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-card text-[11px] font-medium tabular-nums text-muted-foreground shadow-sm">
+        <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[11px] font-medium tabular-nums text-muted-foreground">
           {items.length}
         </span>
       </header>
@@ -601,11 +602,16 @@ export default function TrackerPage() {
   const total = rows?.length ?? 0
   const isDragging = draggingId !== null
 
+  const overdueCount =
+    dueFollowUps?.filter(
+      (r) => r.application.followUpAt !== undefined && r.application.followUpAt < Date.now(),
+    ).length ?? 0
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageHeader
-        title="Application tracker"
-        description="Drag cards between columns — add notes, or remove roles you no longer track."
+        title="Tracker"
+        description="Drag roles across the pipeline — notes and follow-ups stay on each card."
         action={
           !isEmpty && rows !== undefined ? (
             <Button asChild size="sm">
@@ -619,33 +625,26 @@ export default function TrackerPage() {
       />
 
       {rows === undefined ? (
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {columns.map((col) => (
             <div key={col.id} className="h-56 animate-pulse rounded-2xl bg-muted" />
           ))}
         </div>
       ) : isEmpty ? (
-        <section className="mac-window">
-          <div className="mac-titlebar">
-            <div className="mac-traffic-lights" aria-hidden>
-              <span />
-              <span />
-              <span />
-            </div>
-            <span className="flex-1 text-center text-xs font-medium text-muted-foreground">
-              Pipeline
-            </span>
-            <span className="w-[52px]" aria-hidden />
+        <section className="mac-window overflow-hidden">
+          <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-3">
+            <h2 className="text-[15px] font-semibold tracking-tight">Pipeline</h2>
+            <p className="text-xs text-muted-foreground">Saved → Applied → Interview → Offer</p>
           </div>
-          <div className="flex flex-col items-center gap-4 px-6 py-14 text-center">
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-muted">
-              <Kanban className="size-6 text-muted-foreground" />
+          <div className="flex flex-col items-center gap-4 px-6 py-12 text-center">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-muted">
+              <Kanban className="size-5 text-muted-foreground" />
             </div>
-            <div className="max-w-md space-y-2">
-              <p className="text-lg font-semibold tracking-tight">No applications yet</p>
+            <div className="max-w-md space-y-1.5">
+              <p className="text-[15px] font-semibold tracking-tight">No applications yet</p>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                Run an analysis — successful reports land under Saved. Then drag them across Applied
-                → Interview → Offer (or Rejected).
+                Successful analyses land under Saved. Drag them through Applied → Interview → Offer
+                (or Rejected).
               </p>
             </div>
             <div className="flex flex-wrap justify-center gap-2">
@@ -660,10 +659,21 @@ export default function TrackerPage() {
         </section>
       ) : (
         <div className="space-y-4">
-          <p className="text-xs text-muted-foreground">
-            {total} tracked {total === 1 ? "role" : "roles"}
-            {isDragging ? " · Drop on a column to update status" : " · Drag cards to move"}
-          </p>
+          <MetricStrip
+            items={[
+              { label: "Tracked", value: String(total) },
+              {
+                label: "Active",
+                value: String(byStatus.applied.length + byStatus.interview.length),
+                tone: "primary",
+              },
+              {
+                label: "Follow-ups",
+                value: String(dueFollowUps?.length ?? 0),
+                tone: overdueCount > 0 ? "destructive" : "warning",
+              },
+            ]}
+          />
 
           {dueFollowUps && dueFollowUps.length > 0 ? (
             <div className="rounded-xl border border-warning/30 bg-warning/10 px-4 py-3 text-sm">
@@ -672,6 +682,7 @@ export default function TrackerPage() {
                 <div className="min-w-0 space-y-1.5">
                   <p className="font-medium">
                     {dueFollowUps.length} follow-up{dueFollowUps.length === 1 ? "" : "s"} due soon
+                    {isDragging ? " · Drop on a column to move" : null}
                   </p>
                   <ul className="space-y-1 text-xs text-muted-foreground">
                     {dueFollowUps.slice(0, 4).map((row) => {
@@ -690,9 +701,11 @@ export default function TrackerPage() {
                 </div>
               </div>
             </div>
+          ) : isDragging ? (
+            <p className="text-xs text-muted-foreground">Drop on a column to update status</p>
           ) : null}
 
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             {columns.map((col) => (
               <DropColumn
                 key={col.id}

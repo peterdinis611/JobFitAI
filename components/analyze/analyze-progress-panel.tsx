@@ -84,47 +84,33 @@ export function AnalyzeProgressPanel({ messages, isBusy }: AnalyzeProgressPanelP
 
   return (
     <section className="mac-window flex w-full min-w-0 flex-col overflow-hidden">
-      <div className="mac-titlebar shrink-0">
-        <div className="mac-traffic-lights" aria-hidden>
-          <span />
-          <span />
-          <span />
+      <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-[var(--mac-titlebar)] px-4 py-3">
+        <div className="min-w-0">
+          <h2 className="text-[15px] font-semibold tracking-tight">Progress</h2>
+          <p className="text-xs text-muted-foreground">
+            {stream.hasStarted ? "Live agent steps" : "Waiting to start"}
+          </p>
         </div>
-        <span className="flex-1 text-center text-xs font-medium text-muted-foreground">
-          Analysis progress
+        <span
+          className={cn(
+            "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium",
+            badge.tone === "success" && "bg-success/15 text-success",
+            badge.tone === "error" && "bg-destructive/15 text-destructive",
+            badge.tone === "active" && "bg-primary/15 text-primary",
+            badge.tone === "muted" && "bg-muted text-muted-foreground",
+          )}
+        >
+          {badge.tone === "active" ? (
+            <span className="size-1.5 animate-pulse rounded-full bg-current" />
+          ) : null}
+          {badge.text}
         </span>
-        <span className="w-[52px]" aria-hidden />
       </div>
 
       <div
         ref={scrollRef}
-        className="max-h-[min(720px,calc(100dvh-140px))] space-y-5 overflow-y-auto overscroll-contain p-5 sm:p-6"
+        className="max-h-[min(720px,calc(100dvh-140px))] space-y-4 overflow-y-auto overscroll-contain p-4 sm:p-5"
       >
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <h2 className="text-[15px] font-semibold">Match analysis</h2>
-            <p className="text-xs text-muted-foreground">
-              {stream.hasStarted
-                ? "Follow each step below while the agent works."
-                : "Run an analysis to see live progress here."}
-            </p>
-          </div>
-          <span
-            className={cn(
-              "inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium",
-              badge.tone === "success" && "bg-success/15 text-success",
-              badge.tone === "error" && "bg-destructive/15 text-destructive",
-              badge.tone === "active" && "bg-primary/15 text-primary",
-              badge.tone === "muted" && "bg-muted text-muted-foreground",
-            )}
-          >
-            {badge.tone === "active" ? (
-              <span className="size-1.5 animate-pulse rounded-full bg-current" />
-            ) : null}
-            {badge.text}
-          </span>
-        </div>
-
         <AnimatePresence mode="wait">
           {!stream.hasStarted ? (
             <motion.div

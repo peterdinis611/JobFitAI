@@ -14,9 +14,11 @@ import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-pri
 import { AnimatedProgress, MatchScoreRing } from "@/components/ui/animated-progress"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { MetricStrip } from "@/components/ui/metric-strip"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
+import { matchBadgeClass, roleTitle, seniorityLabel } from "@/lib/role-label"
+import { cn } from "@/lib/utils"
 
 export default function AnalysisDetailPage() {
   const params = useParams()
@@ -28,18 +30,12 @@ export default function AnalysisDetailPage() {
 
   if (data === undefined) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="h-8 w-32 animate-pulse rounded bg-muted" />
-        <div className="flex gap-8">
-          <div className="size-32 animate-pulse rounded-full bg-muted" />
-          <div className="flex-1 space-y-3">
-            <div className="h-8 w-64 animate-pulse rounded bg-muted" />
-            <div className="h-4 w-48 animate-pulse rounded bg-muted" />
-          </div>
-        </div>
-        <div className="grid gap-4 lg:grid-cols-2">
+        <div className="h-28 animate-pulse rounded-xl bg-muted" />
+        <div className="grid gap-3 lg:grid-cols-2">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-48 animate-pulse rounded-xl bg-muted" />
+            <div key={i} className="h-40 animate-pulse rounded-xl bg-muted" />
           ))}
         </div>
       </div>
@@ -58,7 +54,8 @@ export default function AnalysisDetailPage() {
   }
 
   const { analysis, resume, jobPosting } = data
-  const title = jobPosting?.title ?? "Job match analysis"
+  const title = roleTitle(jobPosting, analysis)
+  const seniority = seniorityLabel(analysis.seniorityFit)
   const chartData =
     analysis.skillCategories?.map((c: { name: string; score: number }) => ({
       category: c.name,
@@ -83,7 +80,7 @@ export default function AnalysisDetailPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <FadeIn>
         <Link
           href="/"
@@ -93,16 +90,16 @@ export default function AnalysisDetailPage() {
         </Link>
       </FadeIn>
 
-      <FadeIn delay={0.05}>
-        <div className="flex flex-wrap items-center justify-between gap-6">
-          <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
-            <p className="text-sm text-muted-foreground">
-              {resume?.fileName} · {new Date(analysis.createdAt).toLocaleString()}
-            </p>
-          </div>
-          <div className="flex flex-col items-end gap-3">
-            <div className="flex flex-wrap items-center justify-end gap-2">
+      <FadeIn delay={0.04}>
+        <section className="mac-window overflow-hidden">
+          <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border bg-[var(--mac-titlebar)] px-4 py-3 sm:px-5">
+            <div className="min-w-0 space-y-1">
+              <h1 className="text-lg font-semibold tracking-tight sm:text-xl">{title}</h1>
+              <p className="text-xs text-muted-foreground">
+                {resume?.fileName ?? "Resume"} · {new Date(analysis.createdAt).toLocaleString()}
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
               <ExportReportButton analysis={analysis} resume={resume} jobPosting={jobPosting} />
               <Button
                 type="button"
@@ -115,36 +112,70 @@ export default function AnalysisDetailPage() {
                 Delete
               </Button>
             </div>
-            <div className="flex flex-col items-center gap-2">
-              <MatchScoreRing value={analysis.matchPercentage} size={128} />
-              <Badge variant="secondary">Seniority: {analysis.seniorityFit}</Badge>
+          </div>
+
+          <div className="flex flex-col gap-5 p-4 sm:flex-row sm:items-center sm:p-5">
+            <MatchScoreRing
+              value={analysis.matchPercentage}
+              size={112}
+              className="mx-auto sm:mx-0"
+            />
+            <div className="min-w-0 flex-1 space-y-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <span
+                  className={cn(
+                    "inline-flex rounded-md px-2 py-0.5 text-xs font-medium tabular-nums",
+                    matchBadgeClass(analysis.matchPercentage),
+                  )}
+                >
+                  {analysis.matchPercentage}% match
+                </span>
+                <Badge variant="secondary">{seniority.label}</Badge>
+              </div>
+              <AnimatedProgress value={analysis.matchPercentage} className="h-2" />
+              <MetricStrip
+                className="border-0 bg-transparent p-0"
+                items={[
+                  {
+                    label: "Matching",
+                    value: String(analysis.matchingSkills.length),
+                    tone: "success",
+                  },
+                  {
+                    label: "Missing",
+                    value: String(analysis.missingSkills.length),
+                    tone: analysis.missingSkills.length > 0 ? "warning" : undefined,
+                  },
+                  {
+                    label: "Flags",
+                    value: String(analysis.redFlags.length),
+                    tone: analysis.redFlags.length > 0 ? "destructive" : undefined,
+                  },
+                ]}
+              />
             </div>
           </div>
-        </div>
-      </FadeIn>
-
-      <FadeIn delay={0.1}>
-        <AnimatedProgress value={analysis.matchPercentage} className="h-2.5" />
+        </section>
       </FadeIn>
 
       {rescoreDelta ? (
-        <FadeIn delay={0.12}>
+        <FadeIn delay={0.08}>
           <RescoreDeltaBanner delta={rescoreDelta} />
         </FadeIn>
       ) : null}
 
-      <FadeIn delay={0.14}>
+      <FadeIn delay={0.1}>
         <AnalysisActionsPanel data={{ analysis, resume, jobPosting }} />
       </FadeIn>
 
-      <StaggerList className="grid gap-4 lg:grid-cols-2">
+      <StaggerList className="grid gap-3 lg:grid-cols-2">
         {chartData.length > 0 ? (
           <StaggerItem>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base">Skill categories</CardTitle>
-              </CardHeader>
-              <CardContent className="h-[280px]">
+            <section className="mac-window overflow-hidden">
+              <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-2.5">
+                <h2 className="text-[13px] font-semibold">Skill categories</h2>
+              </div>
+              <div className="h-[260px] p-3">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart data={chartData}>
                     <PolarGrid stroke="var(--border)" />
@@ -157,95 +188,98 @@ export default function AnalysisDetailPage() {
                     />
                   </RadarChart>
                 </ResponsiveContainer>
-              </CardContent>
-            </Card>
+              </div>
+            </section>
           </StaggerItem>
         ) : null}
 
         <StaggerItem>
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <CheckCircle2 className="size-4 text-success" /> Matching skills
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
+          <section className="mac-window overflow-hidden">
+            <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-2.5">
+              <h2 className="flex items-center gap-1.5 text-[13px] font-semibold">
+                <CheckCircle2 className="size-3.5 text-success" />
+                Matching skills
+              </h2>
+            </div>
+            <div className="flex flex-wrap gap-1.5 p-4">
               {analysis.matchingSkills.map((s: string, i: number) => (
                 <motion.span
                   key={s}
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.2 + i * 0.03 }}
+                  transition={{ delay: 0.15 + i * 0.02 }}
                 >
                   <Badge variant="secondary">{s}</Badge>
                 </motion.span>
               ))}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </StaggerItem>
 
         <StaggerItem>
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="text-base">Missing skills</CardTitle>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              {analysis.missingSkills.map((s: string, i: number) => (
-                <motion.span
-                  key={s}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.25 + i * 0.03 }}
-                >
-                  <Badge variant="outline">{s}</Badge>
-                </motion.span>
-              ))}
-            </CardContent>
-          </Card>
+          <section className="mac-window overflow-hidden">
+            <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-2.5">
+              <h2 className="text-[13px] font-semibold">Missing skills</h2>
+            </div>
+            <div className="flex flex-wrap gap-1.5 p-4">
+              {analysis.missingSkills.length === 0 ? (
+                <p className="text-sm text-muted-foreground">None flagged</p>
+              ) : (
+                analysis.missingSkills.map((s: string, i: number) => (
+                  <motion.span
+                    key={s}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.18 + i * 0.02 }}
+                  >
+                    <Badge variant="outline">{s}</Badge>
+                  </motion.span>
+                ))
+              )}
+            </div>
+          </section>
         </StaggerItem>
 
         {analysis.redFlags.length > 0 ? (
           <StaggerItem>
-            <Card className="border-destructive/40">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base text-destructive">
-                  <AlertTriangle className="size-4" /> Red flags
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ul className="list-disc space-y-1 pl-4 text-sm">
-                  {analysis.redFlags.map((f: string) => (
-                    <li key={f}>{f}</li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
+            <section className="mac-window overflow-hidden border-destructive/35">
+              <div className="border-b border-destructive/25 bg-destructive/5 px-4 py-2.5">
+                <h2 className="flex items-center gap-1.5 text-[13px] font-semibold text-destructive">
+                  <AlertTriangle className="size-3.5" />
+                  Red flags
+                </h2>
+              </div>
+              <ul className="list-disc space-y-1.5 px-4 py-3 pl-8 text-sm">
+                {analysis.redFlags.map((f: string) => (
+                  <li key={f}>{f}</li>
+                ))}
+              </ul>
+            </section>
           </StaggerItem>
         ) : null}
 
         <StaggerItem className="lg:col-span-2">
-          <Card className="border-border/60 bg-card/80 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Lightbulb className="size-4 text-warning" /> Recommendations
-              </CardTitle>
-              <CardDescription>Actionable CV improvements</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ol className="list-decimal space-y-3 pl-4 text-sm">
-                {analysis.recommendations.map((r: string, i: number) => (
-                  <motion.li
-                    key={r}
-                    initial={{ opacity: 0, x: -8 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.3 + i * 0.06 }}
-                  >
-                    {r}
-                  </motion.li>
-                ))}
-              </ol>
-            </CardContent>
-          </Card>
+          <section className="mac-window overflow-hidden">
+            <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-2.5">
+              <h2 className="flex items-center gap-1.5 text-[13px] font-semibold">
+                <Lightbulb className="size-3.5 text-warning" />
+                Recommendations
+              </h2>
+              <p className="text-[11px] text-muted-foreground">Actionable CV improvements</p>
+            </div>
+            <ol className="list-decimal space-y-2.5 px-4 py-4 pl-8 text-sm">
+              {analysis.recommendations.map((r: string, i: number) => (
+                <motion.li
+                  key={r}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 + i * 0.05 }}
+                >
+                  {r}
+                </motion.li>
+              ))}
+            </ol>
+          </section>
         </StaggerItem>
       </StaggerList>
     </div>

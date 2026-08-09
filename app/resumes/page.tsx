@@ -1,17 +1,14 @@
 "use client"
 
 import { useMutation, useQuery } from "convex/react"
-import { Check, FileUp, Star, Trash2 } from "lucide-react"
+import { Check, FileText, FileUp, Star, Trash2 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useRef, useState } from "react"
 import { toast } from "sonner"
 import { DashboardGettingStarted } from "@/components/dashboard/dashboard-states"
-import { UploadIllustration } from "@/components/illustrations/jobfit-illustrations"
-import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
 import { ResumePreviewDialog } from "@/components/resumes/resume-preview-dialog"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { MetricStrip } from "@/components/ui/metric-strip"
 import { PageHeader } from "@/components/ui/page-header"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
@@ -33,6 +30,9 @@ export default function ResumesPage() {
   const [uploading, setUploading] = useState(false)
   const [dragOver, setDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const active = resumes?.find((r) => r.isActive)
+  const count = resumes?.length ?? 0
 
   const upload = useCallback(
     async (file: File) => {
@@ -72,10 +72,10 @@ export default function ResumesPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       <PageHeader
-        title="Your resumes"
-        description="Upload PDF or DOCX files. The latest upload becomes your active resume."
+        title="Resumes"
+        description="Upload versions — the active CV is used for new analyses."
         action={
           <Button disabled={uploading} onClick={() => inputRef.current?.click()}>
             <FileUp className="size-4" />
@@ -96,155 +96,174 @@ export default function ResumesPage() {
         }}
       />
 
-      <FadeIn delay={0.05}>
-        <motion.div
-          animate={{
-            scale: dragOver ? 1.01 : 1,
-          }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        >
-          <Card
-            className={cn(
-              "border-2 border-dashed border-border bg-card transition-colors",
-              dragOver && "border-primary bg-primary/5",
-              uploading && "pointer-events-none opacity-60",
-            )}
-            onDragOver={(e) => {
-              e.preventDefault()
-              setDragOver(true)
-            }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={(e) => {
-              e.preventDefault()
-              setDragOver(false)
-              const file = e.dataTransfer.files?.[0]
-              if (file) void upload(file)
-            }}
-          >
-            <CardContent className="flex flex-col items-center justify-center gap-3 py-14 text-center">
-              <AnimatePresence mode="wait">
-                {uploading ? (
-                  <motion.div
-                    key="uploading"
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                  >
-                    <UploadIllustration />
-                    <p className="mt-2 text-sm font-medium text-muted-foreground">Uploading…</p>
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="idle"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="flex flex-col items-center gap-2"
-                  >
-                    <motion.div
-                      animate={{ y: dragOver ? -4 : 0 }}
-                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                    >
-                      <FileUp className="size-10 text-primary" />
-                    </motion.div>
-                    <p className="text-sm font-medium">Drag & drop PDF or DOCX here</p>
-                    <p className="text-xs text-muted-foreground">Max 10 MB</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </FadeIn>
+      {count > 0 ? (
+        <MetricStrip
+          items={[
+            { label: "Versions", value: String(count) },
+            {
+              label: "Active",
+              value: active?.fileName ? truncate(active.fileName, 28) : "—",
+              tone: "primary",
+            },
+          ]}
+        />
+      ) : null}
 
-      {resumes?.length === 0 ? (
-        <FadeIn delay={0.1}>
-          <DashboardGettingStarted hasResume={false} />
-        </FadeIn>
-      ) : (
-        <StaggerList className="grid gap-4 sm:grid-cols-2">
-          {resumes?.map((resume: Doc<"resumes">) => (
-            <StaggerItem key={resume._id}>
-              <motion.div
-                whileHover={{ y: -3 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      <section className="mac-window overflow-hidden">
+        <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-3 sm:px-5">
+          <h2 className="text-[15px] font-semibold tracking-tight">Upload</h2>
+          <p className="text-xs text-muted-foreground">PDF or DOCX · max 10 MB</p>
+        </div>
+        <button
+          type="button"
+          disabled={uploading}
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => {
+            e.preventDefault()
+            setDragOver(true)
+          }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={(e) => {
+            e.preventDefault()
+            setDragOver(false)
+            const file = e.dataTransfer.files?.[0]
+            if (file) void upload(file)
+          }}
+          className={cn(
+            "flex w-full flex-col items-center justify-center gap-2 px-4 py-10 text-center transition-colors",
+            dragOver && "bg-primary/5",
+            uploading && "pointer-events-none opacity-60",
+          )}
+        >
+          <AnimatePresence mode="wait">
+            {uploading ? (
+              <motion.p
+                key="up"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-sm text-muted-foreground"
               >
-                <Card
+                Uploading…
+              </motion.p>
+            ) : (
+              <motion.div
+                key="idle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex flex-col items-center gap-2"
+              >
+                <div
                   className={cn(
-                    "transition-shadow hover:shadow-md",
-                    resume.isActive && "ring-2 ring-primary/30",
+                    "flex size-12 items-center justify-center rounded-xl bg-primary/10 transition-transform",
+                    dragOver && "-translate-y-0.5",
                   )}
                 >
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <CardTitle className="text-base">{resume.fileName}</CardTitle>
+                  <FileUp className="size-5 text-primary" />
+                </div>
+                <p className="text-sm font-medium">
+                  {dragOver ? "Drop to upload" : "Drag & drop or click to upload"}
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </button>
+      </section>
+
+      {count === 0 ? (
+        <DashboardGettingStarted hasResume={false} />
+      ) : (
+        <section className="mac-window overflow-hidden">
+          <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-3 sm:px-5">
+            <h2 className="text-[15px] font-semibold tracking-tight">Your versions</h2>
+            <p className="text-xs text-muted-foreground">{count} uploaded</p>
+          </div>
+          <ul className="divide-y divide-border">
+            {resumes?.map((resume: Doc<"resumes">) => (
+              <li
+                key={resume._id}
+                className={cn(
+                  "flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5",
+                  resume.isActive && "bg-primary/5",
+                )}
+              >
+                <div className="flex min-w-0 items-start gap-3">
+                  <div className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <FileText className="size-3.5 text-primary" />
+                  </div>
+                  <div className="min-w-0 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="truncate text-[14px] font-semibold tracking-tight">
+                        {resume.fileName}
+                      </p>
                       {resume.isActive ? (
-                        <Badge className="gap-1 bg-primary">
-                          <Star className="size-3 fill-current" /> Active
-                        </Badge>
+                        <span className="inline-flex items-center gap-1 rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                          <Star className="size-2.5 fill-current" />
+                          Active
+                        </span>
                       ) : null}
                     </div>
-                    <CardDescription className="flex flex-wrap items-center gap-2">
-                      <span>
-                        v{resume.version} · {new Date(resume.createdAt).toLocaleDateString()}
-                      </span>
-                      {resume.parsedText?.trim() ? (
-                        <Badge variant="secondary">
-                          {wordCount(resume.parsedText).toLocaleString()} words
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline">Not parsed yet</Badge>
-                      )}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex flex-wrap gap-2">
-                    <ResumePreviewDialog resume={resume} />
-                    {!resume.isActive ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          void setActive({ resumeId: resume._id }).then(() =>
-                            toast.success("Active resume updated"),
-                          )
-                        }
-                      >
-                        <Check className="size-4" /> Set active
-                      </Button>
-                    ) : (
-                      <p className="self-center text-xs text-muted-foreground">
-                        Used for new analyses
-                      </p>
-                    )}
+                    <p className="text-[11px] text-muted-foreground">
+                      v{resume.version} ·{" "}
+                      {new Date(resume.createdAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                      {resume.parsedText?.trim()
+                        ? ` · ${wordCount(resume.parsedText).toLocaleString()} words`
+                        : " · Not parsed yet"}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 sm:justify-end">
+                  <ResumePreviewDialog resume={resume} />
+                  {!resume.isActive ? (
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
-                      className="text-muted-foreground hover:text-destructive"
-                      onClick={() => {
-                        if (
-                          !window.confirm(
-                            `Delete “${resume.fileName}”? Existing analyses keep their scores but lose this file link.`,
-                          )
-                        ) {
-                          return
-                        }
-                        void removeResume({ resumeId: resume._id })
-                          .then(() => toast.success("Resume deleted"))
-                          .catch((e) =>
-                            toast.error(e instanceof Error ? e.message : "Failed to delete"),
-                          )
-                      }}
+                      onClick={() =>
+                        void setActive({ resumeId: resume._id }).then(() =>
+                          toast.success("Active resume updated"),
+                        )
+                      }
                     >
-                      <Trash2 className="size-4" />
-                      Delete
+                      <Check className="size-3.5" />
+                      Set active
                     </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </StaggerItem>
-          ))}
-        </StaggerList>
+                  ) : null}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground hover:text-destructive"
+                    onClick={() => {
+                      if (
+                        !window.confirm(
+                          `Delete “${resume.fileName}”? Existing analyses keep their scores but lose this file link.`,
+                        )
+                      ) {
+                        return
+                      }
+                      void removeResume({ resumeId: resume._id })
+                        .then(() => toast.success("Resume deleted"))
+                        .catch((e) =>
+                          toast.error(e instanceof Error ? e.message : "Failed to delete"),
+                        )
+                    }}
+                  >
+                    <Trash2 className="size-3.5" />
+                    Delete
+                  </Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
     </div>
   )
+}
+
+function truncate(value: string, max: number) {
+  if (value.length <= max) return value
+  return `${value.slice(0, max - 1)}…`
 }

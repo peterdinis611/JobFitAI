@@ -27,7 +27,6 @@ import {
   TailoredBulletsView,
 } from "@/components/analyses/artifact-views"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
@@ -222,14 +221,14 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
         </div>
       ) : null}
 
-      <Card className="border-border/60 bg-card/80">
-        <CardHeader>
-          <CardTitle className="text-base">Career tools</CardTitle>
-          <CardDescription>
-            Tailor your CV, draft a cover letter, or build a learning plan from this analysis
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
+      <section className="mac-window overflow-hidden">
+        <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-3">
+          <h2 className="text-[15px] font-semibold tracking-tight">Career tools</h2>
+          <p className="text-xs text-muted-foreground">
+            Tailor bullets, cover letter, learning plan, or re-score
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2 p-4">
           <Button
             size="sm"
             variant="outline"
@@ -327,8 +326,8 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
               <Kanban className="size-4" /> Save to tracker
             </Button>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </section>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex h-auto flex-wrap gap-1">
@@ -378,8 +377,11 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
         </TabsContent>
 
         <TabsContent value="stream" className="mt-4">
-          <Card className="flex min-h-[320px] flex-col overflow-hidden border-border/60">
-            <CardContent className="flex min-h-0 flex-1 flex-col p-0">
+          <section className="mac-window flex min-h-[320px] flex-col overflow-hidden">
+            <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-2.5">
+              <h3 className="text-[13px] font-semibold">Agent stream</h3>
+            </div>
+            <div className="flex min-h-0 flex-1 flex-col">
               {agent.data.messages.length === 0 ? (
                 <p className="p-6 text-center text-sm text-muted-foreground">
                   Run a tool above to see the agent stream
@@ -402,8 +404,8 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
                   <ConversationScrollButton />
                 </Conversation>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </section>
         </TabsContent>
       </Tabs>
     </div>
