@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'JobFit AI',
   tagline: 'Match your resume to any role',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   future: {
     v4: true,
@@ -68,6 +68,12 @@ const config: Config = {
     },
     navbar: {
       title: 'JobFit AI',
+      logo: {
+        alt: 'JobFit AI',
+        src: 'img/logo.svg',
+        width: 28,
+        height: 28,
+      },
       items: [
         {
           type: 'docSidebar',
