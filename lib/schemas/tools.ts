@@ -55,14 +55,15 @@ export const scoreMatchOutputSchema = z.object({
   skillCategories: z.array(skillCategorySchema),
 })
 
-const optionalId = z
-  .union([z.string(), z.null(), z.undefined()])
-  .optional()
-  .transform((value) => {
-    if (typeof value !== "string") return undefined
-    const trimmed = value.trim()
-    return trimmed.length > 0 ? trimmed : undefined
-  })
+/** Empty / null IDs become undefined at the call site via `normalizeOptionalId`. */
+const optionalId = z.union([z.string(), z.null()]).optional()
+
+/** Strip blank optional IDs before Convex writes (agents often send ""). */
+export function normalizeOptionalId(value: string | null | undefined): string | undefined {
+  if (typeof value !== "string") return undefined
+  const trimmed = value.trim()
+  return trimmed.length > 0 ? trimmed : undefined
+}
 
 /** Lenient schema — agents often omit fields or send empty strings. */
 export const saveAnalysisInputSchema = z.object({

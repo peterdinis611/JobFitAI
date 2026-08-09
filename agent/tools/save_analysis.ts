@@ -5,13 +5,19 @@ import { runEffect } from "#lib/effect"
 import { ConvexError } from "#lib/errors"
 import { api } from "../../convex/_generated/api.js"
 import type { Id } from "../../convex/_generated/dataModel"
-import { saveAnalysisInputSchema, saveAnalysisOutputSchema } from "../../lib/schemas/tools"
+import {
+  normalizeOptionalId,
+  saveAnalysisInputSchema,
+  saveAnalysisOutputSchema,
+} from "../../lib/schemas/tools"
 
 export default defineTool({
   description: "Persist a completed match analysis to Convex.",
   inputSchema: saveAnalysisInputSchema,
   async execute(input) {
     const parsed = saveAnalysisInputSchema.parse(input)
+    const eveSessionId = normalizeOptionalId(parsed.eveSessionId)
+    const previousAnalysisId = normalizeOptionalId(parsed.previousAnalysisId)
     const program = Effect.tryPromise({
       try: async () => {
         const analysisId = await convexMutation(api.analyses.create, {
@@ -25,9 +31,9 @@ export default defineTool({
           redFlags: parsed.redFlags,
           recommendations: parsed.recommendations,
           ...(parsed.skillCategories?.length ? { skillCategories: parsed.skillCategories } : {}),
-          ...(parsed.eveSessionId ? { eveSessionId: parsed.eveSessionId } : {}),
-          ...(parsed.previousAnalysisId
-            ? { previousAnalysisId: parsed.previousAnalysisId as Id<"analyses"> }
+          ...(eveSessionId ? { eveSessionId } : {}),
+          ...(previousAnalysisId
+            ? { previousAnalysisId: previousAnalysisId as Id<"analyses"> }
             : {}),
         })
         return { analysisId: String(analysisId) }

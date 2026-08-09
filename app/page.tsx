@@ -118,6 +118,27 @@ export default function DashboardPage() {
     }
   }
 
+  async function deleteSelected() {
+    if (compareIds.length === 0) return
+    const count = compareIds.length
+    if (
+      !window.confirm(
+        `Permanently delete ${count} selected ${count === 1 ? "analysis" : "analyses"}? This also removes tracker cards and career tools.`,
+      )
+    ) {
+      return
+    }
+    try {
+      for (const id of compareIds) {
+        await removeAnalysis({ analysisId: id })
+      }
+      setCompareIds([])
+      toast.success(count === 1 ? "Analysis deleted" : `${count} analyses deleted`)
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete")
+    }
+  }
+
   if (!ready || rows === undefined) {
     return <DashboardSkeleton />
   }
@@ -213,12 +234,21 @@ export default function DashboardPage() {
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/5 px-4 py-3 text-sm">
           <p className="text-muted-foreground">
             {compareIds.length === 1
-              ? "Select one more analysis to compare side by side."
-              : "Two analyses selected — ready to compare."}
+              ? "1 selected — pick one more to compare, or delete."
+              : "Two analyses selected — compare or delete."}
           </p>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button size="sm" variant="ghost" onClick={() => setCompareIds([])}>
               Clear
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => void deleteSelected()}
+            >
+              <Trash2 className="size-3.5" />
+              Delete selected
             </Button>
             {compareIds.length === 2 ? (
               <Button asChild size="sm">
@@ -375,6 +405,16 @@ export default function DashboardPage() {
                           Open
                           <ArrowRight className="size-3.5" />
                         </Link>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="size-8 shrink-0 px-0 text-muted-foreground hover:text-destructive"
+                        aria-label={`Delete ${title}`}
+                        onClick={() => void deleteAnalysis(analysis._id, title)}
+                      >
+                        <Trash2 className="size-4" />
                       </Button>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

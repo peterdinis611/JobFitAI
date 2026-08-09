@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
+import { z } from "zod"
 import {
   fetchJobPostingInputSchema,
+  normalizeOptionalId,
   saveAnalysisInputSchema,
   scoreMatchOutputSchema,
 } from "./tools"
@@ -13,6 +15,16 @@ describe("fetchJobPostingInputSchema", () => {
     expect(fetchJobPostingInputSchema.safeParse({ url: "http://example.com/job" }).success).toBe(
       false,
     )
+  })
+})
+
+describe("normalizeOptionalId", () => {
+  it("strips empty and whitespace ids", () => {
+    expect(normalizeOptionalId("")).toBeUndefined()
+    expect(normalizeOptionalId("   ")).toBeUndefined()
+    expect(normalizeOptionalId(null)).toBeUndefined()
+    expect(normalizeOptionalId(undefined)).toBeUndefined()
+    expect(normalizeOptionalId("a_prev")).toBe("a_prev")
   })
 })
 
@@ -29,14 +41,14 @@ describe("saveAnalysisInputSchema", () => {
     recommendations: ["Highlight React"],
   }
 
-  it("strips empty previousAnalysisId and eveSessionId", () => {
+  it("accepts empty optional ids (normalized at the tool call site)", () => {
     const parsed = saveAnalysisInputSchema.parse({
       ...base,
       previousAnalysisId: "",
       eveSessionId: "   ",
     })
-    expect(parsed.previousAnalysisId).toBeUndefined()
-    expect(parsed.eveSessionId).toBeUndefined()
+    expect(normalizeOptionalId(parsed.previousAnalysisId)).toBeUndefined()
+    expect(normalizeOptionalId(parsed.eveSessionId)).toBeUndefined()
   })
 
   it("keeps non-empty optional ids", () => {
@@ -59,6 +71,10 @@ describe("saveAnalysisInputSchema", () => {
     expect(parsed.matchPercentage).toBe(72)
     expect(parsed.matchingSkills).toEqual([])
     expect(parsed.seniorityFit).toBe("match")
+  })
+
+  it("is JSON-Schema convertible for eve tools", () => {
+    expect(() => z.toJSONSchema(saveAnalysisInputSchema)).not.toThrow()
   })
 })
 

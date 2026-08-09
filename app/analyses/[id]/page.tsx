@@ -1,26 +1,30 @@
 "use client"
 
-import { useQuery } from "convex/react"
-import { AlertTriangle, ArrowLeft, CheckCircle2, Lightbulb } from "lucide-react"
+import { useMutation, useQuery } from "convex/react"
+import { AlertTriangle, ArrowLeft, CheckCircle2, Lightbulb, Trash2 } from "lucide-react"
 import { motion } from "motion/react"
 import Link from "next/link"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { PolarAngleAxis, PolarGrid, Radar, RadarChart, ResponsiveContainer } from "recharts"
+import { toast } from "sonner"
 import { AnalysisActionsPanel } from "@/components/analyses/analysis-actions-panel"
 import { RescoreDeltaBanner } from "@/components/analyses/artifact-views"
 import { ExportReportButton } from "@/components/analyses/export-report-button"
 import { FadeIn, StaggerItem, StaggerList } from "@/components/motion/motion-primitives"
 import { AnimatedProgress, MatchScoreRing } from "@/components/ui/animated-progress"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
 
 export default function AnalysisDetailPage() {
   const params = useParams()
+  const router = useRouter()
   const analysisId = params.id as Id<"analyses">
   const data = useQuery(api.analyses.getWithRelations, { analysisId })
   const rescoreDelta = useQuery(api.analyses.getRescoreDelta, { analysisId })
+  const removeAnalysis = useMutation(api.analyses.remove)
 
   if (data === undefined) {
     return (
@@ -54,11 +58,29 @@ export default function AnalysisDetailPage() {
   }
 
   const { analysis, resume, jobPosting } = data
+  const title = jobPosting?.title ?? "Job match analysis"
   const chartData =
     analysis.skillCategories?.map((c: { name: string; score: number }) => ({
       category: c.name,
       score: c.score,
     })) ?? []
+
+  async function handleDelete() {
+    if (
+      !window.confirm(
+        `Permanently delete “${title}”? This also removes tracker cards and career tools for it.`,
+      )
+    ) {
+      return
+    }
+    try {
+      await removeAnalysis({ analysisId })
+      toast.success("Analysis deleted")
+      router.push("/")
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to delete")
+    }
+  }
 
   return (
     <div className="space-y-8">
@@ -74,15 +96,25 @@ export default function AnalysisDetailPage() {
       <FadeIn delay={0.05}>
         <div className="flex flex-wrap items-center justify-between gap-6">
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              {jobPosting?.title ?? "Job match analysis"}
-            </h1>
+            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
             <p className="text-sm text-muted-foreground">
               {resume?.fileName} · {new Date(analysis.createdAt).toLocaleString()}
             </p>
           </div>
           <div className="flex flex-col items-end gap-3">
-            <ExportReportButton analysis={analysis} resume={resume} jobPosting={jobPosting} />
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <ExportReportButton analysis={analysis} resume={resume} jobPosting={jobPosting} />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                onClick={() => void handleDelete()}
+              >
+                <Trash2 className="size-3.5" />
+                Delete
+              </Button>
+            </div>
             <div className="flex flex-col items-center gap-2">
               <MatchScoreRing value={analysis.matchPercentage} size={128} />
               <Badge variant="secondary">Seniority: {analysis.seniorityFit}</Badge>
