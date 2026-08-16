@@ -161,10 +161,87 @@ export function LearningPlanView({ plans }: { plans: Plan[] }) {
           </CardHeader>
           <CardContent>
             <ol className="list-decimal space-y-2 pl-4 text-sm">
-              {plan.steps.map((step, i) => (
-                <li key={`${plan.skill}-${i}`}>{step}</li>
+              {plan.steps.map((step) => (
+                <li key={`${plan.skill}-${step.slice(0, 48)}`}>{step}</li>
               ))}
             </ol>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  )
+}
+
+type InterviewQuestion = {
+  question: string
+  category: "behavioral" | "technical" | "role" | "culture"
+  whyAsked: string
+  tip: string
+}
+
+const CATEGORY_LABEL: Record<InterviewQuestion["category"], string> = {
+  behavioral: "Behavioral",
+  technical: "Technical",
+  role: "Role",
+  culture: "Culture",
+}
+
+export function InterviewPrepView({
+  questions,
+  opener,
+}: {
+  questions: InterviewQuestion[]
+  opener?: string
+}) {
+  async function copyAll() {
+    const text = [
+      opener ? `Tell me about yourself\n${opener}\n` : "",
+      ...questions.map(
+        (q, i) =>
+          `${i + 1}. [${CATEGORY_LABEL[q.category]}] ${q.question}\nWhy: ${q.whyAsked}\nTip: ${q.tip}`,
+      ),
+    ]
+      .filter(Boolean)
+      .join("\n\n")
+    try {
+      await navigator.clipboard.writeText(text)
+      toast.success("Interview prep copied")
+    } catch {
+      toast.error("Could not copy")
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      <Button type="button" size="sm" variant="secondary" onClick={() => void copyAll()}>
+        <Copy className="size-3.5" />
+        Copy all
+      </Button>
+      {opener ? (
+        <div className="rounded-xl border border-border bg-muted/20 p-4">
+          <p className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Opener
+          </p>
+          <p className="text-sm leading-relaxed">{opener}</p>
+        </div>
+      ) : null}
+      {questions.map((q) => (
+        <Card key={q.question} className="border-border/60">
+          <CardHeader className="pb-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary">{CATEGORY_LABEL[q.category]}</Badge>
+            </div>
+            <CardTitle className="text-[15px] leading-snug">{q.question}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <p>
+              <span className="font-medium text-muted-foreground">Why asked: </span>
+              {q.whyAsked}
+            </p>
+            <p>
+              <span className="font-medium text-success">Tip: </span>
+              {q.tip}
+            </p>
           </CardContent>
         </Card>
       ))}

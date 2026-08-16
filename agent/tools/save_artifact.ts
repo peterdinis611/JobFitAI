@@ -9,7 +9,7 @@ import { saveArtifactInputSchema, saveArtifactOutputSchema } from "../../lib/sch
 
 export default defineTool({
   description:
-    "Persist a generated artifact (tailored bullets, cover letter, or learning plan) to Convex.",
+    "Persist a generated artifact (tailored bullets, cover letter, learning plan, or interview prep) to Convex.",
   inputSchema: saveArtifactInputSchema,
   async execute(input) {
     const program = Effect.tryPromise({

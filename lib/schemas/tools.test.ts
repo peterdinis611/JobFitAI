@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import {
   fetchJobPostingInputSchema,
+  interviewPrepOutputSchema,
   normalizeOptionalId,
   saveAnalysisInputSchema,
+  saveArtifactInputSchema,
   scoreMatchOutputSchema,
 } from "./tools"
 
@@ -106,5 +108,59 @@ describe("scoreMatchOutputSchema", () => {
         skillCategories: [],
       }).success,
     ).toBe(false)
+  })
+})
+
+describe("interviewPrepOutputSchema", () => {
+  it("accepts prep questions", () => {
+    const result = interviewPrepOutputSchema.safeParse({
+      opener: "I am a frontend engineer focused on product delivery.",
+      questions: [
+        {
+          question: "Tell me about a React performance win.",
+          category: "technical",
+          whyAsked: "Checks depth on a matching skill.",
+          tip: "Use the metrics from your resume project.",
+        },
+        {
+          question: "How do you handle shifting requirements?",
+          category: "behavioral",
+          whyAsked: "Culture fit and collaboration.",
+          tip: "STAR story with stakeholders.",
+        },
+        {
+          question: "Which posting requirements are stretch goals?",
+          category: "role",
+          whyAsked: "Honest gap assessment.",
+          tip: "Name one missing skill with a ramp plan.",
+        },
+        {
+          question: "What kind of team culture helps you thrive?",
+          category: "culture",
+          whyAsked: "Values alignment.",
+          tip: "Tie to how you collaborated in past roles.",
+        },
+        {
+          question: "Describe a time you owned an ambiguous problem end to end.",
+          category: "behavioral",
+          whyAsked: "Ownership signal.",
+          tip: "Pick a resume project with clear outcome.",
+        },
+      ],
+    })
+    expect(result.success).toBe(true)
+  })
+})
+
+describe("saveArtifactInputSchema", () => {
+  it("allows interview_prep type", () => {
+    expect(
+      saveArtifactInputSchema.safeParse({
+        userId: "u1",
+        analysisId: "a1",
+        type: "interview_prep",
+        content: { questions: [] },
+      }).success,
+    ).toBe(true)
   })
 })

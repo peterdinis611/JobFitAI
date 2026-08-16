@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { extractJobTitle, hostFromUrl, normalizeJobUrl, wordCount } from "./extract-job-title"
+import {
+  extractJobTitle,
+  hostFromUrl,
+  looksLikeJobPaste,
+  normalizeJobUrl,
+  wordCount,
+} from "./extract-job-title"
 
 describe("extractJobTitle", () => {
   it("returns undefined for empty text", () => {
@@ -56,5 +62,19 @@ describe("wordCount", () => {
   it("counts words", () => {
     expect(wordCount("  one two   three ")).toBe(3)
     expect(wordCount("")).toBe(0)
+  })
+})
+
+describe("looksLikeJobPaste", () => {
+  it("detects multiline job text", () => {
+    expect(
+      looksLikeJobPaste(
+        "Senior Engineer\nRequirements:\n- React\n- TypeScript\nWe are looking for a teammate",
+      ),
+    ).toBe(true)
+  })
+
+  it("rejects a clean URL", () => {
+    expect(looksLikeJobPaste("https://careers.acme.com/jobs/123")).toBe(false)
   })
 })

@@ -27,6 +27,7 @@ Some runs also use `load_job_posting` when the job is already stored and only ne
 | `tailor-cv` | parse_resume → tailor_bullets → save_artifact |
 | `generate-cover-letter` | parse_resume → generate_cover_letter → save_artifact |
 | `generate-learning-plan` | generate_learning_plan → save_artifact |
+| `generate-interview-prep` | parse_resume → load_job_posting → generate_interview_prep → save_artifact |
 | `rescore-after-edit` | parse_resume → score_match → save_analysis (+ previousAnalysisId) |
 
 ## Effect + Zod
@@ -47,7 +48,7 @@ openai("gpt-4.1")
 
 Requires `OPENAI_API_KEY` in the environment for the Next/eve process.
 
-Used by the agent chat and structured tools: `score_match`, `tailor_bullets`, `generate_cover_letter`, `generate_learning_plan`.
+Used by the agent chat and structured tools: `score_match`, `tailor_bullets`, `generate_cover_letter`, `generate_learning_plan`, `generate_interview_prep`.
 
 ## Instructions
 

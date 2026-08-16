@@ -159,10 +159,31 @@ export const learningPlanOutputSchema = z.object({
   plans: z.array(learningPlanItemSchema).min(1),
 })
 
+export const interviewQuestionSchema = z.object({
+  question: z.string().min(8),
+  category: z.enum(["behavioral", "technical", "role", "culture"]),
+  whyAsked: z.string().min(8),
+  tip: z.string().min(8),
+})
+
+export const interviewPrepInputSchema = z.object({
+  resumeText: z.string().min(50),
+  jobText: z.string().min(50),
+  jobTitle: z.string().optional(),
+  matchingSkills: z.array(z.string()).optional(),
+  missingSkills: z.array(z.string()).optional(),
+  seniorityFit: seniorityFitSchema.optional(),
+})
+
+export const interviewPrepOutputSchema = z.object({
+  questions: z.array(interviewQuestionSchema).min(5).max(10),
+  opener: z.string().min(20).optional(),
+})
+
 export const saveArtifactInputSchema = z.object({
   userId: z.string().min(1),
   analysisId: z.string().min(1),
-  type: z.enum(["tailored_bullets", "cover_letter", "learning_plan"]),
+  type: z.enum(["tailored_bullets", "cover_letter", "learning_plan", "interview_prep"]),
   content: z.unknown(),
 })
 

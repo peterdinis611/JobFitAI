@@ -111,6 +111,15 @@ export default function AnalyzePage() {
     toast.message("Paste the full job description, then run again")
   }
 
+  function handleJobPasteDetected(text: string) {
+    setTab("text")
+    setJobText(text)
+    setJobUrl("")
+    setUrlFetchFailed(false)
+    setTitleTouched(false)
+    toast.message("Detected job text — switched to Paste")
+  }
+
   async function runAnalysis() {
     if (!userId || !activeResume) {
       toast.error("Upload an active resume first")
@@ -222,6 +231,7 @@ export default function AnalyzePage() {
             onJobTextChange={setJobText}
             jobUrl={jobUrl}
             onJobUrlChange={setJobUrl}
+            onJobPasteDetected={handleJobPasteDetected}
             jobTitle={jobTitle}
             onJobTitleChange={handleJobTitleChange}
             titleAutoDetected={!titleTouched && Boolean(jobTitle)}

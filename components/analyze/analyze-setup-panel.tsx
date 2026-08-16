@@ -6,7 +6,12 @@ import { useMemo } from "react"
 import { JobPostingEditor } from "@/components/analyze/job-posting-editor"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { extractJobTitle, hostFromUrl, normalizeJobUrl } from "@/lib/extract-job-title"
+import {
+  extractJobTitle,
+  hostFromUrl,
+  looksLikeJobPaste,
+  normalizeJobUrl,
+} from "@/lib/extract-job-title"
 import { cn } from "@/lib/utils"
 
 type AnalyzeSetupPanelProps = {
@@ -18,6 +23,8 @@ type AnalyzeSetupPanelProps = {
   onJobTextChange: (value: string) => void
   jobUrl: string
   onJobUrlChange: (value: string) => void
+  /** Fired when pasted text into the URL field looks like a full job posting. */
+  onJobPasteDetected?: (text: string) => void
   jobTitle: string
   onJobTitleChange: (value: string) => void
   titleAutoDetected: boolean
@@ -36,6 +43,7 @@ export function AnalyzeSetupPanel({
   onJobTextChange,
   jobUrl,
   onJobUrlChange,
+  onJobPasteDetected,
   jobTitle,
   onJobTitleChange,
   titleAutoDetected,
@@ -138,24 +146,43 @@ export function AnalyzeSetupPanel({
                 placeholder="https://company.com/careers/…"
                 className="mac-field"
                 value={jobUrl}
-                onChange={(e) => onJobUrlChange(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value
+                  if (onJobPasteDetected && looksLikeJobPaste(value)) {
+                    onJobPasteDetected(value)
+                    return
+                  }
+                  onJobUrlChange(value)
+                }}
+                onPaste={(e) => {
+                  const pasted = e.clipboardData.getData("text")
+                  if (onJobPasteDetected && looksLikeJobPaste(pasted)) {
+                    e.preventDefault()
+                    onJobPasteDetected(pasted)
+                  }
+                }}
                 disabled={isBusy}
               />
               {jobUrl.trim() && !normalizedUrl ? (
                 <p className="text-[11px] text-destructive">Need a valid HTTPS URL</p>
               ) : null}
               {urlHost ? (
-                <p className="text-[11px] text-muted-foreground">Fetch from {urlHost}</p>
+                <p className="text-[11px] text-muted-foreground">
+                  Fetch from {urlHost} · if it fails, we’ll ask you to paste
+                </p>
               ) : (
                 <p className="text-[11px] text-muted-foreground">
-                  Prefer paste if the board blocks bots.
+                  Prefer paste if the board blocks bots. Pasting full text here auto-switches.
                 </p>
               )}
               {urlFetchFailed ? (
                 <div className="space-y-2 rounded-xl border border-warning/35 bg-warning/10 px-3 py-2.5 text-[13px]">
                   <p className="flex items-start gap-2 text-warning">
                     <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
-                    <span>URL fetch failed — paste the posting instead.</span>
+                    <span>
+                      URL fetch blocked or empty — open the posting in your browser, copy the text,
+                      and paste it here.
+                    </span>
                   </p>
                   <Button type="button" size="sm" variant="secondary" onClick={onSwitchToPaste}>
                     Switch to paste

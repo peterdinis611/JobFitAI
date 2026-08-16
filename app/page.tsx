@@ -22,6 +22,7 @@ import {
   DashboardGettingStarted,
   DashboardNoFilterResults,
 } from "@/components/dashboard/dashboard-states"
+import { HistoryInsightsPanel } from "@/components/dashboard/history-insights"
 import { AnimatedProgress } from "@/components/ui/animated-progress"
 import { Button } from "@/components/ui/button"
 import {
@@ -37,6 +38,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
+import { computeHistoryInsights } from "@/lib/history-insights"
 import { matchToneClass, roleTitle, seniorityLabel } from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
@@ -85,6 +87,19 @@ export default function DashboardPage() {
     const best = Math.max(...rows.map(({ analysis }) => analysis.matchPercentage))
     return { avg, best, count: rows.length }
   }, [rows])
+
+  const insights = useMemo(
+    () =>
+      computeHistoryInsights(
+        (rows ?? []).map(({ analysis }) => ({
+          createdAt: analysis.createdAt,
+          matchPercentage: analysis.matchPercentage,
+          missingSkills: analysis.missingSkills,
+          archivedAt: analysis.archivedAt,
+        })),
+      ),
+    [rows],
+  )
 
   function toggleCompare(id: Id<"analyses">) {
     setCompareIds((prev) => {
@@ -180,6 +195,8 @@ export default function DashboardPage() {
           { label: "Best", value: `${stats.best}%`, tone: "warning" },
         ]}
       />
+
+      <HistoryInsightsPanel insights={insights} />
 
       {compareIds.length > 0 ? (
         <div className="sticky top-[60px] z-20 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/30 bg-background/95 px-4 py-3 text-sm shadow-sm backdrop-blur supports-backdrop-filter:bg-background/80">

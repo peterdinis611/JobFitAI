@@ -32,5 +32,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "convex"]
+  "exclude": ["node_modules", "convex", "website", ".next", ".eve", "dist", "public"]
 }

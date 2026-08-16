@@ -66,7 +66,11 @@ Insert analysis row (and auto-create a Tracker **Saved** application when missin
 
 | **Output** | `{ plans: [{ skill, durationWeeks, steps[] }] }` |
 
+### `generate_interview_prep`
+
+| **Output** | `{ opener?, questions: [{ question, category, whyAsked, tip }] }` — 5–10 items |
+
 ### `save_artifact`
 
 | **Input** | `{ userId, analysisId, type, content }` |
-| **type** | `tailored_bullets` \| `cover_letter` \| `learning_plan` |
+| **type** | `tailored_bullets` \| `cover_letter` \| `learning_plan` \| `interview_prep` |

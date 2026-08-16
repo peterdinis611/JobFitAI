@@ -79,3 +79,20 @@ export function hostFromUrl(url: string): string | undefined {
     return undefined
   }
 }
+
+/**
+ * True when the URL field likely received pasted job text (not a single URL).
+ * Used to auto-switch Analyze to the Paste tab.
+ */
+export function looksLikeJobPaste(value: string): boolean {
+  const trimmed = value.trim()
+  if (trimmed.length < 60) return false
+  if (normalizeJobUrl(trimmed) && !trimmed.includes("\n") && trimmed.length < 300) return false
+
+  const lines = trimmed.split(/\r?\n/).filter((l) => l.trim().length > 0)
+  if (lines.length >= 3) return true
+  if (trimmed.length >= 160 && !normalizeJobUrl(trimmed.split(/\s/)[0] ?? "")) return true
+  return /responsibilities|requirements|qualifications|we are looking|about the role|povinnosti|požadavky/i.test(
+    trimmed,
+  )
+}

@@ -8,6 +8,7 @@ import {
   FileText,
   Kanban,
   Loader2,
+  MessageSquareQuote,
   PenLine,
   RefreshCw,
   Sparkles,
@@ -23,6 +24,7 @@ import {
 } from "@/components/ai-elements/conversation"
 import {
   CoverLetterView,
+  InterviewPrepView,
   LearningPlanView,
   TailoredBulletsView,
 } from "@/components/analyses/artifact-views"
@@ -78,6 +80,10 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
   const learningPlan = useQuery(api.artifacts.getByType, {
     analysisId: data.analysis._id,
     type: "learning_plan",
+  })
+  const interviewPrep = useQuery(api.artifacts.getByType, {
+    analysisId: data.analysis._id,
+    type: "interview_prep",
   })
   const application = useQuery(api.applications.getByAnalysis, {
     analysisId: data.analysis._id,
@@ -198,6 +204,17 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
   const tailoredContent = tailored?.content as { bullets?: unknown[] } | undefined
   const coverContent = coverLetter?.content as { coverLetter?: string } | undefined
   const planContent = learningPlan?.content as { plans?: unknown[] } | undefined
+  const interviewContent = interviewPrep?.content as
+    | {
+        questions?: {
+          question: string
+          category: "behavioral" | "technical" | "role" | "culture"
+          whyAsked: string
+          tip: string
+        }[]
+        opener?: string
+      }
+    | undefined
 
   return (
     <div className="space-y-4">
@@ -225,7 +242,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
         <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-3">
           <h2 className="text-[15px] font-semibold tracking-tight">Career tools</h2>
           <p className="text-xs text-muted-foreground">
-            Tailor bullets, cover letter, learning plan, or re-score
+            Tailor bullets, cover letter, learning plan, interview prep, or re-score
           </p>
         </div>
         <div className="flex flex-wrap gap-2 p-4">
@@ -290,6 +307,25 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
             size="sm"
             variant="outline"
             disabled={isBusy}
+            onClick={() =>
+              void runSkill(
+                "generate-interview-prep",
+                "parse_resume → load_job_posting → generate_interview_prep → save_artifact",
+                "interview_prep",
+              )
+            }
+          >
+            {running === "generate-interview-prep" ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <MessageSquareQuote className="size-4" />
+            )}
+            Interview prep
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={isBusy}
             onClick={() => fileRef.current?.click()}
           >
             {rescoreUploading ? (
@@ -334,6 +370,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
           <TabsTrigger value="tailored_bullets">Tailored bullets</TabsTrigger>
           <TabsTrigger value="cover_letter">Cover letter</TabsTrigger>
           <TabsTrigger value="learning_plan">Learning plan</TabsTrigger>
+          <TabsTrigger value="interview_prep">Interview prep</TabsTrigger>
           <TabsTrigger value="stream" className="gap-1">
             <Sparkles className="size-3.5" /> Agent
           </TabsTrigger>
@@ -373,6 +410,17 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
             />
           ) : (
             <EmptyArtifact hint="Click Learning plan for 2-week plans to close skill gaps" />
+          )}
+        </TabsContent>
+
+        <TabsContent value="interview_prep" className="mt-4">
+          {interviewContent?.questions?.length ? (
+            <InterviewPrepView
+              questions={interviewContent.questions}
+              opener={interviewContent.opener}
+            />
+          ) : (
+            <EmptyArtifact hint="Click Interview prep for questions tailored to this role and your CV" />
           )}
         </TabsContent>
 

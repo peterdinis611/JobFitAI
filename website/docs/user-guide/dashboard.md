@@ -12,13 +12,18 @@ History is every match you've saved — filterable, sortable, and ready to compa
 History lists **analyses** (reports). The **Tracker** lists **applications** (pipeline stages). Saving an analysis fills both. See [History vs Tracker](../concepts/history-vs-tracker).
 :::
 
-## Stat cards
+## Stat strip + insights
 
-| Card | Meaning |
-|------|---------|
-| **Total analyses** | Count of all saved reports |
-| **Average match** | Mean match % across history |
-| **Best score** | Highest match % achieved |
+| Metric | Meaning |
+|--------|---------|
+| **Analyses** | Count of reports in the current list |
+| **Average** | Mean match % |
+| **Best** | Highest match % |
+
+Below that, **Insights** shows:
+
+- **Match trend** — recent scores over time (+/− pts from first → last in the window)
+- **Top missing skills** — skills that recur across reports (how often they appear as gaps)
 
 ## Filters and sort
 

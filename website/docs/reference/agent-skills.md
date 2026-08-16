@@ -30,6 +30,10 @@ Draft cover letter from analysis context; save as `cover_letter` artifact.
 
 2-week plans per missing skill; save as `learning_plan` artifact.
 
+### `generate-interview-prep`
+
+Role-specific interview questions + tips from resume + JD; save as `interview_prep` artifact.
+
 ### `rescore-after-edit`
 
 Re-run match with new resume version; pass `previousAnalysisId`; report delta.

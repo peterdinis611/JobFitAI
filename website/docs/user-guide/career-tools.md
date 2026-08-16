@@ -48,6 +48,14 @@ Example output format:
 > 1. Week 1: Read official GraphQL docs…  
 > 2. Week 1: Build hello-world query…
 
+## Interview prep
+
+**Skill:** `generate-interview-prep`
+
+Generates **6–8 interview questions** from the job posting + your resume (behavioral, technical, role, culture), each with why it’s asked and a tip grounded in your CV.
+
+**Tab:** Opener + question cards, copy-all.
+
 ## Re-score
 
 **Skill:** `rescore-after-edit`

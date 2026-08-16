@@ -99,6 +99,7 @@ export default defineSchema({
       v.literal("tailored_bullets"),
       v.literal("cover_letter"),
       v.literal("learning_plan"),
+      v.literal("interview_prep"),
     ),
     content: v.any(),
     createdAt: v.number(),

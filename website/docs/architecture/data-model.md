@@ -64,6 +64,7 @@ Tracker kanban: `saved` | `applied` | `interview` | `offer`. One per analysis (u
 | `tailored_bullets` | `{ bullets: [{ original, rewritten, rationale? }] }` |
 | `cover_letter` | `{ coverLetter: string }` |
 | `learning_plan` | `{ plans: [{ skill, durationWeeks, steps[] }] }` |
+| `interview_prep` | `{ opener?, questions: [{ question, category, whyAsked, tip }] }` |
 
 ### `rateLimits`
 
