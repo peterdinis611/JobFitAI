@@ -1,0 +1,11 @@
+---
+description: JobFit AI project conventions (eve + Convex)
+alwaysApply: true
+---
+
+# JobFit AI
+
+- Follow `AGENTS.md` for eve framework guidance (`node_modules/eve/docs/` or https://eve.dev/docs).
+- For Convex work, read `convex/_generated/ai/guidelines.md` first.
+- Project agent skills live in `.cursor/skills/` (Convex helpers).
+- Prefer Bun scripts: `bun run lint`, `bun run typecheck`, `bun run test`.
