@@ -32,10 +32,10 @@ export function AuthScreen() {
           </div>
 
           <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
-            <SignInButton mode="redirect">
+            <SignInButton mode="redirect" forceRedirectUrl="/" fallbackRedirectUrl="/">
               <Button className="w-full sm:w-auto">Sign in</Button>
             </SignInButton>
-            <SignUpButton mode="redirect">
+            <SignUpButton mode="redirect" forceRedirectUrl="/" fallbackRedirectUrl="/">
               <Button variant="outline" className="w-full sm:w-auto">
                 Create account
               </Button>

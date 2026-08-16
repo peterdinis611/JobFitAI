@@ -1,6 +1,6 @@
 "use client"
 
-import { UserButton } from "@clerk/nextjs"
+import { SignOutButton, UserButton, useAuth } from "@clerk/nextjs"
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
 import { BookOpen, Briefcase, FileText, GitCompare, History, Kanban } from "lucide-react"
 import { motion } from "motion/react"
@@ -8,6 +8,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { AuthScreen } from "@/components/auth/auth-screen"
 import { RobotLogo, RobotLogoMark } from "@/components/brand/robot-logo"
+import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { cn } from "@/lib/utils"
@@ -52,8 +53,85 @@ const links = [
   },
 ]
 
+function ShellLoading() {
+  return (
+    <div className="relative flex min-h-dvh items-center justify-center bg-background">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      <motion.div
+        className="flex flex-col items-center gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
+        <RobotLogo size={44} />
+        <div className="h-1 w-16 overflow-hidden rounded-full bg-muted">
+          <motion.div
+            className="h-full w-1/2 rounded-full bg-primary"
+            animate={{ x: ["-100%", "200%"] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
+/** Clerk session exists but Convex rejected the JWT (missing Convex integration / template). */
+function ConvexAuthMismatch() {
+  return (
+    <div className="relative flex min-h-dvh flex-col items-center justify-center bg-background px-4">
+      <div className="absolute top-4 right-4">
+        <ThemeToggle />
+      </div>
+      <div className="mac-window w-full max-w-md overflow-hidden">
+        <div className="border-b border-border bg-[var(--mac-titlebar)] px-5 py-4">
+          <div className="flex items-center gap-3">
+            <RobotLogoMark />
+            <div>
+              <h1 className="text-[17px] font-semibold tracking-tight">Almost there</h1>
+              <p className="text-xs text-muted-foreground">Clerk is signed in · Convex is not</p>
+            </div>
+          </div>
+        </div>
+        <div className="space-y-4 px-5 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            Activate the{" "}
+            <a
+              className="font-medium text-primary underline-offset-2 hover:underline"
+              href="https://dashboard.clerk.com/apps/setup/convex"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Clerk → Convex integration
+            </a>
+            , then sign out and sign back in so a fresh JWT is issued.
+          </p>
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+            <Button asChild size="sm">
+              <a
+                href="https://dashboard.clerk.com/apps/setup/convex"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open Clerk Convex setup
+              </a>
+            </Button>
+            <SignOutButton redirectUrl="/">
+              <Button variant="outline" size="sm">
+                Sign out and retry
+              </Button>
+            </SignOutButton>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
+  const { isLoaded, isSignedIn } = useAuth()
   const isClerkAuthRoute = pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up")
 
   if (isClerkAuthRoute) {
@@ -67,32 +145,25 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     )
   }
 
+  // Gate the marketing/auth screen on Clerk — not Convex.
+  // Using Convex <Unauthenticated> here caused a / ↔ /sign-in loop when Clerk
+  // already had a session but the Convex JWT template was missing.
+  if (!isLoaded) {
+    return <ShellLoading />
+  }
+
+  if (!isSignedIn) {
+    return <AuthScreen />
+  }
+
   return (
     <>
       <AuthLoading>
-        <div className="relative flex min-h-dvh items-center justify-center bg-background">
-          <div className="absolute top-4 right-4">
-            <ThemeToggle />
-          </div>
-          <motion.div
-            className="flex flex-col items-center gap-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <RobotLogo size={44} />
-            <div className="h-1 w-16 overflow-hidden rounded-full bg-muted">
-              <motion.div
-                className="h-full w-1/2 rounded-full bg-primary"
-                animate={{ x: ["-100%", "200%"] }}
-                transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-              />
-            </div>
-          </motion.div>
-        </div>
+        <ShellLoading />
       </AuthLoading>
 
       <Unauthenticated>
-        <AuthScreen />
+        <ConvexAuthMismatch />
       </Unauthenticated>
 
       <Authenticated>

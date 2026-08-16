@@ -2,6 +2,38 @@ import { withEve } from "eve/next"
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
+  // Avoid advertising the framework in responses.
+  poweredByHeader: false,
+
+  // Modularize barrel imports. lucide-react / recharts / effect are already
+  // optimized by Next defaults; these are the heavy ones we actually use.
+  experimental: {
+    optimizePackageImports: ["radix-ui", "@clerk/nextjs", "motion", "@tiptap/react"],
+  },
+
+  images: {
+    formats: ["image/avif", "image/webp"],
+    remotePatterns: [
+      { protocol: "https", hostname: "img.clerk.com" },
+      { protocol: "https", hostname: "images.clerk.dev" },
+    ],
+  },
+
+  async headers() {
+    return [
+      {
+        // Hashed Docusaurus assets under /docs — long-lived cache.
+        source: "/docs/assets/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+    ]
+  },
+
   async redirects() {
     return [
       {
@@ -11,6 +43,7 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+
   async rewrites() {
     return {
       beforeFiles: [
