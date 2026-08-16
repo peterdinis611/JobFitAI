@@ -13,23 +13,23 @@ export function AuthHeroIllustration({ className }: { className?: string }) {
       aria-hidden
     >
       <defs>
-        <linearGradient id="docGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="oklch(0.72 0.12 195)" />
-          <stop offset="100%" stopColor="oklch(0.55 0.14 210)" />
+        <linearGradient id="authDocGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="var(--primary)" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.55" />
         </linearGradient>
-        <linearGradient id="jobGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="oklch(0.78 0.14 55)" />
-          <stop offset="100%" stopColor="oklch(0.68 0.16 45)" />
+        <linearGradient id="authJobGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#64D2FF" stopOpacity="0.9" />
+          <stop offset="100%" stopColor="var(--primary)" stopOpacity="0.65" />
         </linearGradient>
       </defs>
 
       <motion.circle
         cx="240"
         cy="180"
-        r="120"
-        className="fill-teal-500/5 stroke-teal-500/20"
+        r="128"
+        className="fill-primary/[0.06] stroke-primary/20"
         strokeWidth="1.5"
-        animate={{ scale: [1, 1.04, 1], opacity: [0.6, 1, 0.6] }}
+        animate={{ scale: [1, 1.04, 1], opacity: [0.55, 1, 0.55] }}
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       />
 
@@ -37,28 +37,30 @@ export function AuthHeroIllustration({ className }: { className?: string }) {
         animate={{ y: [0, -6, 0] }}
         transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
       >
-        <rect x="72" y="88" width="120" height="156" rx="14" fill="url(#docGrad)" opacity="0.9" />
-        <rect x="92" y="118" width="72" height="8" rx="4" fill="white" opacity="0.85" />
+        <rect x="72" y="88" width="120" height="156" rx="14" fill="url(#authDocGrad)" />
+        <rect x="92" y="118" width="72" height="8" rx="4" fill="white" opacity="0.9" />
         <rect x="92" y="138" width="80" height="6" rx="3" fill="white" opacity="0.55" />
         <rect x="92" y="154" width="64" height="6" rx="3" fill="white" opacity="0.55" />
         <rect x="92" y="170" width="72" height="6" rx="3" fill="white" opacity="0.55" />
         <rect x="92" y="186" width="56" height="6" rx="3" fill="white" opacity="0.55" />
+        <rect x="92" y="210" width="40" height="16" rx="8" fill="white" opacity="0.35" />
       </motion.g>
 
       <motion.g
         animate={{ y: [0, 6, 0] }}
         transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
       >
-        <rect x="288" y="104" width="120" height="140" rx="14" fill="url(#jobGrad)" opacity="0.9" />
-        <rect x="308" y="132" width="72" height="8" rx="4" fill="white" opacity="0.85" />
+        <rect x="288" y="104" width="120" height="140" rx="14" fill="url(#authJobGrad)" />
+        <rect x="308" y="132" width="72" height="8" rx="4" fill="white" opacity="0.9" />
         <rect x="308" y="152" width="80" height="6" rx="3" fill="white" opacity="0.55" />
         <rect x="308" y="168" width="64" height="6" rx="3" fill="white" opacity="0.55" />
         <rect x="308" y="184" width="72" height="6" rx="3" fill="white" opacity="0.55" />
+        <rect x="308" y="208" width="48" height="16" rx="8" fill="white" opacity="0.35" />
       </motion.g>
 
       <motion.path
         d="M192 168 C220 168 220 192 248 192"
-        stroke="oklch(0.55 0.14 200)"
+        className="stroke-primary"
         strokeWidth="2.5"
         strokeLinecap="round"
         strokeDasharray="6 6"
@@ -68,18 +70,19 @@ export function AuthHeroIllustration({ className }: { className?: string }) {
       <motion.circle
         cx="220"
         cy="180"
-        r="18"
-        className="fill-teal-500/15 stroke-teal-600"
+        r="20"
+        className="fill-primary/15 stroke-primary"
         strokeWidth="2"
-        animate={{ scale: [1, 1.12, 1] }}
+        animate={{ scale: [1, 1.1, 1] }}
         transition={{ duration: 2, repeat: Infinity }}
       />
       <text
         x="220"
         y="185"
         textAnchor="middle"
-        className="fill-teal-700 text-[11px] font-bold"
+        className="fill-primary text-[11px] font-bold"
         fontSize="11"
+        fontFamily="var(--font-system)"
       >
         AI
       </text>

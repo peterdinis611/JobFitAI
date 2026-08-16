@@ -1,5 +1,6 @@
 import { SignUp } from "@clerk/nextjs"
 import type { Metadata } from "next"
+import { AuthRouteShell } from "@/components/auth/auth-route-shell"
 
 export const metadata: Metadata = {
   title: "Create account",
@@ -9,8 +10,11 @@ export const metadata: Metadata = {
 
 export default function SignUpPage() {
   return (
-    <div className="flex min-h-screen items-center justify-center px-4">
+    <AuthRouteShell
+      title="Create your account"
+      subtitle="Start scoring job fit and tracking applications in minutes."
+    >
       <SignUp forceRedirectUrl="/" fallbackRedirectUrl="/" signInUrl="/sign-in" />
-    </div>
+    </AuthRouteShell>
   )
 }

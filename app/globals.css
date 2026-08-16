@@ -259,3 +259,50 @@ textarea {
     font-size: 2rem;
   }
 }
+
+/* ── Auth signal deck (scoped front-door aesthetic) ── */
+.auth-deck {
+  --auth-bg: #07090d;
+  --auth-fg: #eef2f8;
+  --auth-muted: #8b93a7;
+  --auth-accent: #4f8cff;
+  --auth-signal: #3dff9a;
+  --auth-line: rgba(238, 242, 248, 0.12);
+  background: var(--auth-bg);
+  font-family: var(--font-auth-body), var(--font-system);
+  color-scheme: dark;
+}
+
+:root:not(.dark) .auth-deck {
+  --auth-bg: #eceef3;
+  --auth-fg: #10131a;
+  --auth-muted: #5c6578;
+  --auth-accent: #1a5fff;
+  --auth-signal: #0a9f5c;
+  --auth-line: rgba(16, 19, 26, 0.1);
+  color-scheme: light;
+}
+
+.auth-deck .h-13 {
+  height: 3.25rem;
+}
+
+.auth-clerk-panel {
+  border: 1px solid var(--auth-line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--auth-bg) 72%, transparent);
+  padding: 0.5rem;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+}
+
+.auth-footer-link {
+  color: var(--auth-fg);
+  opacity: 0.78;
+  transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.auth-footer-link:hover {
+  opacity: 1;
+  color: var(--auth-accent);
+}

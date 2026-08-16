@@ -7,7 +7,8 @@ import { motion } from "motion/react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { AuthScreen } from "@/components/auth/auth-screen"
-import { RobotLogo, RobotLogoMark } from "@/components/brand/robot-logo"
+import { AppPreloader } from "@/components/brand/app-preloader"
+import { RobotLogoMark } from "@/components/brand/robot-logo"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
@@ -54,27 +55,7 @@ const links = [
 ]
 
 function ShellLoading() {
-  return (
-    <div className="relative flex min-h-dvh items-center justify-center bg-background">
-      <div className="absolute top-4 right-4">
-        <ThemeToggle />
-      </div>
-      <motion.div
-        className="flex flex-col items-center gap-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <RobotLogo size={44} />
-        <div className="h-1 w-16 overflow-hidden rounded-full bg-muted">
-          <motion.div
-            className="h-full w-1/2 rounded-full bg-primary"
-            animate={{ x: ["-100%", "200%"] }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
-          />
-        </div>
-      </motion.div>
-    </div>
-  )
+  return <AppPreloader label="Syncing session" />
 }
 
 /** Clerk session exists but Convex rejected the JWT (missing Convex integration / template). */
@@ -134,15 +115,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth()
   const isClerkAuthRoute = pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up")
 
+  // Sign-in / sign-up pages render their own branded shell (theme toggle included).
   if (isClerkAuthRoute) {
-    return (
-      <div className="relative min-h-dvh bg-background text-foreground">
-        <div className="absolute top-4 right-4 z-10">
-          <ThemeToggle />
-        </div>
-        {children}
-      </div>
-    )
+    return <>{children}</>
   }
 
   // Gate the marketing/auth screen on Clerk — not Convex.
