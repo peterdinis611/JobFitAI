@@ -73,6 +73,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.4,
     },
+    {
+      url: absoluteUrl("/llms.txt"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.2,
+    },
   ]
 
   const byUrl = new Map<string, SitemapEntry>()

@@ -3,16 +3,22 @@
 import { SignOutButton, UserButton, useAuth } from "@clerk/nextjs"
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
 import { BookOpen, Briefcase, FileText, GitCompare, History, Kanban } from "lucide-react"
-import { motion } from "motion/react"
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { AuthScreen } from "@/components/auth/auth-screen"
 import { AppPreloader } from "@/components/brand/app-preloader"
 import { RobotLogoMark } from "@/components/brand/robot-logo"
-import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { cn } from "@/lib/utils"
+
+const AuthScreen = dynamic(
+  () => import("@/components/auth/auth-screen").then((m) => m.AuthScreen),
+  {
+    ssr: false,
+    loading: () => <AppPreloader label="Loading" />,
+  },
+)
 
 const links = [
   {
@@ -65,16 +71,21 @@ function ConvexAuthMismatch() {
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
-      <div className="mac-window w-full max-w-md overflow-hidden">
-        <div className="border-b border-border bg-[var(--mac-titlebar)] px-5 py-4">
+      <section
+        className="mac-window w-full max-w-md overflow-hidden"
+        aria-labelledby="auth-mismatch-title"
+      >
+        <header className="border-b border-border bg-[var(--mac-titlebar)] px-5 py-4">
           <div className="flex items-center gap-3">
             <RobotLogoMark />
             <div>
-              <h1 className="text-[17px] font-semibold tracking-tight">Almost there</h1>
+              <h1 id="auth-mismatch-title" className="text-[17px] font-semibold tracking-tight">
+                Almost there
+              </h1>
               <p className="text-xs text-muted-foreground">Clerk is signed in · Convex is not</p>
             </div>
           </div>
-        </div>
+        </header>
         <div className="space-y-4 px-5 py-8 text-center">
           <p className="text-sm text-muted-foreground">
             Activate the{" "}
@@ -88,24 +99,26 @@ function ConvexAuthMismatch() {
             </a>
             , then sign out and sign back in so a fresh JWT is issued.
           </p>
-          <div className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
-            <Button asChild size="sm">
-              <a
-                href="https://dashboard.clerk.com/apps/setup/convex"
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open Clerk Convex setup
-              </a>
-            </Button>
+          <p className="flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
+            <a
+              href="https://dashboard.clerk.com/apps/setup/convex"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-8 items-center rounded-lg bg-primary px-4 text-[13px] font-medium text-primary-foreground"
+            >
+              Open Clerk Convex setup
+            </a>
             <SignOutButton redirectUrl="/">
-              <Button variant="outline" size="sm">
+              <button
+                type="button"
+                className="inline-flex h-8 items-center rounded-lg border border-border bg-card px-4 text-[13px] font-medium shadow-sm hover:bg-accent"
+              >
                 Sign out and retry
-              </Button>
+              </button>
             </SignOutButton>
-          </div>
+          </p>
         </div>
-      </div>
+      </section>
     </div>
   )
 }
@@ -115,14 +128,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth()
   const isClerkAuthRoute = pathname.startsWith("/sign-in") || pathname.startsWith("/sign-up")
 
-  // Sign-in / sign-up pages render their own branded shell (theme toggle included).
   if (isClerkAuthRoute) {
     return <>{children}</>
   }
 
-  // Gate the marketing/auth screen on Clerk — not Convex.
-  // Using Convex <Unauthenticated> here caused a / ↔ /sign-in loop when Clerk
-  // already had a session but the Convex JWT template was missing.
   if (!isLoaded) {
     return <ShellLoading />
   }
@@ -166,7 +175,7 @@ function AuthenticatedShell({
             <span className="hidden text-[15px] sm:inline">JobFit AI</span>
           </Link>
 
-          <nav className="mac-segmented hidden overflow-x-auto sm:flex">
+          <nav className="mac-segmented hidden overflow-x-auto sm:flex" aria-label="Primary">
             {links.map(({ href, label, icon: Icon, static: isStatic, match }) => {
               const active = match(pathname)
               const className = cn(
@@ -175,7 +184,7 @@ function AuthenticatedShell({
               )
               const inner = (
                 <>
-                  <Icon className="size-3.5 shrink-0 opacity-80" strokeWidth={2.25} />
+                  <Icon className="size-3.5 shrink-0 opacity-80" strokeWidth={2.25} aria-hidden />
                   <span>{label}</span>
                 </>
               )
@@ -184,7 +193,12 @@ function AuthenticatedShell({
                   {inner}
                 </a>
               ) : (
-                <Link key={href} href={href} className={className}>
+                <Link
+                  key={href}
+                  href={href}
+                  className={className}
+                  aria-current={active ? "page" : undefined}
+                >
                   {inner}
                 </Link>
               )
@@ -208,7 +222,10 @@ function AuthenticatedShell({
           </div>
         </div>
 
-        <div className="flex gap-1 overflow-x-auto border-t border-border/60 px-3 py-2 sm:hidden">
+        <nav
+          className="flex gap-1 overflow-x-auto border-t border-border/60 px-3 py-2 sm:hidden"
+          aria-label="Primary mobile"
+        >
           {links.map(({ href, label, icon: Icon, static: isStatic, match }) => {
             const active = match(pathname)
             const className = cn(
@@ -219,7 +236,7 @@ function AuthenticatedShell({
             )
             const inner = (
               <>
-                <Icon className="size-3.5" />
+                <Icon className="size-3.5" aria-hidden />
                 {label}
               </>
             )
@@ -228,23 +245,25 @@ function AuthenticatedShell({
                 {inner}
               </a>
             ) : (
-              <Link key={href} href={href} className={className}>
+              <Link
+                key={href}
+                href={href}
+                className={className}
+                aria-current={active ? "page" : undefined}
+              >
                 {inner}
               </Link>
             )
           })}
-        </div>
+        </nav>
       </header>
 
-      <motion.main
-        className="mx-auto w-full max-w-6xl flex-1 px-4 py-5 sm:px-6 sm:py-6"
-        initial={{ opacity: 0, y: 6 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
+      <main
+        className="shell-page mx-auto w-full max-w-6xl flex-1 px-4 py-5 sm:px-6 sm:py-6"
         key={pathname}
       >
         {children}
-      </motion.main>
+      </main>
     </div>
   )
 }

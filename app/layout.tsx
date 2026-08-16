@@ -7,13 +7,14 @@ import { ConvexClientProvider } from "@/components/providers/convex-provider"
 import { AppThemeProvider } from "@/components/providers/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { ogImage } from "@/lib/seo"
 import { absoluteUrl, getSiteUrl, siteConfig } from "@/lib/site"
 import "./globals.css"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getSiteUrl()),
   title: {
-    default: siteConfig.name,
+    default: `${siteConfig.name} — ${siteConfig.tagline}`,
     template: `%s · ${siteConfig.name}`,
   },
   description: siteConfig.description,
@@ -31,13 +32,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: absoluteUrl("/"),
     siteName: siteConfig.name,
-    title: siteConfig.name,
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
+    images: [ogImage],
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
+    images: [ogImage.url],
   },
   robots: {
     index: true,
@@ -79,6 +82,7 @@ const jsonLd = {
   url: absoluteUrl("/"),
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web",
+  image: absoluteUrl("/opengraph-image"),
   offers: {
     "@type": "Offer",
     price: "0",

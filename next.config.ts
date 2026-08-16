@@ -5,10 +5,25 @@ const nextConfig: NextConfig = {
   // Avoid advertising the framework in responses.
   poweredByHeader: false,
 
+  // Browser source maps for production debugging (Sentry / DevTools).
+  productionBrowserSourceMaps: true,
+
   // Modularize barrel imports. lucide-react / recharts / effect are already
   // optimized by Next defaults; these are the heavy ones we actually use.
   experimental: {
-    optimizePackageImports: ["radix-ui", "@clerk/nextjs", "motion", "@tiptap/react"],
+    optimizePackageImports: [
+      "radix-ui",
+      "@clerk/nextjs",
+      "@clerk/ui",
+      "motion",
+      "lucide-react",
+      "@tiptap/react",
+      "@tiptap/starter-kit",
+      "recharts",
+      "sonner",
+      "cmdk",
+      "next-themes",
+    ],
   },
 
   images: {
