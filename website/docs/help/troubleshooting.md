@@ -16,7 +16,7 @@ Error: CONVEX_URL or NEXT_PUBLIC_CONVEX_URL must be set
 
 **Auth crash on sign-up**
 
-→ Ensure schema includes `authTables` and `externalId` is optional on `users`. Run `npx convex dev --once`.
+→ Ensure Clerk is signed in, Convex has `CLERK_JWT_ISSUER_DOMAIN`, and the Clerk Convex integration is active. Sign out and back in after enabling the integration. Run `npx convex dev --once`.
 
 ## Analysis fails
 

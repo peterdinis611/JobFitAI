@@ -1,3 +1,5 @@
+import { ClerkProvider } from "@clerk/nextjs"
+import { shadcn } from "@clerk/ui/themes"
 import type { Metadata } from "next"
 import type { ReactNode } from "react"
 import { AppShell } from "@/components/layout/app-shell"
@@ -16,14 +18,16 @@ export default function RootLayout({ children }: { readonly children: ReactNode 
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <ConvexClientProvider>
-          <AppThemeProvider>
-            <TooltipProvider>
-              <AppShell>{children}</AppShell>
-              <Toaster />
-            </TooltipProvider>
-          </AppThemeProvider>
-        </ConvexClientProvider>
+        <ClerkProvider appearance={{ theme: shadcn }}>
+          <ConvexClientProvider>
+            <AppThemeProvider>
+              <TooltipProvider>
+                <AppShell>{children}</AppShell>
+                <Toaster />
+              </TooltipProvider>
+            </AppThemeProvider>
+          </ConvexClientProvider>
+        </ClerkProvider>
       </body>
     </html>
   )

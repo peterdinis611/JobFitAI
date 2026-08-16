@@ -10,7 +10,11 @@ describe("jobPostings.updateFromFetch", () => {
   it("updates cleaned text and title for the owning user", async () => {
     const t = convexTest(schema, modules)
     const { userId, jobPostingId } = await t.run(async (ctx) => {
-      const userId = await ctx.db.insert("users", { email: "fetch@jobfit.ai" })
+      const userId = await ctx.db.insert("users", {
+        externalId: "clerk_user_fetch",
+        email: "fetch@jobfit.ai",
+        createdAt: Date.now(),
+      })
       const jobPostingId = await ctx.db.insert("jobPostings", {
         userId,
         source: "url",

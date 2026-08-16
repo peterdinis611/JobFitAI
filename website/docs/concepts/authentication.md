@@ -1,35 +1,33 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 # Authentication
 
-JobFit AI uses [Convex Auth](https://labs.convex.dev/auth) with email + password.
+JobFit AI uses [Clerk](https://clerk.com) for sign-in and [Convex](https://docs.convex.dev/auth/clerk) to validate Clerk JWTs on the backend.
 
-## Sign up / sign in
+## Flow
 
-- Email + password (minimum 8 characters)
-- Separate sign-up and sign-in flows
-- Session managed by `ConvexAuthProvider` on the client
+1. User signs in via Clerk (`/sign-in`, `/sign-up`, or landing CTAs)
+2. `ClerkProvider` + `ConvexProviderWithClerk` attach a Convex JWT
+3. `users.ensureCurrentUser` upserts a Convex `users` row keyed by Clerk `subject` (`externalId`)
+4. Queries/mutations call `requireUserId()` which looks up that row
 
-## Server-side enforcement
+## Config
 
-All Convex queries and mutations call `requireUserId()` — the client never passes a trusted `userId` (except agent tools that run server-side with explicit IDs from session context).
+| Piece | Location |
+|-------|----------|
+| Next.js SDK | `@clerk/nextjs` |
+| Middleware | `proxy.ts` (`clerkMiddleware`) |
+| Convex JWT | `convex/auth.config.ts` + `CLERK_JWT_ISSUER_DOMAIN` on Convex |
+| App user map | `users.externalId` = Clerk user id |
 
-## Protected routes
+Activate the [Clerk ↔ Convex integration](https://dashboard.clerk.com/apps/setup/convex) so tokens include the Convex JWT template (`applicationID: "convex"`).
 
-The app shell shows `AuthScreen` until `useConvexAuth()` reports authenticated. All pages (`/`, `/analyze`, `/resumes`, `/tracker`, etc.) require login.
+## UI
 
-## Docs
+- Signed out: landing with **Sign in** / **Create account**
+- Signed in: Clerk **UserButton** in the header
+- Dedicated routes: `/sign-in`, `/sign-up`
 
-Documentation at `/docs` is **public** — served as static files, no auth required.
-
-## User records
-
-Auth tables from `@convex-dev/auth` plus an extended `users` table for app data. Resume and analysis rows are scoped by `userId`.
-
-:::note
-Password reset and email verification are not enabled yet. Only email + password sign-in is supported.
-:::
-
-[Environment variables →](../reference/environment-variables)
+Existing Convex Auth password accounts are not migrated — create a new Clerk account.

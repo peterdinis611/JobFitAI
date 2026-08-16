@@ -8,7 +8,7 @@ End-to-end walkthrough from zero to a saved match report.
 
 ## 1. Create an account
 
-Sign up with email and password. You stay signed in via Convex Auth.
+Sign up with Clerk (email, password, or social). You stay signed in via Clerk + Convex JWT.
 
 ## 2. Upload a resume
 

@@ -26,7 +26,18 @@ Configure in Convex project settings → Environment variables (for Convex funct
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `AUTH_SECRET` | Auto | Set by `@convex-dev/auth` init |
+| `CLERK_JWT_ISSUER_DOMAIN` | Yes (auth) | Clerk Frontend API URL (e.g. `https://…clerk.accounts.dev`) |
+
+## Next.js / Clerk (`.env.local`)
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
+| `CLERK_SECRET_KEY` | Clerk secret key (server only) |
+| `NEXT_PUBLIC_CLERK_SIGN_IN_URL` | Usually `/sign-in` |
+| `NEXT_PUBLIC_CLERK_SIGN_UP_URL` | Usually `/sign-up` |
+
+Activate [Clerk ↔ Convex](https://dashboard.clerk.com/apps/setup/convex) so JWTs work with Convex.
 
 ## Optional
 

@@ -26,7 +26,7 @@ erDiagram
 
 ### `users`
 
-Auth profile + optional `externalId` for legacy migration. Indexes: `email`, `phone`, `by_external_id`.
+Clerk-mapped profile: `externalId` (Clerk subject), optional `email` / `name` / `image`. Indexes: `email`, `by_external_id`.
 
 ### `resumes`
 
@@ -70,8 +70,8 @@ Tracker kanban: `saved` | `applied` | `interview` | `offer`. One per analysis (u
 
 `(userId, date)` → `analysisCount` for daily quota.
 
-## Auth tables
+## Auth
 
-Included via `authTables` from `@convex-dev/auth/server`.
+Sessions live in **Clerk**. Convex `users` rows map via `externalId` (Clerk subject). See [Authentication](../concepts/authentication).
 
 [Convex API →](../reference/convex-api)

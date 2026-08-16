@@ -9,6 +9,7 @@ const modules = import.meta.glob("./**/*.ts")
 async function seedOwnedJob(t: ReturnType<typeof convexTest>) {
   return t.run(async (ctx) => {
     const userId = await ctx.db.insert("users", {
+      externalId: "clerk_user_tester",
       email: "tester@jobfit.ai",
       createdAt: Date.now(),
     })
@@ -102,7 +103,11 @@ describe("analyses.create", () => {
     const t = convexTest(schema, modules)
     const owned = await seedOwnedJob(t)
     const otherUserId = await t.run(async (ctx) =>
-      ctx.db.insert("users", { email: "other@jobfit.ai" }),
+      ctx.db.insert("users", {
+        externalId: "clerk_user_other",
+        email: "other@jobfit.ai",
+        createdAt: Date.now(),
+      }),
     )
 
     await expect(
