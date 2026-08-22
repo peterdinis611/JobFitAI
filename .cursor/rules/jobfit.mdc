@@ -7,5 +7,6 @@ alwaysApply: true
 
 - Follow `AGENTS.md` for eve framework guidance (`node_modules/eve/docs/` or https://eve.dev/docs).
 - For Convex work, read `convex/_generated/ai/guidelines.md` first.
-- Project agent skills live in `.cursor/skills/` (Convex helpers).
+- Project agent skills: `.cursor/skills/` and `.claude/skills/` — start with `jobfit` router, then `jobfit-frontend`, `jobfit-eve-agent`, `jobfit-clerk-convex`, `jobfit-performance`, or `jobfit-verify`.
+- After editing skills, run `bun run skills:sync`.
 - Prefer Bun scripts: `bun run lint`, `bun run typecheck`, `bun run test`.

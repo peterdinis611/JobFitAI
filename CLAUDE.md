@@ -1,5 +1,7 @@
 @AGENTS.md
 
+Claude Code: see [`.claude/CLAUDE.md`](.claude/CLAUDE.md) and skills in `.claude/skills/`.
+
 <!-- convex-ai-start -->
 
 This project uses [Convex](https://convex.dev) as its backend.

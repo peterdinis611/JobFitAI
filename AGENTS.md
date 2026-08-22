@@ -6,6 +6,23 @@ from the installed eve package docs. In most installs, those docs are at
 installed `eve` package location first and read its `docs/` directory. If
 package docs are unavailable, use https://eve.dev/docs as a fallback.
 
+## Agent skills
+
+Project skills live in **`.cursor/skills/`** (Cursor) and **`.claude/skills/`** (Claude Code — keep in sync).
+
+Start with **`jobfit`** router, then the most specific skill:
+
+| Skill | Use for |
+|-------|---------|
+| `jobfit-frontend` | UI, mac shell, auth landing, dashboard |
+| `jobfit-eve-agent` | Agent tools, analyze-match pipeline |
+| `jobfit-clerk-convex` | Clerk + Convex auth |
+| `jobfit-performance` | Bundle, loading, LCP |
+| `jobfit-verify` | lint / typecheck / test before done |
+| `convex` | Backend — routes to `convex-*` skills |
+
+After editing skills: `bun run skills:sync`
+
 <!-- convex-ai-start -->
 
 This project uses [Convex](https://convex.dev) as its backend.
