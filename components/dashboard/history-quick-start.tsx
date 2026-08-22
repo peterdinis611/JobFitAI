@@ -1,9 +1,10 @@
 "use client"
 
+import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Loader2 } from "lucide-react"
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 import { useRunAnalysis } from "@/hooks/use-run-analysis"
 import { SAMPLE_JOB_POSTING } from "@/lib/sample-job-posting"
 import { extractJobTitle, looksLikeJobPaste, normalizeJobUrl } from "@/lib/extract-job-title"
@@ -30,6 +31,24 @@ export function HistoryQuickStart({
     !isBusy &&
     (tab === "text" ? jobText.trim().length > 0 : Boolean(normalizedUrl))
 
+  function notifyNoResume() {
+    toast.error("No resume found", {
+      description: "Upload a PDF or DOCX on the Resumes page before running a match.",
+      action: {
+        label: "Upload",
+        onClick: () => router.push("/resumes"),
+      },
+    })
+  }
+
+  function guardResume(action: () => void) {
+    if (!hasResume) {
+      notifyNoResume()
+      return
+    }
+    action()
+  }
+
   function handleUrlChange(value: string) {
     if (looksLikeJobPaste(value)) {
       setTab("text")
@@ -47,6 +66,10 @@ export function HistoryQuickStart({
   }
 
   async function handleRun() {
+    if (!hasResume) {
+      notifyNoResume()
+      return
+    }
     if (!canRun) return
     let ok = false
     if (tab === "text") {
@@ -81,14 +104,14 @@ export function HistoryQuickStart({
           <button
             key={mode}
             type="button"
-            disabled={!hasResume || isBusy}
-            onClick={() => setTab(mode)}
+            disabled={isBusy}
+            onClick={() => guardResume(() => setTab(mode))}
             className={cn(
               "flex-1 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors",
               tab === mode
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
-              !hasResume && "cursor-not-allowed opacity-50",
+              !hasResume && "opacity-70",
             )}
           >
             {mode === "text" ? "Paste text" : "Job URL"}
@@ -100,34 +123,47 @@ export function HistoryQuickStart({
         <textarea
           value={jobText}
           onChange={(e) => setJobText(e.target.value)}
-          disabled={!hasResume || isBusy}
+          onFocus={() => {
+            if (!hasResume) notifyNoResume()
+          }}
+          readOnly={!hasResume || isBusy}
           placeholder={
             hasResume
               ? "Paste the full job description…"
               : "Upload a resume first — then paste any job posting here."
           }
           rows={4}
-          className="mac-field mt-3 w-full resize-y px-3 py-2.5 text-[14px] leading-relaxed disabled:cursor-not-allowed disabled:opacity-55"
+          className={cn(
+            "mac-field mt-3 w-full resize-y px-3 py-2.5 text-[14px] leading-relaxed",
+            (!hasResume || isBusy) && "cursor-not-allowed opacity-55",
+          )}
         />
       ) : (
         <input
           type="url"
           value={jobUrl}
           onChange={(e) => handleUrlChange(e.target.value)}
-          disabled={!hasResume || isBusy}
+          onFocus={() => {
+            if (!hasResume) notifyNoResume()
+          }}
+          readOnly={!hasResume || isBusy}
           placeholder={hasResume ? "https://company.com/careers/…" : "Upload a resume first"}
-          className="mac-field mt-3 h-10 w-full px-3 text-[14px] disabled:cursor-not-allowed disabled:opacity-55"
+          className={cn(
+            "mac-field mt-3 h-10 w-full px-3 text-[14px]",
+            (!hasResume || isBusy) && "cursor-not-allowed opacity-55",
+          )}
         />
       )}
 
       <div className="mt-4 flex flex-wrap gap-2">
         <button
           type="button"
-          disabled={!canRun}
+          disabled={isBusy}
           onClick={() => void handleRun()}
           className={cn(
             "dash-onboard-btn-primary inline-flex min-w-[140px] items-center gap-2",
-            !canRun && "pointer-events-none opacity-45",
+            isBusy && "pointer-events-none opacity-45",
+            !hasResume && "opacity-80",
           )}
         >
           {isBusy ? <Loader2 className="size-4 animate-spin" /> : null}
@@ -135,11 +171,12 @@ export function HistoryQuickStart({
         </button>
         <button
           type="button"
-          disabled={!hasResume || isBusy}
-          onClick={loadSample}
+          disabled={isBusy}
+          onClick={() => guardResume(loadSample)}
           className={cn(
             "dash-onboard-btn-secondary",
-            (!hasResume || isBusy) && "pointer-events-none opacity-45",
+            isBusy && "pointer-events-none opacity-45",
+            !hasResume && "opacity-80",
           )}
         >
           Use sample job

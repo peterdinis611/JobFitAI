@@ -33,7 +33,9 @@ export function useRunAnalysis() {
 
   async function runAnalysis({ source, raw, title }: RunAnalysisInput) {
     if (!userId || !activeResume) {
-      toast.error("Upload an active resume first")
+      toast.error("No resume found", {
+        description: "Upload a PDF or DOCX on the Resumes page before running a match.",
+      })
       return false
     }
 
