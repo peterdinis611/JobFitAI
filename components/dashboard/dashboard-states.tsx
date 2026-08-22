@@ -1,35 +1,80 @@
 "use client"
 
-import { Briefcase, FileText, Sparkles, Upload } from "lucide-react"
-import { motion } from "motion/react"
 import Link from "next/link"
-import { AuthHeroIllustration } from "@/components/illustrations/jobfit-illustrations"
+import { authFontVariables } from "@/components/auth/auth-fonts"
+import { OnboardIcon } from "@/components/dashboard/onboard-icons"
+import { OnboardPreview } from "@/components/dashboard/onboard-preview"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 const steps = [
   {
-    icon: Upload,
+    n: "01",
     title: "Upload your CV",
     description: "PDF or DOCX — we parse skills, experience, and seniority.",
     href: "/resumes",
     cta: "Upload resume",
+    icon: "upload" as const,
+    accent: "var(--primary)",
   },
   {
-    icon: Briefcase,
+    n: "02",
     title: "Add a job posting",
     description: "Paste the description or drop in a URL from any job board.",
     href: "/analyze",
     cta: "Add job",
+    icon: "radar" as const,
+    accent: "var(--success)",
   },
   {
-    icon: Sparkles,
+    n: "03",
     title: "Get your match score",
-    description: "See fit %, skill gaps, red flags, and tailored recommendations.",
+    description: "Fit %, skill gaps, red flags, and tailored recommendations.",
     href: "/analyze",
     cta: "Run analysis",
+    icon: "spark" as const,
+    accent: "var(--primary)",
   },
-]
+] as const
+
+function OnboardTitlebar({
+  label,
+  step,
+  total = 3,
+}: {
+  label: string
+  step: number
+  total?: number
+}) {
+  return (
+    <div className="mac-titlebar">
+      <div className="mac-traffic-lights" aria-hidden>
+        <span />
+        <span />
+        <span />
+      </div>
+      <span className="font-[family-name:var(--font-auth-mono)] text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+        {label}
+      </span>
+      <span className="ml-auto font-[family-name:var(--font-auth-mono)] text-[10px] tracking-[0.22em] text-primary uppercase">
+        Step {Math.min(step, total)} of {total}
+      </span>
+    </div>
+  )
+}
+
+function ProgressSegments({ completed }: { completed: number }) {
+  return (
+    <div className="dash-onboard-segments" aria-label={`${completed} of 3 steps complete`}>
+      {steps.map((step, index) => (
+        <span
+          key={step.n}
+          className={cn("dash-onboard-segment", index < completed && "dash-onboard-segment-done")}
+        />
+      ))}
+    </div>
+  )
+}
 
 export function DashboardGettingStarted({
   hasResume,
@@ -38,121 +83,167 @@ export function DashboardGettingStarted({
   hasResume: boolean
   className?: string
 }) {
+  const completed = hasResume ? 1 : 0
+  const activeStep = completed + 1
   const primaryHref = hasResume ? "/analyze" : "/resumes"
   const primaryLabel = hasResume ? "Run your first analysis" : "Upload your resume"
 
   return (
-    <motion.div
-      className={cn("mac-window", className)}
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-10">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-              Getting started
-            </p>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-              {hasResume ? "Ready to see how you match?" : "Let’s set up your first match"}
-            </h2>
-            <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-base">
-              {hasResume
-                ? "Paste a job description and get an AI breakdown of fit, missing skills, and CV improvements in under a minute."
-                : "Upload a resume first, then compare it against any job posting to get a detailed match report."}
+    <div className={cn("dash-onboard mac-window", authFontVariables, className)}>
+      <OnboardTitlebar label="Match setup" step={activeStep} />
+
+      <div className="dash-onboard-hero relative">
+        <div aria-hidden className="dash-onboard-glow pointer-events-none absolute inset-0" />
+
+        <div className="relative grid gap-10 p-6 sm:p-8 lg:grid-cols-[1.12fr_0.88fr] lg:items-center lg:gap-12 lg:p-10">
+          <div className="dash-onboard-copy space-y-6">
+            <div className="space-y-3">
+              <p className="font-[family-name:var(--font-auth-mono)] text-[11px] tracking-[0.32em] text-primary uppercase">
+                {hasResume ? "Signal locked" : "Protocol"}
+              </p>
+              <h2 className="font-[family-name:var(--font-auth-display)] text-[clamp(1.75rem,4vw,2.65rem)] leading-[1.05] font-bold tracking-[-0.04em]">
+                {hasResume ? "Resume parsed — add a job to calibrate" : "Let’s set up your first match"}
+              </h2>
+              <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground sm:text-base">
+                {hasResume
+                  ? "Paste a job description and get an AI breakdown of fit, missing skills, and CV improvements in under a minute."
+                  : "Upload a resume first, then compare it against any job posting to get a detailed match report."}
+              </p>
+            </div>
+
+            <ProgressSegments completed={completed} />
+
+            <div className="flex flex-wrap gap-3">
+              <Link href={primaryHref} className="dash-onboard-btn-primary">
+                {primaryLabel}
+              </Link>
+              {!hasResume ? (
+                <Link href="/analyze" className="dash-onboard-btn-secondary">
+                  I already uploaded one
+                </Link>
+              ) : null}
+            </div>
+
+            <p className="font-[family-name:var(--font-auth-mono)] text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
+              {hasResume ? "1 signal captured · 2 inputs remaining" : "0 signals · 3 steps to first report"}
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
-            <Button asChild size="lg">
-              <Link href={primaryHref}>{primaryLabel}</Link>
-            </Button>
-            {!hasResume ? (
-              <Button asChild variant="outline" size="lg">
-                <Link href="/analyze">I already uploaded one</Link>
-              </Button>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="flex justify-center lg:justify-end">
-          <AuthHeroIllustration className="max-h-56 w-full max-w-sm sm:max-h-64" />
+          <OnboardPreview hasResume={hasResume} className="dash-onboard-dial-wrap" />
         </div>
       </div>
 
-      <div className="grid gap-3 border-t border-border bg-muted/20 p-4 sm:grid-cols-3 sm:gap-4 sm:p-6">
+      <ol className="dash-onboard-steps grid gap-3 border-t border-border bg-muted/15 p-4 sm:grid-cols-3 sm:gap-4 sm:p-6">
         {steps.map((step, index) => {
-          const Icon = step.icon
           const done = index === 0 && hasResume
+          const active = index === completed && !done
+
           return (
-            <motion.div
-              key={step.title}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + index * 0.08, duration: 0.4 }}
-            >
+            <li key={step.n}>
               <Link
                 href={step.href}
                 className={cn(
-                  "group flex h-full flex-col rounded-lg border border-border bg-card p-4 transition-all hover:shadow-md",
-                  done && "border-primary/30 bg-primary/5",
+                  "dash-onboard-step group block h-full",
+                  done && "dash-onboard-step-done",
+                  active && "dash-onboard-step-active",
                 )}
+                style={{ ["--step-accent" as string]: step.accent, animationDelay: `${index * 80}ms` }}
               >
-                <div className="mb-3 flex items-center justify-between">
-                  <span
-                    className={cn(
-                      "flex size-9 items-center justify-center rounded-lg",
-                      done ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground",
-                    )}
-                  >
-                    <Icon className="size-4" />
+                <span aria-hidden className="dash-onboard-step-ghost">
+                  {step.n}
+                </span>
+
+                <div className="relative flex items-start justify-between gap-3">
+                  <span className="font-[family-name:var(--font-auth-mono)] text-[11px] tracking-[0.24em] text-primary">
+                    {step.n}
                   </span>
-                  <span className="text-xs font-medium text-muted-foreground">
-                    {String(index + 1).padStart(2, "0")}
+                  <span className="dash-onboard-step-icon" aria-hidden>
+                    <OnboardIcon name={step.icon} />
                   </span>
                 </div>
-                <h3 className="font-medium">{step.title}</h3>
-                <p className="mt-1 flex-1 text-sm text-muted-foreground">{step.description}</p>
-                <span className="mt-3 text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
-                  {done ? "Done ✓" : step.cta} →
+
+                <h3 className="relative mt-8 font-[family-name:var(--font-auth-display)] text-lg leading-tight font-semibold tracking-[-0.03em]">
+                  {step.title}
+                </h3>
+                <p className="relative mt-2 text-sm leading-relaxed text-muted-foreground">
+                  {step.description}
+                </p>
+                <span className="relative mt-4 inline-flex text-sm font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                  {done ? "Done ✓" : `${step.cta} →`}
                 </span>
+
+                {index < steps.length - 1 ? (
+                  <span aria-hidden className="dash-onboard-step-connector hidden sm:block" />
+                ) : null}
               </Link>
-            </motion.div>
+            </li>
           )
         })}
-      </div>
-    </motion.div>
+      </ol>
+    </div>
   )
 }
 
 export function DashboardEmptyHistory({ className }: { className?: string }) {
   return (
-    <motion.div
-      className={cn("mac-panel flex flex-col items-center px-6 py-12 text-center", className)}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <div className="flex size-14 items-center justify-center rounded-2xl bg-muted">
-        <Sparkles className="size-6 text-muted-foreground" />
+    <div className={cn("dash-onboard mac-window", authFontVariables, className)}>
+      <OnboardTitlebar label="History · empty" step={2} />
+
+      <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-10 lg:p-10">
+        <div className="dash-onboard-empty-viz" aria-hidden>
+          <div className="dash-onboard-empty-grid">
+            {[68, 54, 72, 61, 79].map((width, index) => (
+              <div
+                key={width}
+                className="dash-onboard-empty-row"
+                style={{ animationDelay: `${index * 70}ms` }}
+              >
+                <span className="dash-onboard-empty-date" />
+                <span
+                  className="dash-onboard-empty-bar"
+                  style={{ ["--bar-width" as string]: `${width}%` }}
+                />
+                <span className="dash-onboard-empty-score">—</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-center font-[family-name:var(--font-auth-mono)] text-[10px] tracking-[0.22em] text-muted-foreground uppercase">
+            Reports appear here after save
+          </p>
+        </div>
+
+        <div className="dash-onboard-copy space-y-5">
+          <div className="flex size-11 items-center justify-center rounded-xl border border-border bg-primary/10 text-primary">
+            <OnboardIcon name="history" />
+          </div>
+          <div className="space-y-2">
+            <p className="font-[family-name:var(--font-auth-mono)] text-[11px] tracking-[0.32em] text-primary uppercase">
+              No signal yet
+            </p>
+            <h3 className="font-[family-name:var(--font-auth-display)] text-2xl font-bold tracking-[-0.04em]">
+              Your match timeline is waiting
+            </h3>
+            <p className="text-[15px] leading-relaxed text-muted-foreground">
+              Completed analyses land here after the <strong className="font-medium text-foreground">Save report</strong>{" "}
+              step succeeds. If you already ran one, check Analyze — a failed save won&apos;t show up here.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Link href="/analyze" className="dash-onboard-btn-primary">
+              Run analysis
+            </Link>
+            <Link href="/tracker" className="dash-onboard-btn-secondary">
+              Application tracker
+            </Link>
+          </div>
+
+          <p className="font-[family-name:var(--font-auth-mono)] text-[10px] leading-relaxed tracking-[0.12em] text-muted-foreground uppercase">
+            Tracker is separate — save a report from its detail page to track an application.
+          </p>
+        </div>
       </div>
-      <h3 className="mt-4 text-lg font-semibold">No analyses in history yet</h3>
-      <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-        Completed analyses appear here after the <strong>Save report</strong> step succeeds. If you
-        already ran one, check the Analyze page — a failed save won&apos;t show up here.
-      </p>
-      <div className="mt-6 flex flex-wrap justify-center gap-2">
-        <Button asChild>
-          <Link href="/analyze">Run analysis</Link>
-        </Button>
-        <Button asChild variant="outline">
-          <Link href="/tracker">Application tracker</Link>
-        </Button>
-      </div>
-      <p className="mt-4 max-w-sm text-xs text-muted-foreground">
-        Tracker is separate — save a report from its detail page to track an application.
-      </p>
-    </motion.div>
+    </div>
   )
 }
 
@@ -164,19 +255,17 @@ export function DashboardNoFilterResults({
   onClear: () => void
 }) {
   return (
-    <motion.div
-      className="flex flex-col items-center px-4 py-14 text-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-    >
-      <div className="flex size-14 items-center justify-center rounded-2xl bg-muted">
-        <FileText className="size-6 text-muted-foreground" />
+    <div className={cn("dash-onboard mac-panel px-6 py-12 text-center", authFontVariables)}>
+      <div className="mx-auto flex size-12 items-center justify-center rounded-xl border border-border bg-muted/40 text-muted-foreground">
+        <OnboardIcon name="filter" />
       </div>
-      <h3 className="mt-4 text-lg font-semibold">No matches at ≥ {minMatch}%</h3>
-      <p className="mt-1 max-w-sm text-sm text-muted-foreground">
+      <h3 className="mt-4 font-[family-name:var(--font-auth-display)] text-xl font-semibold tracking-[-0.03em]">
+        No matches at ≥ {minMatch}%
+      </h3>
+      <p className="mx-auto mt-2 max-w-sm text-sm text-muted-foreground">
         Try lowering the filter or run a new analysis against a different role.
       </p>
-      <div className="mt-5 flex gap-2">
+      <div className="mt-6 flex flex-wrap justify-center gap-2">
         <Button variant="outline" size="sm" onClick={onClear}>
           Show all
         </Button>
@@ -184,6 +273,6 @@ export function DashboardNoFilterResults({
           <Link href="/analyze">New analysis</Link>
         </Button>
       </div>
-    </motion.div>
+    </div>
   )
 }

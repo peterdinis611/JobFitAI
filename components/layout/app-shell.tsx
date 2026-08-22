@@ -3,22 +3,14 @@
 import { SignOutButton, UserButton, useAuth } from "@clerk/nextjs"
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react"
 import { BookOpen, Briefcase, FileText, GitCompare, History, Kanban } from "lucide-react"
-import dynamic from "next/dynamic"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { AppPreloader } from "@/components/brand/app-preloader"
+import { AuthScreen } from "@/components/auth/auth-screen"
 import { RobotLogoMark } from "@/components/brand/robot-logo"
+import { ShellLoading } from "@/components/brand/shell-loading"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { cn } from "@/lib/utils"
-
-const AuthScreen = dynamic(
-  () => import("@/components/auth/auth-screen").then((m) => m.AuthScreen),
-  {
-    ssr: false,
-    loading: () => <AppPreloader label="Loading" />,
-  },
-)
 
 const links = [
   {
@@ -60,8 +52,8 @@ const links = [
   },
 ]
 
-function ShellLoading() {
-  return <AppPreloader label="Syncing session" />
+function ShellLoadingGate() {
+  return <ShellLoading label="Syncing session" />
 }
 
 /** Clerk session exists but Convex rejected the JWT (missing Convex integration / template). */
@@ -133,7 +125,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   if (!isLoaded) {
-    return <ShellLoading />
+    return <ShellLoadingGate />
   }
 
   if (!isSignedIn) {
@@ -143,7 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <AuthLoading>
-        <ShellLoading />
+        <ShellLoadingGate />
       </AuthLoading>
 
       <Unauthenticated>

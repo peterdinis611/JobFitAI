@@ -17,16 +17,9 @@ const MatchDial = dynamic(() => import("@/components/auth/match-dial").then((m) 
   ),
 })
 
-const AuthBootOverlay = dynamic(
-  () => import("@/components/auth/auth-boot-overlay").then((m) => m.AuthBootOverlay),
-  { ssr: false },
-)
-
 export function AuthScreen() {
   return (
     <div className={cn("auth-deck relative text-[var(--auth-fg)]", authFontVariables)}>
-      <AuthBootOverlay />
-
       <div className="pointer-events-none fixed inset-0 z-0" aria-hidden>
         <AuthAtmosphere />
       </div>
@@ -36,13 +29,6 @@ export function AuthScreen() {
           <ThemeToggle />
         </div>
       </div>
-
-      <a
-        href="#how-it-works"
-        className="fixed bottom-6 left-1/2 z-30 hidden -translate-x-1/2 font-[family-name:var(--font-auth-mono)] text-[10px] tracking-[0.28em] text-[var(--auth-muted)] uppercase transition-colors hover:text-[var(--auth-accent)] md:inline-flex"
-      >
-        Scroll · How it works
-      </a>
 
       <p
         aria-hidden
@@ -120,6 +106,13 @@ export function AuthScreen() {
             Example readout — your score after analysis
           </p>
         </aside>
+
+        <a
+          href="#how-it-works"
+          className="auth-scroll-hint absolute bottom-6 left-1/2 z-20 hidden -translate-x-1/2 font-[family-name:var(--font-auth-mono)] text-[10px] tracking-[0.28em] text-[var(--auth-muted)] uppercase transition-colors hover:text-[var(--auth-accent)] md:inline-flex lg:bottom-8"
+        >
+          Scroll · How it works
+        </a>
       </section>
 
       <AuthHowItWorks />

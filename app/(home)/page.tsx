@@ -17,9 +17,9 @@ import { motion } from "motion/react"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
+import { HistoryEmptyMetrics } from "@/components/dashboard/history-empty-metrics"
+import { HistoryEmptyState } from "@/components/dashboard/history-empty-state"
 import {
-  DashboardEmptyHistory,
-  DashboardGettingStarted,
   DashboardNoFilterResults,
 } from "@/components/dashboard/dashboard-states"
 import { HistoryInsightsPanel } from "@/components/dashboard/history-insights"
@@ -67,6 +67,7 @@ export default function DashboardPage() {
   const [compareIds, setCompareIds] = useState<Id<"analyses">[]>([])
 
   const hasResume = Boolean(resumes?.some((r) => r.isActive))
+  const activeResume = resumes?.find((r) => r.isActive)
   const isEmpty = rows?.length === 0 && !includeArchived
 
   const sorted = useMemo(() => {
@@ -163,12 +164,26 @@ export default function DashboardPage() {
 
   if (isEmpty) {
     return (
-      <div className="space-y-8">
+      <div className="space-y-5">
         <PageHeader
           title="History"
-          description="Track how well your resume matches each job posting over time."
+          description={
+            hasResume
+              ? "Your resume is ready — run a match and saved reports will appear here."
+              : "Track how well your resume matches each job posting over time."
+          }
         />
-        {hasResume ? <DashboardEmptyHistory /> : <DashboardGettingStarted hasResume={false} />}
+        <HistoryEmptyMetrics
+          analysisCount={0}
+          hasResume={hasResume}
+          activeResumeName={activeResume?.fileName}
+          resumes={resumes}
+        />
+        <HistoryEmptyState
+          hasResume={hasResume}
+          activeResumeName={activeResume?.fileName}
+          resumes={resumes}
+        />
       </div>
     )
   }

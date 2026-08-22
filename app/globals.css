@@ -348,6 +348,170 @@ textarea {
   background: color-mix(in srgb, var(--auth-accent) 10%, transparent);
 }
 
+/* ── How it works + footer ── */
+.auth-how {
+  border-top: 1px solid var(--auth-line);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--auth-bg) 92%, transparent) 0%,
+    color-mix(in srgb, var(--auth-fg) 3%, var(--auth-bg)) 100%
+  );
+}
+
+.auth-how-glow {
+  background: radial-gradient(
+    ellipse 70% 50% at 50% 0%,
+    color-mix(in srgb, var(--auth-accent) 10%, transparent),
+    transparent 70%
+  );
+}
+
+.auth-how-header {
+  animation: auth-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.auth-step-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid var(--auth-line);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--auth-fg) 5%, transparent) 0%,
+    color-mix(in srgb, var(--auth-bg) 88%, transparent) 100%
+  );
+  padding: 1.75rem 1.5rem 1.85rem;
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--auth-fg) 8%, transparent) inset;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  animation: auth-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.auth-step-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--step-accent, var(--auth-accent)), transparent);
+  opacity: 0.85;
+}
+
+.auth-step-card:hover {
+  border-color: color-mix(in srgb, var(--step-accent, var(--auth-accent)) 45%, var(--auth-line));
+  transform: translateY(-3px);
+  box-shadow: 0 20px 48px color-mix(in srgb, var(--auth-bg) 55%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--step-accent, var(--auth-accent)) 12%, transparent);
+}
+
+.auth-step-ghost {
+  position: absolute;
+  top: -0.35rem;
+  right: 0.5rem;
+  font-family: var(--font-auth-display), var(--font-system);
+  font-size: clamp(4.5rem, 12vw, 6.5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: var(--auth-fg);
+  opacity: 0.04;
+  pointer-events: none;
+  user-select: none;
+}
+
+.auth-step-index {
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  color: var(--auth-accent);
+}
+
+.auth-step-icon {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--step-accent, var(--auth-accent)) 35%, var(--auth-line));
+  background: color-mix(in srgb, var(--step-accent, var(--auth-accent)) 14%, transparent);
+  color: var(--step-accent, var(--auth-accent));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.auth-step-card:hover .auth-step-icon {
+  transform: scale(1.06);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--step-accent, var(--auth-accent)) 25%, transparent);
+}
+
+.auth-step-connector {
+  position: absolute;
+  top: 2.25rem;
+  right: -0.85rem;
+  width: 1.75rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--auth-accent), var(--auth-signal));
+  opacity: 0.45;
+}
+
+.auth-how-cta {
+  animation: auth-rise 0.55s 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.auth-footer {
+  border-top: 1px solid var(--auth-line);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--auth-fg) 2%, var(--auth-bg)) 0%,
+    var(--auth-bg) 40%
+  );
+}
+
+.auth-footer-mark {
+  border: 1px solid var(--auth-line);
+  background: color-mix(in srgb, var(--auth-accent) 12%, transparent);
+  color: var(--auth-accent);
+}
+
+.auth-footer-link-muted {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.auth-footer-link-muted:hover {
+  color: var(--auth-fg);
+  opacity: 0.55;
+}
+
+.auth-footer-pulse {
+  animation: auth-signal-pulse 2s ease-in-out infinite;
+}
+
+.auth-scroll-hint {
+  animation: auth-scroll-bob 2.4s ease-in-out infinite;
+}
+
+@keyframes auth-signal-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes auth-scroll-bob {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translate(-50%, 4px);
+    opacity: 1;
+  }
+}
+
 @keyframes auth-fade-in {
   from {
     opacity: 0;
@@ -451,10 +615,19 @@ textarea {
   .auth-hero-dial,
   .auth-orb-a,
   .auth-orb-b,
-  .auth-scan {
+  .auth-scan,
+  .auth-how-header,
+  .auth-step-card,
+  .auth-how-cta,
+  .auth-scroll-hint,
+  .auth-footer-pulse {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .auth-step-card:hover {
+    transform: none;
   }
 }
 
@@ -477,4 +650,381 @@ textarea {
   .shell-page {
     animation: none;
   }
+
+  .shell-loading-mark,
+  .shell-loading-bar {
+    animation: none !important;
+  }
+}
+
+@keyframes shell-loading-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes shell-loading-slide {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+.shell-loading-mark {
+  animation: shell-loading-pulse 1.8s ease-in-out infinite;
+}
+
+.shell-loading-bar {
+  animation: shell-loading-slide 0.9s ease-in-out infinite;
+}
+
+/* ── Dashboard onboard / empty states (signal deck inside mac shell) ── */
+.dash-onboard {
+  font-family: var(--font-auth-body), var(--font-system);
+}
+
+.dash-onboard-glow {
+  background: radial-gradient(
+    ellipse 80% 60% at 72% 38%,
+    color-mix(in srgb, var(--primary) 14%, transparent),
+    transparent 68%
+  );
+}
+
+.dash-onboard-copy {
+  animation: auth-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-onboard-dial-wrap {
+  animation: auth-rise 0.65s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-onboard-segments {
+  display: flex;
+  gap: 0.45rem;
+}
+
+.dash-onboard-segment {
+  height: 3px;
+  flex: 1;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.dash-onboard-segment-done {
+  background: linear-gradient(90deg, var(--primary), var(--success));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.dash-onboard-btn-primary,
+.dash-onboard-btn-secondary {
+  display: inline-flex;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+  padding: 0 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: transform 0.15s ease, filter 0.15s ease, border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.dash-onboard-btn-primary {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--primary) 92%, white) 0%,
+    var(--primary) 100%
+  );
+  color: var(--primary-foreground);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.15) inset,
+    0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.dash-onboard-btn-primary:hover {
+  filter: brightness(1.05);
+}
+
+.dash-onboard-btn-secondary {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--foreground) 4%, transparent);
+  color: var(--foreground);
+}
+
+.dash-onboard-btn-secondary:hover {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.dash-onboard-btn-primary:active,
+.dash-onboard-btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.dash-onboard-dial {
+  color: var(--foreground);
+}
+
+.dash-onboard-dial-fill {
+  animation: dash-dial-fill 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-onboard-dial-pulse {
+  animation: dash-dial-pulse 2.4s ease-in-out infinite;
+}
+
+.dash-onboard-needle-idle {
+  transform-origin: 160px 160px;
+  animation: dash-needle-idle 3s ease-in-out infinite;
+}
+
+.dash-onboard-scan {
+  position: absolute;
+  top: 12%;
+  left: 8%;
+  width: 2px;
+  height: 76%;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--primary) 55%, transparent),
+    transparent
+  );
+  opacity: 0.5;
+  animation: dash-scan 3.2s ease-in-out infinite;
+}
+
+.dash-onboard-steps {
+  list-style: none;
+  margin: 0;
+  padding: 1rem;
+}
+
+.dash-onboard-step {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.875rem;
+  border: 1px solid var(--border);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--foreground) 4%, var(--card)) 0%,
+    var(--card) 100%
+  );
+  padding: 1.35rem 1.25rem 1.5rem;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  animation: auth-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-onboard-step::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--step-accent, var(--primary)), transparent);
+  opacity: 0.75;
+}
+
+.dash-onboard-step:hover {
+  border-color: color-mix(in srgb, var(--step-accent, var(--primary)) 40%, var(--border));
+  transform: translateY(-2px);
+  box-shadow: var(--mac-shadow-lg);
+}
+
+.dash-onboard-step-done {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--primary) 10%, var(--card)) 0%,
+    var(--card) 100%
+  );
+}
+
+.dash-onboard-step-active {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.dash-onboard-step-ghost {
+  position: absolute;
+  top: -0.25rem;
+  right: 0.35rem;
+  font-family: var(--font-auth-display), var(--font-system);
+  font-size: clamp(3.5rem, 10vw, 5rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  color: var(--foreground);
+  opacity: 0.035;
+  pointer-events: none;
+  user-select: none;
+}
+
+.dash-onboard-step-icon {
+  display: flex;
+  width: 2.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--step-accent, var(--primary)) 30%, var(--border));
+  background: color-mix(in srgb, var(--step-accent, var(--primary)) 12%, transparent);
+  color: var(--step-accent, var(--primary));
+  transition: transform 0.2s ease;
+}
+
+.dash-onboard-step:hover .dash-onboard-step-icon {
+  transform: scale(1.06);
+}
+
+.dash-onboard-step-connector {
+  position: absolute;
+  top: 2rem;
+  right: -0.65rem;
+  width: 1.25rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--primary), var(--success));
+  opacity: 0.4;
+}
+
+.dash-onboard-empty-viz {
+  animation: auth-rise 0.55s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-onboard-empty-grid {
+  border-radius: 0.875rem;
+  border: 1px dashed color-mix(in srgb, var(--border) 85%, var(--primary));
+  background: color-mix(in srgb, var(--foreground) 3%, var(--card));
+  padding: 1.25rem 1rem;
+}
+
+.dash-onboard-empty-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0;
+  opacity: 0.55;
+  animation: auth-rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-onboard-empty-date {
+  width: 2.75rem;
+  height: 0.45rem;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.dash-onboard-empty-bar {
+  height: 0.45rem;
+  flex: 1;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-onboard-empty-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--bar-width, 50%);
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--primary) 35%, transparent),
+    color-mix(in srgb, var(--success) 25%, transparent)
+  );
+  opacity: 0.45;
+}
+
+.dash-onboard-empty-score {
+  width: 1.75rem;
+  flex-shrink: 0;
+  text-align: right;
+  font-family: var(--font-auth-mono), ui-monospace, monospace;
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+
+@keyframes dash-dial-fill {
+  from {
+    stroke-dasharray: 0 615;
+  }
+}
+
+@keyframes dash-dial-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes dash-needle-idle {
+  0%,
+  100% {
+    transform: rotate(-95deg);
+  }
+  50% {
+    transform: rotate(-88deg);
+  }
+}
+
+@keyframes dash-scan {
+  0%,
+  100% {
+    left: 8%;
+    opacity: 0.25;
+  }
+  50% {
+    left: 88%;
+    opacity: 0.65;
+  }
+}
+
+.dash-onboard-next-banner {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.625rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border));
+  background: color-mix(in srgb, var(--primary) 6%, transparent);
+  padding: 0.5rem 0.85rem;
+  font-family: var(--font-auth-mono), ui-monospace, monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  animation: auth-rise 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-onboard-next-banner-ready {
+  border-color: color-mix(in srgb, var(--success) 30%, var(--border));
+  background: color-mix(in srgb, var(--success) 8%, transparent);
+}
+
+.dash-onboard-quick {
+  border-radius: 0.875rem;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--foreground) 3%, var(--card));
+  padding: 1.15rem 1.1rem 1.25rem;
+  animation: auth-rise 0.55s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.dash-onboard-sample {
+  animation: auth-rise 0.5s 0.06s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
