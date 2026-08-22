@@ -33,6 +33,15 @@ HTTPS careers links (http is upgraded). If fetch fails, Analyze shows a **Switch
 
 You can always set or override the **Role title** field before running.
 
+### Batch
+
+Switch **Batch** on Setup to queue several jobs:
+
+- **Paste:** separate postings with a `---` line
+- **URL:** one HTTPS link per line
+
+Each queued job runs one after another (the agent is single-session) and counts toward the daily analysis limit. Company, location, and salary are extracted when the posting includes them.
+
 ## What happens on Run
 
 ```mermaid

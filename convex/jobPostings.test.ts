@@ -30,13 +30,19 @@ describe("jobPostings.updateFromFetch", () => {
       userId,
       jobPostingId,
       title: "Platform Engineer",
-      cleanedText: "Platform Engineer\nBuild APIs",
+      cleanedText:
+        "Platform Engineer\nCompany: Acme Labs\nLocation: Berlin · Remote\nSalary: €90k\nBuild APIs",
+      company: "Acme Labs",
     })
 
     const job = await t.run(async (ctx) => ctx.db.get(jobPostingId))
     expect(job).toMatchObject({
       title: "Platform Engineer",
-      cleanedText: "Platform Engineer\nBuild APIs",
+      company: "Acme Labs",
+      location: "Berlin · Remote",
+      salary: "€90k",
+      cleanedText:
+        "Platform Engineer\nCompany: Acme Labs\nLocation: Berlin · Remote\nSalary: €90k\nBuild APIs",
     })
   })
 })

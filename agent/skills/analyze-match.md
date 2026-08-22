@@ -7,7 +7,7 @@ Use this playbook when the user requests a **full resume vs. job posting analysi
 ### 1. Gather inputs
 - Confirm `resumeId`, `userId`, and `jobPostingId` from session context.
 - Determine job content:
-  - **URL** → `fetch_job_posting` then `update_job_posting` with the returned title and cleanedText
+  - **URL** → `fetch_job_posting` then `update_job_posting` with the returned title, cleanedText, and any company/location/salary
   - **Pasted text** → call `load_job_posting({ userId, jobPostingId })` to read cleanedText from Convex (do not expect full job text in the chat message)
 
 ### 2. Parse resume

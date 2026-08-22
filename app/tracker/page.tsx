@@ -29,7 +29,8 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
-import { roleTitle } from "@/lib/role-label"
+import { followUpLabel, isFollowUpOverdue } from "@/lib/follow-up"
+import { roleMeta, roleTitle } from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
 type Status = "saved" | "applied" | "interview" | "offer" | "rejected"
@@ -111,18 +112,6 @@ function toDateInputValue(ts: number) {
   return `${yyyy}-${mm}-${dd}`
 }
 
-function followUpLabel(ts: number) {
-  const start = new Date()
-  start.setHours(0, 0, 0, 0)
-  const target = new Date(ts)
-  target.setHours(0, 0, 0, 0)
-  const diffDays = Math.round((target.getTime() - start.getTime()) / (24 * 60 * 60 * 1000))
-  if (diffDays < 0) return `Overdue · ${formatDate(ts)}`
-  if (diffDays === 0) return "Due today"
-  if (diffDays === 1) return "Due tomorrow"
-  return `Due ${formatDate(ts)}`
-}
-
 function TrackerCard({
   row,
   onMove,
@@ -148,7 +137,7 @@ function TrackerCard({
   const [notesDraft, setNotesDraft] = useState(application.notes ?? "")
   const [savingNotes, setSavingNotes] = useState(false)
   const followUpOverdue =
-    application.followUpAt !== undefined && application.followUpAt < Date.now()
+    application.followUpAt !== undefined && isFollowUpOverdue(application.followUpAt)
 
   function handleDragStart(e: DragEvent<HTMLElement>) {
     e.dataTransfer.setData(DRAG_MIME, application._id)
@@ -197,6 +186,11 @@ function TrackerCard({
           <h3 className="line-clamp-2 text-[13px] font-semibold leading-snug tracking-tight">
             {title}
           </h3>
+          {roleMeta(jobPosting) ? (
+            <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
+              {roleMeta(jobPosting)}
+            </p>
+          ) : null}
           <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
             <span
               className={cn(

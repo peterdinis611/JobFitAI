@@ -153,6 +153,17 @@ describe("interviewPrepOutputSchema", () => {
 })
 
 describe("saveArtifactInputSchema", () => {
+  it("allows tailored_cv type", () => {
+    expect(
+      saveArtifactInputSchema.safeParse({
+        userId: "u1",
+        analysisId: "a1",
+        type: "tailored_cv",
+        content: { headline: "x", summary: "y", experience: [], skills: [] },
+      }).success,
+    ).toBe(true)
+  })
+
   it("allows interview_prep type", () => {
     expect(
       saveArtifactInputSchema.safeParse({

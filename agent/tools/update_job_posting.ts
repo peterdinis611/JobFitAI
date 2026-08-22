@@ -9,7 +9,7 @@ import { updateJobPostingInputSchema, updateJobPostingOutputSchema } from "../..
 
 export default defineTool({
   description:
-    "Persist fetched job posting text and extracted title to Convex after fetch_job_posting.",
+    "Persist fetched job posting text, title, and metadata (company, location, salary) to Convex after fetch_job_posting.",
   inputSchema: updateJobPostingInputSchema,
   async execute(input) {
     const program = Effect.tryPromise({
@@ -19,10 +19,16 @@ export default defineTool({
           jobPostingId: input.jobPostingId as Id<"jobPostings">,
           title: input.title,
           cleanedText: input.cleanedText,
+          company: input.company,
+          location: input.location,
+          salary: input.salary,
         })
         return {
           jobPostingId: input.jobPostingId,
           title: input.title,
+          company: input.company,
+          location: input.location,
+          salary: input.salary,
         }
       },
       catch: (error) =>

@@ -1,7 +1,12 @@
 import { v } from "convex/values"
-import { extractJobTitle } from "../lib/extract-job-title"
+import { extractJobMetadata } from "../lib/extract-job-metadata"
 import { mutation, query } from "./_generated/server"
 import { requireUserId } from "./lib/auth"
+
+function trimField(value: string | undefined, max = 120): string | undefined {
+  const trimmed = value?.trim()
+  return trimmed && trimmed.length > 0 ? trimmed.slice(0, max) : undefined
+}
 
 export const create = mutation({
   args: {
@@ -10,16 +15,14 @@ export const create = mutation({
     cleanedText: v.string(),
     url: v.optional(v.string()),
     title: v.optional(v.string()),
+    company: v.optional(v.string()),
+    location: v.optional(v.string()),
+    salary: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUserId(ctx)
-    const trimmedTitle = args.title?.trim()
-    const title =
-      trimmedTitle && trimmedTitle.length > 0
-        ? trimmedTitle.slice(0, 120)
-        : args.source === "text"
-          ? extractJobTitle(args.cleanedText)
-          : undefined
+    const extracted = extractJobMetadata(args.cleanedText, args.url)
+    const title = trimField(args.title) ?? (args.source === "text" ? extracted.title : undefined)
     return await ctx.db.insert("jobPostings", {
       userId,
       source: args.source,
@@ -27,6 +30,9 @@ export const create = mutation({
       cleanedText: args.cleanedText,
       url: args.url,
       title,
+      company: trimField(args.company, 80) ?? extracted.company,
+      location: trimField(args.location, 80) ?? extracted.location,
+      salary: trimField(args.salary, 80) ?? extracted.salary,
       createdAt: Date.now(),
     })
   },
@@ -52,14 +58,21 @@ export const updateFromFetch = mutation({
     jobPostingId: v.id("jobPostings"),
     title: v.optional(v.string()),
     cleanedText: v.string(),
+    company: v.optional(v.string()),
+    location: v.optional(v.string()),
+    salary: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const job = await ctx.db.get(args.jobPostingId)
     if (!job || job.userId !== args.userId) throw new Error("Job posting not found")
-    const title = args.title?.trim() || extractJobTitle(args.cleanedText) || job.title
+    const extracted = extractJobMetadata(args.cleanedText, job.url)
+    const title = trimField(args.title) || extracted.title || job.title
     await ctx.db.patch(args.jobPostingId, {
       cleanedText: args.cleanedText,
       title,
+      company: trimField(args.company, 80) ?? extracted.company ?? job.company,
+      location: trimField(args.location, 80) ?? extracted.location ?? job.location,
+      salary: trimField(args.salary, 80) ?? extracted.salary ?? job.salary,
     })
   },
 })

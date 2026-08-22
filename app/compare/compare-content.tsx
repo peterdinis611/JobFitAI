@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
-import { matchBadgeClass, roleTitle, seniorityLabel } from "@/lib/role-label"
+import { matchBadgeClass, roleMeta, roleTitle, seniorityLabel } from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
 type AnalysisRow = {
@@ -50,7 +50,13 @@ function ComparePanel({ label, data }: { label: string; data: AnalysisRow | null
           {roleTitle(jobPosting, analysis)}
         </h3>
         <p className="truncate text-[11px] text-muted-foreground">
-          {resume?.fileName ?? "Resume"} · {new Date(analysis.createdAt).toLocaleDateString()}
+          {[
+            roleMeta(jobPosting),
+            resume?.fileName ?? "Resume",
+            new Date(analysis.createdAt).toLocaleDateString(),
+          ]
+            .filter(Boolean)
+            .join(" · ")}
         </p>
       </div>
 

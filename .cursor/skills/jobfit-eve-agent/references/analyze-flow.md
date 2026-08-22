@@ -15,6 +15,7 @@
 
 ```
 agent/skills/tailor-cv.md
+agent/skills/generate-tailored-cv.md
 agent/skills/rescore-after-edit.md
 agent/skills/generate-learning-plan.md
 ```

@@ -34,6 +34,11 @@ export function roleTitle(
   return "Untitled role"
 }
 
+export function roleMeta(job: Doc<"jobPostings"> | null | undefined): string | undefined {
+  const parts = [job?.company?.trim(), job?.location?.trim(), job?.salary?.trim()].filter(Boolean)
+  return parts.length > 0 ? parts.join(" · ") : undefined
+}
+
 export function seniorityLabel(fit: "under" | "match" | "over") {
   switch (fit) {
     case "under":

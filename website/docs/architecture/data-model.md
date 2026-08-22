@@ -45,6 +45,7 @@ Clerk-mapped profile: `externalId` (Clerk subject), optional `email` / `name` / 
 | source | `text` \| `url` | Input method |
 | rawText, cleanedText | string | Job content |
 | title | string? | Auto-extracted or from fetch |
+| company, location, salary | string? | Heuristics + JSON-LD when fetching URLs |
 | url | string? | When source is url |
 
 ### `analyses`
@@ -65,6 +66,7 @@ Tracker kanban: `saved` | `applied` | `interview` | `offer`. One per analysis (u
 | `cover_letter` | `{ coverLetter: string }` |
 | `learning_plan` | `{ plans: [{ skill, durationWeeks, steps[] }] }` |
 | `interview_prep` | `{ opener?, questions: [{ question, category, whyAsked, tip }] }` |
+| `tailored_cv` | `{ headline, summary, experience: [{ heading, bullets[] }], skills[] }` |
 
 ### `rateLimits`
 

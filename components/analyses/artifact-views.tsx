@@ -6,6 +6,8 @@ import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import type { TailoredCvDraft } from "@/lib/application-pack"
+import { tailoredCvToMarkdown } from "@/lib/application-pack"
 import {
   downloadTailoredDocx,
   downloadTailoredPdf,
@@ -116,6 +118,70 @@ export function TailoredBulletsView({
           </CardContent>
         </Card>
       ))}
+    </div>
+  )
+}
+
+export function TailoredCvView({ draft, jobTitle }: { draft: TailoredCvDraft; jobTitle?: string }) {
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(tailoredCvToMarkdown(draft, jobTitle))
+      toast.success("Tailored CV copied")
+    } catch {
+      toast.error("Could not copy")
+    }
+  }
+
+  function downloadMarkdown() {
+    downloadTextFile(
+      `tailored-cv-${slugifyRole(jobTitle) || "role"}.md`,
+      tailoredCvToMarkdown(draft, jobTitle),
+    )
+    toast.success("Downloaded tailored CV")
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2">
+        <Button type="button" size="sm" variant="secondary" onClick={() => void copy()}>
+          <Copy className="size-3.5" />
+          Copy draft
+        </Button>
+        <Button type="button" size="sm" variant="outline" onClick={downloadMarkdown}>
+          <Download className="size-3.5" />
+          .md
+        </Button>
+      </div>
+      <Card className="border-border/60 bg-muted/20">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base">{draft.headline}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-sm">
+          <p className="leading-relaxed">{draft.summary}</p>
+          {draft.experience.map((section) => (
+            <div key={section.heading}>
+              <p className="mb-1.5 text-[13px] font-semibold">{section.heading}</p>
+              <ul className="list-disc space-y-1 pl-5">
+                {section.bullets.map((bullet) => (
+                  <li key={`${section.heading}-${bullet.slice(0, 32)}`}>{bullet}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          {draft.skills.length > 0 ? (
+            <div className="flex flex-wrap gap-1">
+              {draft.skills.map((skill) => (
+                <Badge key={skill} variant="secondary">
+                  {skill}
+                </Badge>
+              ))}
+            </div>
+          ) : null}
+        </CardContent>
+      </Card>
+      <p className="text-[11px] text-muted-foreground">
+        Draft only — verify employers, dates, and metrics before you send it.
+      </p>
     </div>
   )
 }

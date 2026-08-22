@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation"
 import { AuthScreen } from "@/components/auth/auth-screen"
 import { RobotLogoMark } from "@/components/brand/robot-logo"
 import { ShellLoading } from "@/components/brand/shell-loading"
+import { FollowUpBell } from "@/components/layout/follow-up-bell"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { cn } from "@/lib/utils"
@@ -203,6 +204,7 @@ function AuthenticatedShell({
                 {email}
               </span>
             ) : null}
+            <FollowUpBell />
             <ThemeToggle />
             <UserButton
               appearance={{

@@ -33,6 +33,9 @@ export default defineSchema({
     cleanedText: v.string(),
     url: v.optional(v.string()),
     title: v.optional(v.string()),
+    company: v.optional(v.string()),
+    location: v.optional(v.string()),
+    salary: v.optional(v.string()),
     createdAt: v.number(),
   }).index("by_user", ["userId"]),
 
@@ -94,6 +97,7 @@ export default defineSchema({
       v.literal("cover_letter"),
       v.literal("learning_plan"),
       v.literal("interview_prep"),
+      v.literal("tailored_cv"),
     ),
     content: v.any(),
     createdAt: v.number(),

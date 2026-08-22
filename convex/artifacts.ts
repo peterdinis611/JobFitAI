@@ -8,6 +8,7 @@ const artifactType = v.union(
   v.literal("cover_letter"),
   v.literal("learning_plan"),
   v.literal("interview_prep"),
+  v.literal("tailored_cv"),
 )
 
 async function assertAnalysisOwned(

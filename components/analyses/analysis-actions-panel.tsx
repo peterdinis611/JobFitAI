@@ -5,6 +5,7 @@ import { useEveAgent } from "eve/react"
 import {
   ArrowRight,
   BookOpen,
+  Download,
   FileText,
   Kanban,
   Loader2,
@@ -27,6 +28,7 @@ import {
   InterviewPrepView,
   LearningPlanView,
   TailoredBulletsView,
+  TailoredCvView,
 } from "@/components/analyses/artifact-views"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -35,6 +37,13 @@ import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
 import { parseAnalysisStream } from "@/lib/analyze-stream"
+import type { TailoredCvDraft } from "@/lib/application-pack"
+import {
+  type ApplicationPackInput,
+  downloadApplicationPackDocx,
+  downloadApplicationPackMarkdown,
+  downloadApplicationPackPdf,
+} from "@/lib/application-pack"
 
 type AnalysisContext = {
   analysis: Doc<"analyses">
@@ -49,6 +58,7 @@ function buildContextJson({ analysis, resume, jobPosting }: AnalysisContext, use
     resumeId: analysis.resumeId,
     jobPostingId: analysis.jobPostingId,
     jobTitle: jobPosting?.title,
+    company: jobPosting?.company,
     matchPercentage: analysis.matchPercentage,
     matchingSkills: analysis.matchingSkills,
     missingSkills: analysis.missingSkills,
@@ -84,6 +94,10 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
   const interviewPrep = useQuery(api.artifacts.getByType, {
     analysisId: data.analysis._id,
     type: "interview_prep",
+  })
+  const tailoredCv = useQuery(api.artifacts.getByType, {
+    analysisId: data.analysis._id,
+    type: "tailored_cv",
   })
   const application = useQuery(api.applications.getByAnalysis, {
     analysisId: data.analysis._id,
@@ -202,6 +216,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
   }
 
   const tailoredContent = tailored?.content as { bullets?: unknown[] } | undefined
+  const tailoredCvContent = tailoredCv?.content as TailoredCvDraft | undefined
   const coverContent = coverLetter?.content as { coverLetter?: string } | undefined
   const planContent = learningPlan?.content as { plans?: unknown[] } | undefined
   const interviewContent = interviewPrep?.content as
@@ -215,6 +230,17 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
         opener?: string
       }
     | undefined
+
+  function buildPack(): ApplicationPackInput {
+    return {
+      analysis: data.analysis,
+      resume: data.resume,
+      jobPosting: data.jobPosting,
+      tailoredCv: tailoredCvContent?.headline ? tailoredCvContent : null,
+      bullets: tailoredContent?.bullets as ApplicationPackInput["bullets"],
+      coverLetter: coverContent?.coverLetter,
+    }
+  }
 
   return (
     <div className="space-y-4">
@@ -242,7 +268,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
         <div className="border-b border-border bg-[var(--mac-titlebar)] px-4 py-3">
           <h2 className="text-[15px] font-semibold tracking-tight">Career tools</h2>
           <p className="text-xs text-muted-foreground">
-            Tailor bullets, cover letter, learning plan, interview prep, or re-score
+            Tailor a full CV, bullets, cover letter, or pack the application
           </p>
         </div>
         <div className="flex flex-wrap gap-2 p-4">
@@ -264,6 +290,25 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
               <PenLine className="size-4" />
             )}
             Tailor bullets
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={isBusy}
+            onClick={() =>
+              void runSkill(
+                "generate-tailored-cv",
+                "parse_resume → load_job_posting → generate_tailored_cv → save_artifact",
+                "tailored_cv",
+              )
+            }
+          >
+            {running === "generate-tailored-cv" ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <FileText className="size-4" />
+            )}
+            Full CV
           </Button>
           <Button
             size="sm"
@@ -346,6 +391,52 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
               e.target.value = ""
             }}
           />
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={isBusy}
+            onClick={() => {
+              const pack = buildPack()
+              try {
+                downloadApplicationPackMarkdown(pack)
+                toast.success("Downloaded application pack")
+              } catch (e) {
+                toast.error(e instanceof Error ? e.message : "Pack export failed")
+              }
+            }}
+          >
+            <Download className="size-4" />
+            Pack .md
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={isBusy}
+            onClick={() => {
+              void downloadApplicationPackDocx(buildPack())
+                .then(() => toast.success("Downloaded pack DOCX"))
+                .catch((e) => toast.error(e instanceof Error ? e.message : "DOCX failed"))
+            }}
+          >
+            <Download className="size-4" />
+            Pack .docx
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            disabled={isBusy}
+            onClick={() => {
+              try {
+                downloadApplicationPackPdf(buildPack())
+                toast.success("Downloaded pack PDF")
+              } catch (e) {
+                toast.error(e instanceof Error ? e.message : "PDF failed")
+              }
+            }}
+          >
+            <Download className="size-4" />
+            Pack .pdf
+          </Button>
           {application ? (
             <Button asChild size="sm" variant="secondary">
               <Link href="/tracker">
@@ -368,6 +459,7 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="flex h-auto flex-wrap gap-1">
           <TabsTrigger value="tailored_bullets">Tailored bullets</TabsTrigger>
+          <TabsTrigger value="tailored_cv">Full CV</TabsTrigger>
           <TabsTrigger value="cover_letter">Cover letter</TabsTrigger>
           <TabsTrigger value="learning_plan">Learning plan</TabsTrigger>
           <TabsTrigger value="interview_prep">Interview prep</TabsTrigger>
@@ -390,6 +482,14 @@ export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
             />
           ) : (
             <EmptyArtifact hint="Click Tailor bullets to rewrite 3–5 resume bullets for this role" />
+          )}
+        </TabsContent>
+
+        <TabsContent value="tailored_cv" className="mt-4">
+          {tailoredCvContent?.headline ? (
+            <TailoredCvView draft={tailoredCvContent} jobTitle={data.jobPosting?.title} />
+          ) : (
+            <EmptyArtifact hint="Click Full CV to generate a role-specific resume draft" />
           )}
         </TabsContent>
 

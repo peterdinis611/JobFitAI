@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { MetricStrip } from "@/components/ui/metric-strip"
 import { api } from "@/convex/_generated/api"
 import type { Id } from "@/convex/_generated/dataModel"
-import { matchBadgeClass, roleTitle, seniorityLabel } from "@/lib/role-label"
+import { matchBadgeClass, roleMeta, roleTitle, seniorityLabel } from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
 export default function AnalysisDetailPage() {
@@ -96,7 +96,13 @@ export default function AnalysisDetailPage() {
             <div className="min-w-0 space-y-1">
               <h1 className="text-lg font-semibold tracking-tight sm:text-xl">{title}</h1>
               <p className="text-xs text-muted-foreground">
-                {resume?.fileName ?? "Resume"} · {new Date(analysis.createdAt).toLocaleString()}
+                {[
+                  roleMeta(jobPosting),
+                  resume?.fileName ?? "Resume",
+                  new Date(analysis.createdAt).toLocaleString(),
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">

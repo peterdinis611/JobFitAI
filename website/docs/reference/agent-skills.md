@@ -22,6 +22,10 @@ Parse unstructured job text into must-haves, nice-to-haves, seniority, domain. U
 
 Rewrite 3–5 bullets; save as `tailored_bullets` artifact; show before/after.
 
+### `generate-tailored-cv`
+
+Full resume draft (headline, summary, experience, skills); save as `tailored_cv` artifact.
+
 ### `generate-cover-letter`
 
 Draft cover letter from analysis context; save as `cover_letter` artifact.

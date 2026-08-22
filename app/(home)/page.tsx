@@ -17,11 +17,9 @@ import { motion } from "motion/react"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
+import { DashboardNoFilterResults } from "@/components/dashboard/dashboard-states"
 import { HistoryEmptyMetrics } from "@/components/dashboard/history-empty-metrics"
 import { HistoryEmptyState } from "@/components/dashboard/history-empty-state"
-import {
-  DashboardNoFilterResults,
-} from "@/components/dashboard/dashboard-states"
 import { HistoryInsightsPanel } from "@/components/dashboard/history-insights"
 import { AnimatedProgress } from "@/components/ui/animated-progress"
 import { Button } from "@/components/ui/button"
@@ -39,7 +37,7 @@ import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { computeHistoryInsights } from "@/lib/history-insights"
-import { matchToneClass, roleTitle, seniorityLabel } from "@/lib/role-label"
+import { matchToneClass, roleMeta, roleTitle, seniorityLabel } from "@/lib/role-label"
 import { cn } from "@/lib/utils"
 
 const filters = [
@@ -384,6 +382,9 @@ function AnalysisCard({
           >
             {title}
           </Link>
+          {roleMeta(jobPosting) ? (
+            <p className="truncate text-[11px] text-muted-foreground">{roleMeta(jobPosting)}</p>
+          ) : null}
           <div className="flex flex-wrap items-center gap-1.5">
             <span
               className={cn(

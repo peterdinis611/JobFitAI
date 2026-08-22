@@ -14,7 +14,7 @@ The eve agent follows skills (playbooks) and calls typed tools. Never guesses re
 |------|------|-------|
 | 1 | `parse_resume` | PDF/DOCX → plain text via Effect |
 | 2 | `fetch_job_posting` | URL only — HTTPS, sanitized HTML |
-| 3 | `update_job_posting` | Persist title + cleaned text |
+| 3 | `update_job_posting` | Persist title, cleaned text, company/location/salary |
 | 4 | `score_match` | LLM structured scoring |
 | 5 | `save_analysis` | Insert `analyses` row (+ auto `applications` Saved) |
 
@@ -25,6 +25,7 @@ Some runs also use `load_job_posting` when the job is already stored and only ne
 | Skill | Tools |
 |-------|-------|
 | `tailor-cv` | parse_resume → tailor_bullets → save_artifact |
+| `generate-tailored-cv` | parse_resume → load_job_posting → generate_tailored_cv → save_artifact |
 | `generate-cover-letter` | parse_resume → generate_cover_letter → save_artifact |
 | `generate-learning-plan` | generate_learning_plan → save_artifact |
 | `generate-interview-prep` | parse_resume → load_job_posting → generate_interview_prep → save_artifact |

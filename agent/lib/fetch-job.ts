@@ -19,10 +19,55 @@ function extractTitle(html: string): string | undefined {
   return titleMatch?.[1]?.replace(/\s+/g, " ").trim() || undefined
 }
 
-function extractJsonLdJobText(html: string): string | undefined {
+function orgName(org: unknown): string | undefined {
+  if (typeof org === "string" && org.trim()) return org.trim()
+  if (org && typeof org === "object" && "name" in org) {
+    const name = (org as { name?: unknown }).name
+    if (typeof name === "string" && name.trim()) return name.trim()
+  }
+  return undefined
+}
+
+function locationText(loc: unknown): string | undefined {
+  if (typeof loc === "string" && loc.trim()) return loc.trim()
+  if (!loc || typeof loc !== "object") return undefined
+  const obj = loc as Record<string, unknown>
+  if (typeof obj.addressLocality === "string") {
+    const country = typeof obj.addressCountry === "string" ? obj.addressCountry : undefined
+    return [obj.addressLocality, country].filter(Boolean).join(", ")
+  }
+  if (obj.address) return locationText(obj.address)
+  return undefined
+}
+
+function salaryText(salary: unknown): string | undefined {
+  if (typeof salary === "string" && salary.trim()) return salary.trim()
+  if (!salary || typeof salary !== "object") return undefined
+  const obj = salary as Record<string, unknown>
+  const value =
+    obj.value && typeof obj.value === "object" ? (obj.value as Record<string, unknown>) : obj
+  const min = value.minValue ?? value.value
+  const max = value.maxValue
+  const currency = typeof obj.currency === "string" ? obj.currency : ""
+  if (typeof min === "number" && typeof max === "number") {
+    return `${currency} ${min}–${max}`.trim()
+  }
+  if (typeof min === "number") return `${currency} ${min}`.trim()
+  return undefined
+}
+
+export type FetchedJobMeta = {
+  title?: string
+  company?: string
+  location?: string
+  salary?: string
+}
+
+export function extractJsonLdJobMeta(html: string): FetchedJobMeta & { cleanedText?: string } {
   const scripts = [
     ...html.matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi),
   ]
+  const meta: FetchedJobMeta = {}
   const chunks: string[] = []
 
   for (const match of scripts) {
@@ -36,9 +81,23 @@ function extractJsonLdJobText(html: string): string | undefined {
         const obj = node as Record<string, unknown>
         const type = String(obj["@type"] ?? "")
         if (!/JobPosting/i.test(type)) continue
-        const title = typeof obj.title === "string" ? obj.title : undefined
+        if (typeof obj.title === "string" && !meta.title) meta.title = obj.title.trim()
+        const company = orgName(obj.hiringOrganization)
+        if (company && !meta.company) meta.company = company
+        const loc = locationText(obj.jobLocation) ?? locationText(obj.jobLocationType)
+        if (
+          typeof obj.jobLocationType === "string" &&
+          /remote/i.test(obj.jobLocationType) &&
+          !meta.location
+        ) {
+          meta.location = loc ? `${loc} · Remote` : "Remote"
+        } else if (loc && !meta.location) {
+          meta.location = loc
+        }
+        const pay = salaryText(obj.baseSalary)
+        if (pay && !meta.salary) meta.salary = pay
         const description = typeof obj.description === "string" ? obj.description : undefined
-        if (title) chunks.push(title)
+        if (typeof obj.title === "string") chunks.push(obj.title)
         if (description) {
           const cleaned = sanitizeHtml(description, {
             allowedTags: ALLOWED_TAGS,
@@ -55,7 +114,11 @@ function extractJsonLdJobText(html: string): string | undefined {
   }
 
   const text = chunks.join("\n\n").trim()
-  return text.length >= 80 ? text : undefined
+  return { ...meta, cleanedText: text.length >= 80 ? text : undefined }
+}
+
+function extractJsonLdJobText(html: string): string | undefined {
+  return extractJsonLdJobMeta(html).cleanedText
 }
 
 function extractMetaDescription(html: string): string | undefined {
@@ -85,7 +148,7 @@ function looksBlocked(html: string, cleaned: string): boolean {
 
 export function fetchAndCleanJobPage(
   url: string,
-): Effect.Effect<{ title: string | undefined; cleanedText: string }, FetchError> {
+): Effect.Effect<{ title: string | undefined; cleanedText: string } & FetchedJobMeta, FetchError> {
   const attempt = Effect.tryPromise({
     try: async () => {
       const response = await fetch(url, {
@@ -110,9 +173,11 @@ export function fetchAndCleanJobPage(
       }
 
       const html = await response.text()
-      const title = extractTitle(html)
+      const jsonLd = extractJsonLdJobMeta(html)
+      const title = jsonLd.title || extractTitle(html)
 
       const candidates = [
+        jsonLd.cleanedText,
         extractJsonLdJobText(html),
         extractMetaDescription(html),
         stripHtml(html),
@@ -128,7 +193,13 @@ export function fetchAndCleanJobPage(
         })
       }
 
-      return { title, cleanedText }
+      return {
+        title,
+        cleanedText,
+        company: jsonLd.company,
+        location: jsonLd.location,
+        salary: jsonLd.salary,
+      }
     },
     catch: (error) =>
       error instanceof FetchError

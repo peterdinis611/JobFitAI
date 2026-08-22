@@ -30,7 +30,8 @@ Drag a card between columns to update status. Drop on the column body (or anothe
 
 - **Add notes** on any card (interview feedback, contacts, next steps). Saves on blur.
 - **Remove** deletes the tracker card only — the History analysis remains.
-- **Follow-up reminders** auto-schedule when you move to **Applied** (7 days) or **Interview** (3 days). Edit or clear the date on the card. Due/overdue items appear in a banner at the top of Tracker.
+- **Follow-up reminders** auto-schedule when you move to **Applied** (7 days) or **Interview** (3 days). Edit or clear the date on the card. Due/overdue items appear in a banner at the top of Tracker and in the **bell** in the app toolbar.
+- Enable **browser alerts** from the bell to get a system notification when a follow-up is overdue. Snooze 1 day or mark done without leaving the current page.
 
 ## Card contents
 

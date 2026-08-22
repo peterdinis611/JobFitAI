@@ -24,6 +24,23 @@ Rewrites **3–5 resume bullets** for the specific job:
 Bullets are suggestions — verify accuracy before using on a real application. The agent won't invent employers but may suggest metrics you should confirm.
 :::
 
+## Full tailored CV
+
+**Skill:** `generate-tailored-cv`
+
+Generates a **full resume draft** for the role: headline, summary, experience sections, and a skills line.
+
+**Tab:** Copy-ready draft. Verify employers, dates, and metrics before sending.
+
+## Application pack
+
+Download **Pack .md / .docx / .pdf** on the report to bundle:
+
+- Match report
+- Tailored CV (if generated)
+- Tailored bullets (if generated)
+- Cover letter (if generated)
+
 ## Cover letter
 
 **Skill:** `generate-cover-letter`

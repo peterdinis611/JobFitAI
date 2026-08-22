@@ -70,7 +70,11 @@ Insert analysis row (and auto-create a Tracker **Saved** application when missin
 
 | **Output** | `{ opener?, questions: [{ question, category, whyAsked, tip }] }` — 5–10 items |
 
+### `generate_tailored_cv`
+
+| **Output** | `{ headline, summary, experience: [{ heading, bullets[] }], skills[] }` |
+
 ### `save_artifact`
 
 | **Input** | `{ userId, analysisId, type, content }` |
-| **type** | `tailored_bullets` \| `cover_letter` \| `learning_plan` \| `interview_prep` |
+| **type** | `tailored_bullets` \| `cover_letter` \| `learning_plan` \| `interview_prep` \| `tailored_cv` |

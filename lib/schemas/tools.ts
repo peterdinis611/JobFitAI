@@ -35,6 +35,9 @@ export const fetchJobPostingInputSchema = z.object({
 export const fetchJobPostingOutputSchema = z.object({
   url: z.string().url(),
   title: z.string().optional(),
+  company: z.string().optional(),
+  location: z.string().optional(),
+  salary: z.string().optional(),
   cleanedText: z.string().min(1),
   wordCount: z.number().int().nonnegative(),
 })
@@ -89,12 +92,18 @@ export const updateJobPostingInputSchema = z.object({
   userId: z.string().min(1),
   jobPostingId: z.string().min(1),
   title: z.string().optional(),
+  company: z.string().optional(),
+  location: z.string().optional(),
+  salary: z.string().optional(),
   cleanedText: z.string().min(1),
 })
 
 export const updateJobPostingOutputSchema = z.object({
   jobPostingId: z.string(),
   title: z.string().optional(),
+  company: z.string().optional(),
+  location: z.string().optional(),
+  salary: z.string().optional(),
 })
 
 export const loadJobPostingInputSchema = z.object({
@@ -106,6 +115,9 @@ export const loadJobPostingOutputSchema = z.object({
   jobPostingId: z.string(),
   source: z.enum(["text", "url"]),
   title: z.string().optional(),
+  company: z.string().optional(),
+  location: z.string().optional(),
+  salary: z.string().optional(),
   cleanedText: z.string().min(1),
   url: z.string().optional(),
   wordCount: z.number().int().nonnegative(),
@@ -180,10 +192,38 @@ export const interviewPrepOutputSchema = z.object({
   opener: z.string().min(20).optional(),
 })
 
+export const tailoredCvSectionSchema = z.object({
+  heading: z.string().min(1),
+  bullets: z.array(z.string().min(1)).min(1),
+})
+
+export const tailoredCvInputSchema = z.object({
+  resumeText: z.string().min(50),
+  jobText: z.string().min(50),
+  jobTitle: z.string().optional(),
+  company: z.string().optional(),
+  matchingSkills: z.array(z.string()).optional(),
+  missingSkills: z.array(z.string()).optional(),
+  recommendations: z.array(z.string()).optional(),
+})
+
+export const tailoredCvOutputSchema = z.object({
+  headline: z.string().min(8),
+  summary: z.string().min(40),
+  experience: z.array(tailoredCvSectionSchema).min(1).max(6),
+  skills: z.array(z.string()).min(3).max(20),
+})
+
 export const saveArtifactInputSchema = z.object({
   userId: z.string().min(1),
   analysisId: z.string().min(1),
-  type: z.enum(["tailored_bullets", "cover_letter", "learning_plan", "interview_prep"]),
+  type: z.enum([
+    "tailored_bullets",
+    "cover_letter",
+    "learning_plan",
+    "interview_prep",
+    "tailored_cv",
+  ]),
   content: z.unknown(),
 })
 
