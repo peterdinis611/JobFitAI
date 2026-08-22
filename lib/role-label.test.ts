@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { matchBadgeClass, matchToneClass, roleTitle, seniorityLabel } from "./role-label"
+import { matchBadgeClass, matchToneClass, roleMeta, roleTitle, seniorityLabel } from "./role-label"
 
 describe("roleTitle", () => {
   it("prefers explicit job title", () => {
@@ -36,6 +36,23 @@ describe("roleTitle", () => {
 
   it("returns Untitled role as last resort", () => {
     expect(roleTitle(null)).toBe("Untitled role")
+  })
+})
+
+describe("roleMeta", () => {
+  it("joins company, location, and salary", () => {
+    expect(
+      roleMeta({
+        company: " Acme ",
+        location: "Berlin",
+        salary: "€90k",
+      } as never),
+    ).toBe("Acme · Berlin · €90k")
+  })
+
+  it("returns undefined when nothing is set", () => {
+    expect(roleMeta(null)).toBeUndefined()
+    expect(roleMeta({ title: "Engineer" } as never)).toBeUndefined()
   })
 })
 

@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest"
 import { z } from "zod"
 import {
   fetchJobPostingInputSchema,
+  fetchJobPostingOutputSchema,
   interviewPrepOutputSchema,
   normalizeOptionalId,
   saveAnalysisInputSchema,
   saveArtifactInputSchema,
   scoreMatchOutputSchema,
+  tailoredCvOutputSchema,
+  updateJobPostingInputSchema,
 } from "./tools"
 
 describe("fetchJobPostingInputSchema", () => {
@@ -152,6 +155,72 @@ describe("interviewPrepOutputSchema", () => {
   })
 })
 
+describe("fetchJobPostingOutputSchema", () => {
+  it("accepts optional company, location, and salary", () => {
+    const parsed = fetchJobPostingOutputSchema.parse({
+      url: "https://acme.com/jobs/1",
+      title: "Engineer",
+      company: "Acme",
+      location: "Remote",
+      salary: "$140k",
+      cleanedText: "Engineer role at Acme",
+      wordCount: 4,
+    })
+    expect(parsed.company).toBe("Acme")
+    expect(parsed.location).toBe("Remote")
+    expect(parsed.salary).toBe("$140k")
+  })
+})
+
+describe("updateJobPostingInputSchema", () => {
+  it("requires cleaned text and accepts metadata", () => {
+    expect(
+      updateJobPostingInputSchema.safeParse({
+        userId: "u1",
+        jobPostingId: "j1",
+        cleanedText: "Role text",
+        company: "Acme",
+        location: "Berlin",
+        salary: "€90k",
+      }).success,
+    ).toBe(true)
+    expect(
+      updateJobPostingInputSchema.safeParse({
+        userId: "u1",
+        jobPostingId: "j1",
+        cleanedText: "",
+      }).success,
+    ).toBe(false)
+  })
+})
+
+describe("tailoredCvOutputSchema", () => {
+  const valid = {
+    headline: "Frontend Engineer · React and TypeScript",
+    summary:
+      "Product-minded engineer who ships customer-facing work with clear ownership and measurable outcomes.",
+    experience: [
+      {
+        heading: "Engineer · Acme",
+        bullets: ["Shipped the dashboard", "Cut build time in half", "Mentored two juniors"],
+      },
+    ],
+    skills: ["React", "TypeScript", "CSS"],
+  }
+
+  it("accepts a full CV draft", () => {
+    expect(tailoredCvOutputSchema.safeParse(valid).success).toBe(true)
+  })
+
+  it("rejects a headline that is too short", () => {
+    expect(tailoredCvOutputSchema.safeParse({ ...valid, headline: "Dev" }).success).toBe(false)
+  })
+
+  it("rejects empty experience", () => {
+    expect(tailoredCvOutputSchema.safeParse({ ...valid, experience: [] }).success).toBe(false)
+  })
+})
+
 describe("saveArtifactInputSchema", () => {
   it("allows tailored_cv type", () => {
     expect(
@@ -162,6 +231,17 @@ describe("saveArtifactInputSchema", () => {
         content: { headline: "x", summary: "y", experience: [], skills: [] },
       }).success,
     ).toBe(true)
+  })
+
+  it("rejects unknown artifact types", () => {
+    expect(
+      saveArtifactInputSchema.safeParse({
+        userId: "u1",
+        analysisId: "a1",
+        type: "resume_pdf",
+        content: {},
+      }).success,
+    ).toBe(false)
   })
 
   it("allows interview_prep type", () => {

@@ -36,6 +36,29 @@ describe("analysisToMarkdown", () => {
     expect(md).toContain("1. Add a GraphQL project")
   })
 
+  it("includes company, location, and salary when present", () => {
+    const md = analysisToMarkdown({
+      analysis: {
+        createdAt: Date.now(),
+        matchPercentage: 70,
+        seniorityFit: "match",
+        matchingSkills: [],
+        missingSkills: [],
+        redFlags: [],
+        recommendations: ["Keep going"],
+      } as never,
+      jobPosting: {
+        title: "Platform Engineer",
+        company: "Acme Labs",
+        location: "Berlin",
+        salary: "€90k",
+      } as never,
+    })
+    expect(md).toContain("**Company:** Acme Labs")
+    expect(md).toContain("**Location:** Berlin")
+    expect(md).toContain("**Salary:** €90k")
+  })
+
   it("falls back when job title is missing", () => {
     const md = analysisToMarkdown({
       analysis: {

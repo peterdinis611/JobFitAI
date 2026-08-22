@@ -65,7 +65,7 @@ function inferCompanyFromTitleLine(firstLine?: string): string | undefined {
 function companyFromHost(url: string): string | undefined {
   const host = hostFromUrl(url)
   if (!host) return undefined
-  const skip = /^(www|jobs|careers|boards|linkedin|indeed|glassdoor)$/i
+  const skip = /^(www|jobs|careers|boards|linkedin|indeed|glassdoor|com|org|net|io)$/i
   const root = host.split(".").find((part) => !skip.test(part))
   if (!root) return undefined
   return root.charAt(0).toUpperCase() + root.slice(1)

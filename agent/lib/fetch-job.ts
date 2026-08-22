@@ -87,7 +87,7 @@ export function extractJsonLdJobMeta(html: string): FetchedJobMeta & { cleanedTe
         const loc = locationText(obj.jobLocation) ?? locationText(obj.jobLocationType)
         if (
           typeof obj.jobLocationType === "string" &&
-          /remote/i.test(obj.jobLocationType) &&
+          /remote|telecommute/i.test(obj.jobLocationType) &&
           !meta.location
         ) {
           meta.location = loc ? `${loc} · Remote` : "Remote"
