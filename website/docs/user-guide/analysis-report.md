@@ -11,8 +11,9 @@ The full match report for a single resume + job pairing.
 ## Header
 
 - **Job title** (from posting or [role-label fallbacks](../concepts/role-titles))
+- **Company · location · salary** when extracted ([job metadata](../concepts/job-metadata))
 - **Resume filename** and analysis date
-- **Copy report** — exports Markdown to clipboard
+- **Export** — copy or download the match report as Markdown / DOCX / PDF
 - **Match score ring** and seniority badge (Right level / Below target / Above target)
 
 ## Re-score delta
@@ -40,8 +41,11 @@ With a link to the previous report.
 Below the report, the **Career tools** panel provides:
 
 - [Tailor bullets](./career-tools#tailor-bullets)
+- [Full tailored CV](./career-tools#full-tailored-cv)
+- [Application pack](./career-tools#application-pack)
 - [Cover letter](./career-tools#cover-letter)
 - [Learning plan](./career-tools#learning-plan)
+- [Interview prep](./career-tools#interview-prep)
 - [Re-score](./career-tools#re-score)
 - [Save to tracker](./career-tools#save-to-tracker)
 
@@ -49,4 +53,6 @@ Generated content appears in tabs; the **Agent** tab shows the live stream.
 
 ## Export format
 
-Copy report produces Markdown with role, score, skills, flags, and recommendations — ready for Notion, email, or version control.
+Copy / download on the report produces Markdown (or DOCX / PDF) with role, score, skills, flags, and recommendations — ready for Notion, email, or version control.
+
+To include a tailored CV, bullets, and cover letter in one file, use **Pack .md / .docx / .pdf** after those career tools have run. See [Application pack](./career-tools#application-pack).

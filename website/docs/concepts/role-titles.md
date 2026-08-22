@@ -43,8 +43,13 @@ Raw agent values are mapped for display:
 
 These appear on History cards and reports — not as the raw enum.
 
+## Company, location, salary
+
+Those fields are stored separately and shown as a subtitle — they are not part of this title fallback chain. See [Job metadata](./job-metadata).
+
 ## Related
 
 - [Dashboard](../user-guide/dashboard)  
+- [Job metadata](./job-metadata)  
 - [Matching scores](./matching-scores)  
 - [Job title extraction](../architecture/data-model#jobpostings) (data model)  

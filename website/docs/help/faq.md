@@ -20,7 +20,19 @@ Yes. Paste the full job description on the Analyze page (recommended when boards
 
 ### Why is my match score lower than expected?
 
-The agent weights must-have skills heavily and flags honest gaps. Check **Missing skills** and **Recommendations** on the report. Use **Learning plan** and **Tailor bullets** to improve.
+The agent weights must-have skills heavily and flags honest gaps. Check **Missing skills** and **Recommendations** on the report. Use **Learning plan**, **Full CV**, and **Tailor bullets** to improve.
+
+### Can I analyze several jobs at once?
+
+Yes. On Analyze, switch **Batch**. Separate pastes with a `---` or `***` line, or put one HTTPS URL per line. Jobs run one after another. Each successful run counts toward the daily analysis limit.
+
+### How do follow-up reminders work?
+
+Moving a Tracker card to **Applied** (+7 days) or **Interview** (+3 days) sets `followUpAt` if no date exists. The toolbar **bell** lists due items; **Enable browser alerts** sends one system notification per overdue card per UTC day. See [Tracker](../user-guide/tracker#follow-up-notifications).
+
+### What is the application pack?
+
+On the report, **Pack .md / .docx / .pdf** downloads one file with the match report plus any Full CV, tailored bullets, and cover letter you already generated.
 
 ### Which AI model is used?
 
@@ -60,7 +72,7 @@ Parsing runs on first analysis. Run any analysis once, then preview updates.
 
 ### Do career tools count toward the limit?
 
-Full analyses and re-score yes. Tailor / cover letter / learning plan currently do not increment the counter.
+Full analyses (including each batch item) and re-score yes. Tailor bullets, Full CV, cover letter, learning plan, and interview prep do not increment the counter.
 
 ### Analysis stream shows errors about auth / empty IDs
 

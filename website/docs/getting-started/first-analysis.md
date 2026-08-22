@@ -24,8 +24,8 @@ After the first analysis, open **Preview** on a resume card to see parsed text a
 
 1. Go to **Analyze**  
 2. Confirm your active resume is shown in the setup panel  
-3. Paste the job description in the editor (or switch to **URL** for an HTTPS careers link)  
-4. Click **Run analysis**  
+3. Paste the job description in the editor (or switch to **URL** for an HTTPS careers link). For several roles, switch **Batch** — `---` between pastes, or one URL per line  
+4. Click **Run analysis** (or **Add to queue** → **Analyze N**)  
 
 Watch the **progress panel** — steps typically go:
 
@@ -52,16 +52,20 @@ On `/analyses/[id]` you'll see:
 - Skill radar chart (when categories are available)  
 - Matching / missing skills  
 - Red flags and recommendations  
-- **Career tools** panel (tailor, cover letter, learning plan, re-score)  
+- Company / location / salary when the posting included them  
+- **Career tools** panel (full CV, bullets, cover letter, pack, learning plan, interview prep, re-score)  
 
 ## 6. Go further
 
 | Goal | Where |
 |------|-------|
+| Tailor a full CV | Report → **Career tools** → Full CV |
 | Tailor CV bullets | Report → **Career tools** → Tailor bullets |
+| Download one application file | Report → **Pack .md / .docx / .pdf** |
 | Draft cover letter | Report → **Cover letter** |
 | Close skill gaps | Report → **Learning plan** |
 | Move application stage | **Tracker** → drag card or change status |
+| Follow-up after apply | **Tracker** → Applied (bell + optional browser alerts) |
 | Compare two roles | History → select two → **Compare selected** |
 | Re-score after CV edit | Report → **Re-score with new CV** |
 
@@ -69,6 +73,7 @@ On `/analyses/[id]` you'll see:
 
 - Paste the **full** job description (requirements + responsibilities), not just the title  
 - Put the job title near the top of the paste so History shows a clear role name  
+- Add `Company:` / `Location:` / `Salary:` lines when you have them ([job metadata](../concepts/job-metadata))  
 - Prefer PDF/DOCX with selectable text (scanned images parse poorly)  
 
 [Recommended workflow →](./recommended-workflow) · [Role titles →](../concepts/role-titles)

@@ -53,7 +53,9 @@ Match your resume to any role — with honest scoring, actionable feedback, and 
 | **Match analysis** | Resume vs job posting → match %, skills, red flags, recommendations |
 | **History** | Filterable list of every saved report with compare |
 | **Tracker** | Kanban (Saved → Offer) with drag-and-drop; auto-added on save |
-| **Career tools** | Tailored CV, bullets, cover letter, learning plan, application pack |
+| **Career tools** | Tailored CV, bullets, cover letter, learning plan, interview prep, application pack |
+| **Follow-ups** | Toolbar bell + optional browser alerts when Applied / Interview dates are due |
+| **Batch analyze** | Queue several pastes (`---`) or URLs (one per line) |
 | **Re-score** | Upload a revised CV and see the match % delta |
 
 ## How a match works
@@ -68,10 +70,10 @@ flowchart LR
 ```
 
 1. Upload a PDF/DOCX resume  
-2. Paste a job description (or HTTPS URL) on **Analyze**  
-3. The eve agent parses, scores, and saves  
+2. Paste a job description, drop an HTTPS URL, or **batch** several postings on **Analyze**  
+3. The eve agent parses, scores, and saves (title / company / location / salary when present)  
 4. Open the report from **History**; the role also lands in **Tracker**  
-5. Optionally tailor bullets, draft a cover letter, or re-score after edits  
+5. Optionally generate a tailored CV, pack the application, or re-score after edits  
 
 [Full walkthrough →](./getting-started/first-analysis) · [Recommended workflow →](./getting-started/recommended-workflow)
 
@@ -101,6 +103,7 @@ flowchart LR
 | First analysis | [Getting started →](./getting-started/first-analysis) |
 | How scoring works | [Matching scores →](./concepts/matching-scores) |
 | Why “Untitled role”? | [Role titles →](./concepts/role-titles) |
+| Company / location / salary | [Job metadata →](./concepts/job-metadata) |
 | System architecture | [Overview →](./architecture/overview) |
 | Environment variables | [Reference →](./reference/environment-variables) |
 | Deploy | [Production →](./deployment/production) |

@@ -46,7 +46,7 @@ Re-run match with new resume version; pass `previousAnalysisId`; report delta.
 
 From `agent/instructions.md`:
 
-> Load skills on demand — `analyze-match` for full analysis; `tailor-cv`, `generate-cover-letter`, etc. for post-analysis actions.
+> Load skills on demand — `analyze-match` for full analysis; `tailor-cv`, `generate-tailored-cv`, `generate-cover-letter`, etc. for post-analysis actions.
 
 The UI triggers skills via `agent.send()` with context JSON and explicit skill name in the message.
 

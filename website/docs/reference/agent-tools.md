@@ -19,20 +19,29 @@ Load resume from Convex storage; extract PDF/DOCX text.
 
 ### `fetch_job_posting`
 
-Fetch HTTPS URL, strip HTML, return clean text.
+Fetch HTTPS URL, strip HTML, return clean text plus metadata when JSON-LD / heuristics find it.
 
 | | |
 |---|---|
 | **Input** | `{ url }` — HTTPS only, max 2048 chars |
-| **Output** | `{ url, title?, cleanedText, wordCount }` |
+| **Output** | `{ url, title?, company?, location?, salary?, cleanedText, wordCount }` |
 
 ### `update_job_posting`
 
-Persist fetched job content + title.
+Persist fetched job content, title, and metadata.
 
 | | |
 |---|---|
-| **Input** | `{ userId, jobPostingId, title?, cleanedText }` |
+| **Input** | `{ userId, jobPostingId, title?, company?, location?, salary?, cleanedText }` |
+
+### `load_job_posting`
+
+Load a stored posting for career tools (trusted `userId` + `getForAgent`).
+
+| | |
+|---|---|
+| **Input** | `{ userId, jobPostingId }` |
+| **Output** | `{ jobPostingId, source, title?, company?, location?, salary?, cleanedText, url?, wordCount }` |
 
 ### `score_match`
 

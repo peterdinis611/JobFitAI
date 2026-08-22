@@ -49,7 +49,7 @@ openai("gpt-4.1")
 
 Requires `OPENAI_API_KEY` in the environment for the Next/eve process.
 
-Used by the agent chat and structured tools: `score_match`, `tailor_bullets`, `generate_cover_letter`, `generate_learning_plan`, `generate_interview_prep`.
+Used by the agent chat and structured tools: `score_match`, `tailor_bullets`, `generate_tailored_cv`, `generate_cover_letter`, `generate_learning_plan`, `generate_interview_prep`.
 
 ## Instructions
 

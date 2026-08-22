@@ -39,6 +39,7 @@ Each saved analysis appears as a card (not a dense table row):
 |---------|-------------|
 | ☐ | Select for comparison (pick two) |
 | **Role** | Best available title — see [Role titles](../concepts/role-titles) |
+| **Meta** | Company · location · salary when extracted ([job metadata](../concepts/job-metadata)) |
 | **Match** | Percentage with progress bar and color tone |
 | **Seniority** | Human label: Right level / Below target / Above target |
 | **Skills** | Chips for top matching skills |

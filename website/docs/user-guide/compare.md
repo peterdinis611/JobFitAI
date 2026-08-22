@@ -23,6 +23,7 @@ Use the dropdowns to pick any two analyses from your history.
 
 For each analysis:
 
+- Role title plus company / location / salary when present
 - Match score ring
 - Seniority fit
 - Top matching / missing skills (up to 8 each)

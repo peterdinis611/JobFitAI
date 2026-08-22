@@ -18,7 +18,7 @@ The window resets by calendar date (UTC date string in Convex).
 
 Table: `rateLimits` — `(userId, date, analysisCount)`
 
-Mutation: `rateLimits.checkAndIncrement` — called from the Analyze page before starting a run.
+Mutation: `rateLimits.checkAndIncrement` — called from Analyze (including **each** job in a batch) before starting a run.
 
 ## When exceeded
 
@@ -26,7 +26,7 @@ The UI shows: **"Daily analysis limit reached (20/day)"** and the analysis does 
 
 ## Career tools
 
-Tailor bullets, cover letter, and learning plan use the agent but do **not** currently increment the analysis counter (only full match runs on `/analyze` and re-score do).
+Tailor bullets, full CV, cover letter, learning plan, and interview prep use the agent but do **not** increment the analysis counter (only full match runs on `/analyze`, including batch items, and re-score do).
 
 :::info
 Limits apply per authenticated user, not per IP.

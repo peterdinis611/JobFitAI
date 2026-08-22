@@ -42,7 +42,11 @@ API key / unauthorized / model
 
 **URL fetch failed**
 
-→ Paste job text manually. Only HTTPS URLs supported.
+→ Paste job text manually. Only HTTPS URLs supported. In **Batch**, a blocked URL marks that queue item as failed and the next job still runs.
+
+**Batch stopped after the first job**
+
+→ Check the daily analysis limit and the queue item status. A failed URL should continue; a rate-limit toast stops further runs.
 
 **Save succeeded in stream but nothing in History**
 
@@ -65,6 +69,14 @@ API key / unauthorized / model
 **Drag-and-drop on Tracker does nothing**
 
 → Drop on the column area; ensure you're signed in. Check browser console for mutation errors.
+
+**Follow-up bell is empty / no browser alert**
+
+→ Reminders exist only after a card is **Applied** or **Interview**. Browser alerts need permission and fire once per overdue card per UTC day. Check site notification settings if you tapped Enable but saw nothing.
+
+**Company / location / salary missing**
+
+→ Paste labeled lines (`Company:`, `Location:`, `Salary:`) or use a careers page with JobPosting JSON-LD. Job-board hostnames are never used as the company. [Job metadata](../concepts/job-metadata).
 
 ## Docs (`/docs`)
 

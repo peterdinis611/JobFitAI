@@ -28,18 +28,31 @@ Bullets are suggestions — verify accuracy before using on a real application. 
 
 **Skill:** `generate-tailored-cv`
 
-Generates a **full resume draft** for the role: headline, summary, experience sections, and a skills line.
+Generates a **full resume draft** for the role (not just 3–5 bullets):
 
-**Tab:** Copy-ready draft. Verify employers, dates, and metrics before sending.
+1. `parse_resume` — fresh CV text  
+2. `load_job_posting` — title, company, cleaned text  
+3. `generate_tailored_cv` — headline, summary, experience sections, skills line  
+4. `save_artifact` — type `tailored_cv`  
+
+**Tab:** Copy-ready draft + `.md` download.
+
+:::warning
+Draft only — the agent must not invent employers, dates, or degrees. Confirm every metric before you send it.
+:::
 
 ## Application pack
 
-Download **Pack .md / .docx / .pdf** on the report to bundle:
+On the report, **Pack .md / .docx / .pdf** downloads one file with whatever you already generated:
 
-- Match report
-- Tailored CV (if generated)
-- Tailored bullets (if generated)
-- Cover letter (if generated)
+| Included | When |
+|----------|------|
+| Match report | Always |
+| Tailored CV | After **Full CV** |
+| Tailored bullets | After **Tailor bullets** |
+| Cover letter | After **Cover letter** |
+
+Use this as the last step before moving the Tracker card to **Applied**.
 
 ## Cover letter
 
@@ -91,5 +104,7 @@ Creates an `applications` row in **Saved** status linked to this analysis. No ag
 :::tip Auto-track
 New analyses already create a **Saved** card when `save_analysis` succeeds. Use this button if the card was removed or for older reports created before auto-track.
 :::
+
+Full analyses and re-score count toward the daily limit. Tailor / Full CV / cover letter / learning plan / interview prep do **not**.
 
 [Agent skills reference →](../reference/agent-skills) · [History vs Tracker →](../concepts/history-vs-tracker)

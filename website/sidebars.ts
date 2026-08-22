@@ -35,6 +35,7 @@ const sidebars: SidebarsConfig = {
         'concepts/matching-scores',
         'concepts/history-vs-tracker',
         'concepts/role-titles',
+        'concepts/job-metadata',
         'concepts/authentication',
         'concepts/rate-limits',
         'concepts/glossary',

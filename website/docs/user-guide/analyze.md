@@ -12,7 +12,7 @@ Start a new resume vs. job match analysis.
 
 | Panel | Purpose |
 |-------|---------|
-| **Setup** (left) | Active resume, job editor / URL, Run analysis |
+| **Setup** (left) | Active resume, Single/Batch, job editor / URL, Run analysis |
 | **Progress** (right) | Step pipeline + compact agent status while running |
 
 When idle, the progress panel explains what will happen. During a run it tracks parse → score → save (and fetch for URLs).
@@ -35,12 +35,20 @@ You can always set or override the **Role title** field before running.
 
 ### Batch
 
-Switch **Batch** on Setup to queue several jobs:
+Switch **Single / Batch** on Setup to queue several jobs before the agent runs:
 
-- **Paste:** separate postings with a `---` line
-- **URL:** one HTTPS link per line
+| Input | How to add multiple |
+|-------|---------------------|
+| **Paste** | Separate postings with a `---` or `***` line, then **Add to queue** |
+| **URL** | One HTTPS link per line, then **Add to queue** |
 
-Each queued job runs one after another (the agent is single-session) and counts toward the daily analysis limit. Company, location, and salary are extracted when the posting includes them.
+The queue lists each job (title or host). **Analyze N** runs them **one after another** — the eve session is single-threaded. Each successful save toasts and starts the next. A blocked URL marks that item as failed and continues.
+
+:::tip Daily limit
+Every queued run calls `rateLimits.checkAndIncrement`. Five jobs in a batch use five of your 20 daily analyses.
+:::
+
+Company, location, and salary are extracted when the posting includes them. See [Job metadata](../concepts/job-metadata).
 
 ## What happens on Run
 
@@ -71,4 +79,4 @@ On successful save:
 
 Each user gets **20 analyses per day**. If exceeded, you'll see a toast and the run won't start.
 
-[Matching scores →](../concepts/matching-scores) · [Troubleshooting →](../help/troubleshooting)
+[Matching scores →](../concepts/matching-scores) · [Job metadata →](../concepts/job-metadata) · [Troubleshooting →](../help/troubleshooting)

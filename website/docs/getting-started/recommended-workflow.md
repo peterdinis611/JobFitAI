@@ -14,17 +14,18 @@ flowchart TD
   B --> C{Match ≥ 70%?}
   C -->|Yes| D[Review report]
   C -->|No| E[Note gaps / skip or stretch]
-  D --> F[Tailor bullets]
+  D --> F[Full CV / Tailor bullets]
   F --> G[Update CV]
   G --> H[Re-score]
-  H --> I[Cover letter]
+  H --> I[Cover letter + application pack]
   I --> J[Apply → Tracker: Applied]
-  J --> K[Interview → Tracker]
+  J --> K[Follow-up bell]
+  K --> L[Interview → Tracker]
 ```
 
 ### 1. Analyze every serious role
 
-Paste the full posting on **Analyze**. Don't rely on the title alone — the agent needs requirements text to score honestly.
+Paste the full posting on **Analyze**. Don't rely on the title alone — the agent needs requirements text to score honestly. For a stack of roles, use **Batch** (one URL per line or pastes split by `---`).
 
 ### 2. Triage with History filters
 
@@ -39,9 +40,9 @@ On **History**:
 On the report:
 
 1. Read **Missing skills** and **Recommendations**  
-2. Run **Tailor bullets** — copy verified rewrites into your CV  
+2. Run **Full CV** and/or **Tailor bullets** — copy verified rewrites into your CV  
 3. Upload the revised CV and **Re-score** to confirm the delta  
-4. Generate a **Cover letter** from the improved match  
+4. Generate a **Cover letter**, then download the **application pack**  
 
 ### 4. Track the pipeline
 
@@ -53,6 +54,9 @@ Cards land in **Saved** when an analysis saves. Drag them:
 | **Applied** | Application submitted |
 | **Interview** | Screening / onsite |
 | **Offer** | Offer or negotiation |
+| **Rejected** | Closed / not moving forward |
+
+Moving to **Applied** or **Interview** schedules a follow-up. Watch the toolbar **bell** (and optional browser alerts) so you don't ghost a recruiter.
 
 ### 5. Learn from patterns
 

@@ -40,6 +40,8 @@ flowchart LR
 
 You can have many History entries you never actively track beyond the default Saved card. You should not expect Tracker to invent rows without an analysis.
 
+Follow-up dates live on **Tracker** cards only (`applications.followUpAt`). History never stores reminders. See [Follow-up notifications](../user-guide/tracker#follow-up-notifications).
+
 ## Related
 
 - [Dashboard](../user-guide/dashboard)  

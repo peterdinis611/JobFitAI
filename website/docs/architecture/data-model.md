@@ -56,7 +56,9 @@ When `analyses.create` runs (via `save_analysis`), it also inserts an `applicati
 
 ### `applications`
 
-Tracker kanban: `saved` | `applied` | `interview` | `offer`. One per analysis (unique by analysisId).
+Tracker kanban: `saved` | `applied` | `interview` | `offer` | `rejected`. One per analysis (unique by analysisId).
+
+Optional `notes`, `followUpAt` (auto-set on Applied / Interview). Indexes: `by_user`, `by_user_status`, `by_analysis`, `by_user_follow_up`.
 
 ### `artifacts`
 

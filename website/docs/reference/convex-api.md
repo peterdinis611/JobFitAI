@@ -32,10 +32,11 @@ Public Convex functions (authenticated unless noted).
 
 | Function | Type | Description |
 |----------|------|-------------|
-| `create` | mutation | New posting (auto title for text) |
+| `create` | mutation | New posting (auto title + company/location/salary) |
 | `updateTitle` | mutation | User-facing title update |
-| `updateFromFetch` | mutation | Agent — after URL fetch |
+| `updateFromFetch` | mutation | Agent — after URL fetch (merges metadata) |
 | `get` | query | Single posting |
+| `getForAgent` | query | Agent-trusted get with explicit `userId` |
 
 ## `applications`
 
@@ -44,7 +45,10 @@ Public Convex functions (authenticated unless noted).
 | `listByUser` | query | Tracker with relations |
 | `getByAnalysis` | query | Application for report |
 | `create` | mutation | Save to tracker |
-| `updateStatus` | mutation | Move kanban column |
+| `updateStatus` | mutation | Move kanban column (sets/clears `followUpAt`) |
+| `updateNotes` | mutation | Card notes |
+| `setFollowUp` | mutation | Set or clear reminder date |
+| `listDueFollowUps` | query | Applied/Interview reminders in the next N days |
 | `remove` | mutation | Delete from tracker |
 
 ## `artifacts`

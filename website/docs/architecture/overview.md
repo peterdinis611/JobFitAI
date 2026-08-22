@@ -48,8 +48,10 @@ website/   Docusaurus source
 
 ## Request paths
 
-**Analysis run:** Browser → `agent.send()` → eve → tools → Convex → stream back → UI updates via Convex subscription when analysis is saved.
+**Analysis run:** Browser → `agent.send()` → eve → tools → Convex → stream back → UI updates via Convex subscription when analysis is saved. Batch Analyze queues several pastes or URLs and runs them one after another.
 
-**Dashboard:** Convex `analyses.listByUser` with joined resume + job posting.
+**Dashboard:** Convex `analyses.listByUser` with joined resume + job posting (title plus company / location / salary when present).
+
+**Follow-ups:** Tracker cards store `followUpAt`. The toolbar bell reads `applications.listDueFollowUps`.
 
 [Agent pipeline →](./agent-pipeline) · [Data model →](./data-model)
