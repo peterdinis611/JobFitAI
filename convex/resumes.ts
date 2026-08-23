@@ -130,7 +130,14 @@ export const updateParsedTextForAgent = mutation({
 export const getFileUrl = query({
   args: { storageId: v.id("_storage") },
   handler: async (ctx, args) => {
-    await requireUserId(ctx)
+    const userId = await requireUserId(ctx)
+    const owned = await ctx.db
+      .query("resumes")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect()
+    if (!owned.some((resume) => resume.storageId === args.storageId)) {
+      return null
+    }
     return await ctx.storage.getUrl(args.storageId)
   },
 })

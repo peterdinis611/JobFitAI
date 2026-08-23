@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
       "sonner",
       "cmdk",
       "next-themes",
+      "@embedpdf/react-pdf-viewer",
     ],
   },
 

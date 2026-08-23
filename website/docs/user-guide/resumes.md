@@ -26,12 +26,12 @@ To switch: click **Set active** on an older version.
 
 **Preview** opens a dialog with:
 
-- Parsed plain text (after first analysis parses the file)
-- Word count badge
-- Version and active status
+- **PDF** — embedded document viewer (`@embedpdf/react-pdf-viewer`) plus extracted text after the first analysis
+- **DOCX** — extracted plain text (visual preview is PDF-only)
+- Word count badge, version, and active status
 
 :::info
-Parsing runs during the first analysis via `parse_resume`. Until then, preview shows "Not parsed yet".
+Parsing runs during the first analysis via `parse_resume`. Until then, a PDF still previews as a document; DOCX shows “Not parsed yet”.
 :::
 
 ## Versioning tips
