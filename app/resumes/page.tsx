@@ -2,11 +2,11 @@
 
 import { useMutation, useQuery } from "convex/react"
 import { Check, FileText, FileUp, Star, Trash2 } from "lucide-react"
-import { AnimatePresence, motion } from "motion/react"
 import { useCallback, useRef, useState } from "react"
 import { toast } from "sonner"
 import { DashboardGettingStarted } from "@/components/dashboard/dashboard-states"
 import { ResumePreviewDialog } from "@/components/resumes/resume-preview-dialog"
+import { type ResumeUploadPhase, ResumeUploadZone } from "@/components/resumes/resume-upload-zone"
 import { Button } from "@/components/ui/button"
 import { MetricStrip } from "@/components/ui/metric-strip"
 import { PageHeader } from "@/components/ui/page-header"
@@ -27,9 +27,11 @@ export default function ResumesPage() {
   const createResume = useMutation(api.resumes.create)
   const setActive = useMutation(api.resumes.setActive)
   const removeResume = useMutation(api.resumes.remove)
-  const [uploading, setUploading] = useState(false)
-  const [dragOver, setDragOver] = useState(false)
+  const [phase, setPhase] = useState<ResumeUploadPhase>("idle")
+  const [uploadName, setUploadName] = useState<string>()
+  const [progress, setProgress] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
+  const uploading = phase === "transfer" || phase === "save"
 
   const active = resumes?.find((r) => r.isActive)
   const count = resumes?.length ?? 0
@@ -41,16 +43,14 @@ export default function ResumesPage() {
         return
       }
 
-      setUploading(true)
+      setUploadName(file.name)
+      setProgress(0)
+      setPhase("transfer")
       try {
         const uploadUrl = await generateUploadUrl({})
-        const res = await fetch(uploadUrl, {
-          method: "POST",
-          headers: { "Content-Type": file.type || "application/octet-stream" },
-          body: file,
-        })
-        if (!res.ok) throw new Error("Upload failed")
-        const { storageId } = (await res.json()) as { storageId: Id<"_storage"> }
+        const storageId = await postResumeFile(uploadUrl, file, setProgress)
+        setPhase("save")
+        setProgress(1)
 
         await createResume({
           storageId,
@@ -61,7 +61,9 @@ export default function ResumesPage() {
       } catch (e) {
         toast.error(e instanceof Error ? e.message : "Upload failed")
       } finally {
-        setUploading(false)
+        setPhase("idle")
+        setUploadName(undefined)
+        setProgress(0)
       }
     },
     [generateUploadUrl, createResume],
@@ -114,59 +116,29 @@ export default function ResumesPage() {
           <h2 className="text-[15px] font-semibold tracking-tight">Upload</h2>
           <p className="text-xs text-muted-foreground">PDF or DOCX · max 10 MB</p>
         </div>
-        <button
-          type="button"
-          disabled={uploading}
-          onClick={() => inputRef.current?.click()}
+        <ResumeUploadZone
+          phase={phase}
+          fileName={uploadName}
+          progress={progress}
+          onPick={() => inputRef.current?.click()}
           onDragOver={(e) => {
             e.preventDefault()
-            setDragOver(true)
           }}
-          onDragLeave={() => setDragOver(false)}
+          onDragEnter={(e) => {
+            e.preventDefault()
+            if (phase === "idle") setPhase("hot")
+          }}
+          onDragLeave={(e) => {
+            const next = e.relatedTarget
+            if (next instanceof Node && e.currentTarget.contains(next)) return
+            if (phase === "hot") setPhase("idle")
+          }}
           onDrop={(e) => {
             e.preventDefault()
-            setDragOver(false)
             const file = e.dataTransfer.files?.[0]
             if (file) void upload(file)
           }}
-          className={cn(
-            "flex w-full flex-col items-center justify-center gap-2 px-4 py-10 text-center transition-colors",
-            dragOver && "bg-primary/5",
-            uploading && "pointer-events-none opacity-60",
-          )}
-        >
-          <AnimatePresence mode="wait">
-            {uploading ? (
-              <motion.p
-                key="up"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-sm text-muted-foreground"
-              >
-                Uploading…
-              </motion.p>
-            ) : (
-              <motion.div
-                key="idle"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center gap-2"
-              >
-                <div
-                  className={cn(
-                    "flex size-12 items-center justify-center rounded-xl bg-primary/10 transition-transform",
-                    dragOver && "-translate-y-0.5",
-                  )}
-                >
-                  <FileUp className="size-5 text-primary" />
-                </div>
-                <p className="text-sm font-medium">
-                  {dragOver ? "Drop to upload" : "Drag & drop or click to upload"}
-                </p>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </button>
+        />
       </section>
 
       {count === 0 ? (
@@ -266,4 +238,38 @@ export default function ResumesPage() {
 function truncate(value: string, max: number) {
   if (value.length <= max) return value
   return `${value.slice(0, max - 1)}…`
+}
+
+function postResumeFile(
+  url: string,
+  file: File,
+  onProgress: (ratio: number) => void,
+): Promise<Id<"_storage">> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest()
+    xhr.open("POST", url)
+    xhr.responseType = "json"
+    xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream")
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable && event.total > 0) {
+        onProgress(event.loaded / event.total)
+      }
+    }
+    xhr.onload = () => {
+      try {
+        const raw = xhr.response ?? xhr.responseText
+        const body =
+          typeof raw === "string" ? (JSON.parse(raw) as { storageId?: Id<"_storage"> }) : raw
+        if (xhr.status >= 200 && xhr.status < 300 && body?.storageId) {
+          resolve(body.storageId)
+          return
+        }
+      } catch {
+        /* fall through */
+      }
+      reject(new Error("Upload failed"))
+    }
+    xhr.onerror = () => reject(new Error("Upload failed"))
+    xhr.send(file)
+  })
 }

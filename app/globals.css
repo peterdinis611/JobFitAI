@@ -1028,3 +1028,454 @@ textarea {
 .dash-onboard-sample {
   animation: auth-rise 0.5s 0.06s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* Resume paper-feed ingest */
+button.cv-ingest-hit {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+button.cv-ingest-hit:disabled {
+  cursor: progress;
+}
+
+button.cv-ingest-hit:focus-visible {
+  outline: none;
+}
+
+button.cv-ingest-hit:focus-visible .cv-ingest {
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.cv-ingest {
+  --cv-progress: 0;
+  box-sizing: border-box;
+  display: flex;
+  width: 100%;
+  min-height: 16.5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  padding: 1.75rem 1.25rem 1.4rem;
+  text-align: center;
+  background:
+    radial-gradient(ellipse 70% 55% at 50% 18%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 70%),
+    linear-gradient(180deg, color-mix(in srgb, var(--foreground) 2.5%, transparent), transparent 42%);
+  transition: background 0.25s ease, box-shadow 0.2s ease;
+}
+
+.cv-ingest--hot {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 22%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 68%),
+    linear-gradient(180deg, color-mix(in srgb, var(--primary) 6%, transparent), transparent 50%);
+}
+
+.cv-ingest--transfer,
+.cv-ingest--save {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 8%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 62%),
+    repeating-linear-gradient(
+      180deg,
+      transparent,
+      transparent 11px,
+      color-mix(in srgb, var(--primary) 5%, transparent) 12px
+    );
+}
+
+.cv-ingest-stage {
+  position: relative;
+  display: flex;
+  width: 7.5rem;
+  height: 7.75rem;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+}
+
+.cv-ingest-dust,
+.cv-ingest-dust--b {
+  position: absolute;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 55%, white);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cv-ingest--transfer .cv-ingest-dust,
+.cv-ingest--save .cv-ingest-dust {
+  animation: cv-dust 1.6s ease-in-out infinite;
+}
+
+.cv-ingest-dust {
+  top: 18%;
+  left: 8%;
+  width: 5px;
+  height: 5px;
+}
+
+.cv-ingest-dust--b {
+  top: 28%;
+  right: 10%;
+  width: 4px;
+  height: 4px;
+  animation-delay: 0.45s;
+}
+
+.cv-ingest-sheet {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 4.5rem;
+  height: 5.65rem;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 0.34rem;
+  padding: 0.9rem 0.58rem 0.7rem;
+  border: 1px solid color-mix(in srgb, var(--foreground) 22%, var(--border));
+  border-radius: 3px 11px 3px 3px;
+  background: #fbfbfd;
+  box-shadow:
+    0 12px 24px color-mix(in srgb, var(--foreground) 14%, transparent),
+    0 1px 0 rgb(255 255 255 / 0.7) inset;
+  transform-origin: 50% 100%;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.dark .cv-ingest-sheet {
+  background: color-mix(in srgb, var(--card) 70%, #3a3a3c);
+  border-color: rgb(255 255 255 / 0.18);
+}
+
+.cv-ingest--idle .cv-ingest-sheet {
+  animation: cv-sheet-idle 3.4s ease-in-out infinite;
+}
+
+.cv-ingest--hot .cv-ingest-sheet {
+  transform: translateY(-10px) rotate(-4deg) scale(1.04);
+}
+
+.cv-ingest--transfer .cv-ingest-sheet,
+.cv-ingest--save .cv-ingest-sheet {
+  animation: cv-sheet-feed 1.8s cubic-bezier(0.45, 0, 0.2, 1) infinite;
+}
+
+.cv-ingest-fold {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 1.05rem;
+  height: 1.05rem;
+  background:
+    linear-gradient(135deg, transparent 48%, color-mix(in srgb, var(--foreground) 8%, var(--muted)) 50%);
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+}
+
+.cv-ingest-line {
+  display: block;
+  height: 3px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.cv-ingest-line:nth-child(2) {
+  width: 88%;
+}
+.cv-ingest-line:nth-child(3) {
+  width: 72%;
+}
+.cv-ingest-line:nth-child(4) {
+  width: 80%;
+}
+.cv-ingest-line:nth-child(5) {
+  width: 54%;
+}
+
+.cv-ingest--transfer .cv-ingest-line,
+.cv-ingest--save .cv-ingest-line {
+  animation: cv-line-read 1.15s ease-in-out infinite;
+}
+
+.cv-ingest--transfer .cv-ingest-line:nth-child(3),
+.cv-ingest--save .cv-ingest-line:nth-child(3) {
+  animation-delay: 0.12s;
+}
+.cv-ingest--transfer .cv-ingest-line:nth-child(4),
+.cv-ingest--save .cv-ingest-line:nth-child(4) {
+  animation-delay: 0.22s;
+}
+.cv-ingest--transfer .cv-ingest-line:nth-child(5),
+.cv-ingest--save .cv-ingest-line:nth-child(5) {
+  animation-delay: 0.34s;
+}
+
+.cv-ingest-beam {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: calc(12% + var(--cv-progress) * 68%);
+  height: 2px;
+  border-radius: 99px;
+  background: var(--primary);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--primary) 80%, transparent);
+  opacity: 0;
+}
+
+.cv-ingest--idle .cv-ingest-beam {
+  animation: cv-beam-idle 3.4s ease-in-out infinite;
+}
+
+.cv-ingest--transfer .cv-ingest-beam,
+.cv-ingest--save .cv-ingest-beam {
+  opacity: 1;
+  animation: cv-beam-busy 1.05s ease-in-out infinite;
+}
+
+.cv-ingest-slot {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 5.6rem;
+  height: 0.85rem;
+  margin-top: -0.35rem;
+}
+
+.cv-ingest-slot-lip {
+  display: block;
+  height: 100%;
+  border: 1px solid color-mix(in srgb, var(--foreground) 18%, var(--border));
+  border-radius: 3px 3px 8px 8px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--foreground) 18%, var(--card)), var(--muted));
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--foreground) 12%, transparent);
+}
+
+.cv-ingest-slot-glow {
+  position: absolute;
+  inset: 18% 12% auto;
+  height: 3px;
+  border-radius: 99px;
+  background: var(--primary);
+  opacity: 0;
+  filter: blur(2px);
+}
+
+.cv-ingest--hot .cv-ingest-slot-glow,
+.cv-ingest--transfer .cv-ingest-slot-glow,
+.cv-ingest--save .cv-ingest-slot-glow {
+  opacity: 0.85;
+  animation: cv-slot-pulse 1.1s ease-in-out infinite;
+}
+
+.cv-ingest-copy {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.cv-ingest-kicker,
+.cv-ingest-title,
+.cv-ingest-file,
+.cv-ingest-hint {
+  display: block;
+  margin: 0;
+  text-align: center;
+}
+
+.cv-ingest-kicker {
+  font-family: ui-monospace, "SF Mono", "Menlo", monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+
+.cv-ingest-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+}
+
+.cv-ingest-file {
+  max-width: 18rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: ui-monospace, "SF Mono", "Menlo", monospace;
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+}
+
+.cv-ingest-hint {
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+}
+
+.cv-ingest-meter {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.65rem;
+  width: min(16rem, 100%);
+}
+
+.cv-ingest-meter-track {
+  display: block;
+  overflow: hidden;
+  height: 4px;
+  border-radius: 99px;
+  background: color-mix(in srgb, var(--foreground) 10%, transparent);
+}
+
+.cv-ingest-meter-fill {
+  display: block;
+  height: 100%;
+  width: calc(var(--cv-progress) * 100%);
+  border-radius: inherit;
+  background: var(--primary);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--primary) 45%, transparent);
+  transition: width 0.16s ease-out;
+}
+
+.cv-ingest--save .cv-ingest-meter-fill {
+  width: 100%;
+  animation: cv-meter-shimmer 1s ease-in-out infinite;
+}
+
+.cv-ingest-meter-pct {
+  font-family: ui-monospace, "SF Mono", "Menlo", monospace;
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+}
+
+@keyframes cv-sheet-idle {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.2deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1.4deg);
+  }
+}
+
+@keyframes cv-sheet-feed {
+  0% {
+    transform: translateY(-14px) rotate(-3deg);
+  }
+  55% {
+    transform: translateY(10px) rotate(1deg) scaleY(0.92);
+  }
+  100% {
+    transform: translateY(-14px) rotate(-3deg);
+  }
+}
+
+@keyframes cv-beam-idle {
+  0%,
+  100% {
+    opacity: 0;
+    top: 18%;
+  }
+  40% {
+    opacity: 0.55;
+  }
+  100% {
+    top: 78%;
+  }
+}
+
+@keyframes cv-beam-busy {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scaleX(0.86);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes cv-line-read {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+    background: color-mix(in srgb, var(--primary) 55%, var(--foreground));
+  }
+}
+
+@keyframes cv-slot-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes cv-dust {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  30% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-22px);
+  }
+}
+
+@keyframes cv-meter-shimmer {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cv-ingest-sheet,
+  .cv-ingest-beam,
+  .cv-ingest-line,
+  .cv-ingest-dust,
+  .cv-ingest-slot-glow,
+  .cv-ingest-meter-fill {
+    animation: none !important;
+  }
+
+  .cv-ingest--idle .cv-ingest-sheet,
+  .cv-ingest--hot .cv-ingest-sheet,
+  .cv-ingest--transfer .cv-ingest-sheet,
+  .cv-ingest--save .cv-ingest-sheet {
+    transform: none;
+  }
+
+  .cv-ingest--transfer .cv-ingest-beam,
+  .cv-ingest--save .cv-ingest-beam {
+    opacity: 1;
+  }
+}
