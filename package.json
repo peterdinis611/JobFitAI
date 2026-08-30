@@ -8,7 +8,7 @@
     "#evals/*": "./evals/*"
   },
   "scripts": {
-    "build": "npm run build:docs && next build",
+    "build": "next build",
     "build:docs": "npm ci --prefix website && npm run build --prefix website && node scripts/copy-docs.mjs",
     "dev": "next dev",
     "dev:docs": "npm run start --prefix website -- --port 3001 --host 0.0.0.0",
