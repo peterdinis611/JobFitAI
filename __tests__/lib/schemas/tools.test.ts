@@ -10,7 +10,7 @@ import {
   scoreMatchOutputSchema,
   tailoredCvOutputSchema,
   updateJobPostingInputSchema,
-} from "./tools"
+} from "@/lib/schemas/tools"
 
 describe("fetchJobPostingInputSchema", () => {
   it("requires HTTPS URLs", () => {

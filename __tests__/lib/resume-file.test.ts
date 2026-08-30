@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { isPdfResume } from "./resume-file"
+import { isPdfResume } from "@/lib/resume-file"
 
 describe("isPdfResume", () => {
   it("detects pdf mime types", () => {

@@ -22,7 +22,7 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "node",
-          include: ["lib/**/*.test.ts", "agent/**/*.test.ts"],
+          include: ["__tests__/lib/**/*.test.ts", "__tests__/agent/**/*.test.ts"],
           exclude: ["node_modules", "website", ".next", "public"],
         },
       },
@@ -35,7 +35,7 @@ export default defineConfig({
         test: {
           name: "convex",
           environment: "edge-runtime",
-          include: ["convex/**/*.test.ts"],
+          include: ["__tests__/convex/**/*.test.ts"],
           exclude: ["node_modules", "convex/_generated/**"],
         },
       },

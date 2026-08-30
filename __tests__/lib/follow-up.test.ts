@@ -7,7 +7,7 @@ import {
   isFollowUpDueToday,
   isFollowUpOverdue,
   utcDayKey,
-} from "./follow-up"
+} from "@/lib/follow-up"
 
 describe("followUpLabel", () => {
   it("labels overdue, today, and tomorrow", () => {

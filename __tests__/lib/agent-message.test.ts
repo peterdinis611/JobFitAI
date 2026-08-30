@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { buildAgentContextJson, formatAgentSkillMessage } from "./agent-message"
+import { buildAgentContextJson, formatAgentSkillMessage } from "@/lib/agent-message"
 
 describe("buildAgentContextJson", () => {
   it("keeps known fields and drops empty strings", () => {

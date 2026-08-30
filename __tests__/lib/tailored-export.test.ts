@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest"
-import { slugifyRole, tailoredBulletsPlainList, tailoredBulletsToMarkdown } from "./tailored-export"
+import {
+  slugifyRole,
+  tailoredBulletsPlainList,
+  tailoredBulletsToMarkdown,
+} from "@/lib/tailored-export"
 
 const bullets = [
   {

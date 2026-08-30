@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { extractJobMetadata, mergeJobMetadata } from "./extract-job-metadata"
+import { extractJobMetadata, mergeJobMetadata } from "@/lib/extract-job-metadata"
 
 describe("extractJobMetadata", () => {
   it("reads labeled company, location, and salary", () => {

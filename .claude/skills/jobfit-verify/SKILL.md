@@ -29,7 +29,7 @@ Fix failures before marking work complete. Do not skip hooks on commit unless us
 ## Tooling notes
 
 - **Linter**: Biome (`biome.json`) — not ESLint
-- **Tests**: Vitest (`vitest.config.ts`), colocated `*.test.ts`
+- **Tests**: Vitest (`vitest.config.ts`), files in `__tests__/` mirroring `lib/`, `agent/`, `convex/`
 - **Package manager**: Bun (scripts assume bun)
 
 ## Auto-fix

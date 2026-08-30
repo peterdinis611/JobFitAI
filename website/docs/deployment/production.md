@@ -14,22 +14,31 @@ Ensure production env vars match your Vercel (or host) deployment.
 
 ## Vercel (Next.js + eve)
 
-1. Connect GitHub repo
-2. Set environment variables:
-   - `NEXT_PUBLIC_CONVEX_URL`
-   - `CONVEX_URL`
+1. Connect the GitHub repo (root = this project, not `website/`)
+2. Framework: **Next.js**. Node **24.x** (from `package.json` `engines`)
+3. Build command: `npm run build` or `bun run build` (docs + Next)
+4. Set environment variables (Production + Preview):
+   - `NEXT_PUBLIC_CONVEX_URL` — **production** Convex URL
+   - `CONVEX_URL` — same URL (agent / server)
    - `OPENAI_API_KEY`
-3. Build command: `npm run build` (includes `build:docs`)
-4. `withEve()` in `next.config.ts` handles eve integration
+   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+   - `CLERK_SECRET_KEY`
+   - `NEXT_PUBLIC_CLERK_SIGN_IN_URL` — `/sign-in`
+   - `NEXT_PUBLIC_CLERK_SIGN_UP_URL` — `/sign-up`
+5. `withEve()` in `next.config.ts` handles eve — no separate eve server
+
+On Convex **production**, set `CLERK_JWT_ISSUER_DOMAIN`. Add the Vercel URL to Clerk allowed origins / redirect URLs.
 
 ## Build pipeline
 
 ```bash
-npm run build:docs   # Docusaurus → public/docs/
-next build           # Next.js app
+npm ci --prefix website   # website/ is not a workspace — required on Vercel
+npm run build --prefix website
+node scripts/copy-docs.mjs   # → public/docs/
+next build
 ```
 
-Single `npm run build` runs both.
+`public/docs/` is gitignored. `npm run build` / `bun run build` installs Docusaurus deps, builds docs, then Next.js.
 
 ## Docs in production
 

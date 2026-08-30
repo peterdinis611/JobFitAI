@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { extractJsonLdJobMeta } from "./fetch-job"
+import { extractJsonLdJobMeta } from "#lib/fetch-job"
 
 const LONG_DESC =
   "We are hiring a platform engineer to build APIs, own reliability, and work with product on the next set of customer-facing services for our core marketplace."

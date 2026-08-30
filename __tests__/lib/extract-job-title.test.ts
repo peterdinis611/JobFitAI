@@ -5,7 +5,7 @@ import {
   looksLikeJobPaste,
   normalizeJobUrl,
   wordCount,
-} from "./extract-job-title"
+} from "@/lib/extract-job-title"
 
 describe("extractJobTitle", () => {
   it("returns undefined for empty text", () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { analysisToMarkdown } from "./analysis-export"
+import { analysisToMarkdown } from "@/lib/analysis-export"
 
 describe("analysisToMarkdown", () => {
   it("renders a readable report", () => {

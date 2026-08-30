@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { applicationPackMarkdown, tailoredCvToMarkdown } from "./application-pack"
+import { applicationPackMarkdown, tailoredCvToMarkdown } from "@/lib/application-pack"
 
 const analysis = {
   matchPercentage: 81,

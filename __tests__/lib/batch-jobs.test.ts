@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { draftLabel, parseBatchPastes, parseBatchUrls } from "./batch-jobs"
+import { draftLabel, parseBatchPastes, parseBatchUrls } from "@/lib/batch-jobs"
 
 describe("parseBatchUrls", () => {
   it("keeps one HTTPS URL per line and drops junk", () => {

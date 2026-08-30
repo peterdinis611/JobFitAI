@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { computeHistoryInsights } from "./history-insights"
+import { computeHistoryInsights } from "@/lib/history-insights"
 
 describe("computeHistoryInsights", () => {
   it("computes trend delta and top missing skills", () => {

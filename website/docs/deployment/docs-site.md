@@ -20,7 +20,7 @@ website/
 
 | Command | Purpose |
 |---------|---------|
-| `npm run build:docs` | Build → `public/docs/` |
+| `npm run build:docs` | `npm ci` in `website/` → Docusaurus → `public/docs/` |
 | `npm run dev:docs` | Live reload on port 3001 |
 | `npm run build` | Docs + Next.js production build |
 

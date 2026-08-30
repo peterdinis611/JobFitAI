@@ -1,6 +1,6 @@
 import type { EveMessage } from "eve/react"
 import { describe, expect, it } from "vitest"
-import { parseAnalysisStream } from "./analyze-stream"
+import { parseAnalysisStream } from "@/lib/analyze-stream"
 
 function assistant(parts: EveMessage["parts"]): EveMessage {
   return { id: "m1", role: "assistant", parts } as EveMessage

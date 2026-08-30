@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest"
-import { matchBadgeClass, matchToneClass, roleMeta, roleTitle, seniorityLabel } from "./role-label"
+import {
+  matchBadgeClass,
+  matchToneClass,
+  roleMeta,
+  roleTitle,
+  seniorityLabel,
+} from "@/lib/role-label"
 
 describe("roleTitle", () => {
   it("prefers explicit job title", () => {
