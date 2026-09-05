@@ -54,7 +54,7 @@ Activate [Clerk ↔ Convex](https://dashboard.clerk.com/apps/setup/convex) so JW
 
 ## Agent / eve
 
-The eve channel reads `CONVEX_URL` or `NEXT_PUBLIC_CONVEX_URL` in `agent/lib/convex.ts` for `ConvexHttpClient`. The LLM reads `OPENAI_API_KEY` via the Vercel AI SDK OpenAI provider.
+The eve channel reads `CONVEX_URL` or `NEXT_PUBLIC_CONVEX_URL` in `agent/lib/convex.ts` for `ConvexHttpClient`. The LLM reads `OPENAI_API_KEY` via the Vercel AI SDK OpenAI provider. Production `/eve/v1/*` also needs `CLERK_SECRET_KEY` and `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` so the channel can verify the browser session.
 
 :::caution
 Never commit `.env.local` or secrets to git.

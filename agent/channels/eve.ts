@@ -1,11 +1,7 @@
-import { localDev, none, vercelOidc } from "eve/channels/auth"
+import { localDev, vercelOidc } from "eve/channels/auth"
 import { eveChannel } from "eve/channels/eve"
+import { clerkRouteAuth } from "#lib/eve-clerk-auth"
 
 export default eveChannel({
-  auth: [
-    vercelOidc(),
-    localDev(),
-    // Public demo — replace with Auth.js / Clerk in production
-    none(),
-  ],
+  auth: [clerkRouteAuth, vercelOidc(), localDev()],
 })

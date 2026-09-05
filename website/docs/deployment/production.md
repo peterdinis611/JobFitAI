@@ -25,7 +25,8 @@ Ensure production env vars match your Vercel (or host) deployment.
    - `CLERK_SECRET_KEY`
    - `NEXT_PUBLIC_CLERK_SIGN_IN_URL` — `/sign-in`
    - `NEXT_PUBLIC_CLERK_SIGN_UP_URL` — `/sign-up`
-5. `withEve()` in `next.config.ts` handles eve — no separate eve server
+5. `withEve()` in `next.config.ts` mounts eve at `/eve/v1/*` (requires **eve 0.24.5+** — older versions wrote rejected `experimentalServices` and `/eve/v1/session` returned 500)
+6. eve channel auth is Clerk (signed-in cookie) + `vercelOidc()` + `localDev()`. Do not add `none()` in production.
 
 On Convex **production**, set `CLERK_JWT_ISSUER_DOMAIN`. Add the Vercel URL to Clerk allowed origins / redirect URLs.
 
