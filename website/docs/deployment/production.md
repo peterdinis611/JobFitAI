@@ -26,7 +26,7 @@ Ensure production env vars match your Vercel (or host) deployment.
    - `NEXT_PUBLIC_CLERK_SIGN_IN_URL` — `/sign-in`
    - `NEXT_PUBLIC_CLERK_SIGN_UP_URL` — `/sign-up`
    - `NEXT_PUBLIC_SITE_URL` — public origin (`https://job-fit-ai-mocha.vercel.app`)
-5. Local `next dev` still uses `withEve()` to proxy `/eve/v1/*`. On Vercel, `vercel.json` owns that routing. Pin **eve 0.24.5**.
+5. Local `next dev` still uses `withEve()` to proxy `/eve/v1/*`. On Vercel, `vercel.json` owns that routing. Pin **eve 0.27.6** — `0.24.x` ships an incomplete Vercel function (`#public/...` missing) so `/eve/v1/health` returns `FUNCTION_INVOCATION_FAILED`. Do not jump to `0.51+` (`send({ message })` broke).
 6. Browser calls send the Clerk session JWT (`Authorization: Bearer`) via `useJobFitAgent`. Do not add `none()` in production.
 7. Push this commit, then **Redeploy → Clear cache**. `curl -i https://<app>/eve/v1/health` must return **200**. Session without login is **401**. `FUNCTION_INVOCATION_FAILED` on health means the eve service build did not produce a function — check the **eve** service build log, not only Next.js.
 
