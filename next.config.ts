@@ -74,6 +74,8 @@ const nextConfig: NextConfig = {
 }
 
 export default withEve(nextConfig, {
-  // Local `next dev` proxies /eve/v1/* here. Vercel routing is vercel.json services.
+  // Local `next dev` proxies /eve/v1/*. On Vercel, withEve writes the eve service
+  // into Next.js Build Output. Do not wrap the app in vercel.json `services` —
+  // that mode rejects Edge (opengraph-image, Clerk proxy).
   eveRoot: ".",
 })

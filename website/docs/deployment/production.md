@@ -15,8 +15,8 @@ Ensure production env vars match your Vercel (or host) deployment.
 ## Vercel (Next.js + eve)
 
 1. Connect the GitHub repo (root = this project, not `website/`)
-2. Node **24.x**. `vercel.json` declares two services (`web` = Next.js, `eve` = agent). Do not leave a leftover `experimentalServices` block.
-3. Root build command can stay `npm run build` / `bun run build` — Vercel builds each service separately (`next build` and `eve build`).
+2. Framework: **Next.js**. Node **24.x**. Do **not** use a `vercel.json` `services` graph — Vercel Services reject Edge output (`opengraph-image`, Clerk `proxy.ts`).
+3. Build command: `npm run build` / `bun run build`. `withEve()` mounts eve at `/eve/v1/*` during `next build`.
 4. Set environment variables (Production + Preview):
    - `NEXT_PUBLIC_CONVEX_URL` — **production** Convex URL
    - `CONVEX_URL` — same URL (agent / server)
@@ -26,9 +26,9 @@ Ensure production env vars match your Vercel (or host) deployment.
    - `NEXT_PUBLIC_CLERK_SIGN_IN_URL` — `/sign-in`
    - `NEXT_PUBLIC_CLERK_SIGN_UP_URL` — `/sign-up`
    - `NEXT_PUBLIC_SITE_URL` — public origin (`https://job-fit-ai-mocha.vercel.app`)
-5. Local `next dev` still uses `withEve()` to proxy `/eve/v1/*`. On Vercel, `vercel.json` owns that routing. Pin **eve 0.27.6** — `0.24.x` ships an incomplete Vercel function (`#public/...` missing) so `/eve/v1/health` returns `FUNCTION_INVOCATION_FAILED`. Do not jump to `0.51+` (`send({ message })` broke).
+5. Pin **eve 0.27.6**. `0.24.x` ships an incomplete Vercel function so `/eve/v1/health` is `FUNCTION_INVOCATION_FAILED`. Do not jump to `0.51+` (`send({ message })` broke).
 6. Browser calls send the Clerk session JWT (`Authorization: Bearer`) via `useJobFitAgent`. Do not add `none()` in production.
-7. Push this commit, then **Redeploy → Clear cache**. `curl -i https://<app>/eve/v1/health` must return **200**. Session without login is **401**. `FUNCTION_INVOCATION_FAILED` on health means the eve service build did not produce a function — check the **eve** service build log, not only Next.js.
+7. Push, then **Redeploy → Clear cache**. `curl -i https://<app>/eve/v1/health` must return **200**. Session without login is **401**.
 
 On Convex **production**, set `CLERK_JWT_ISSUER_DOMAIN`. Add the Vercel URL to Clerk allowed origins / redirect URLs.
 

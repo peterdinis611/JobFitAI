@@ -55,7 +55,7 @@ lib/schemas/    # shared Zod schemas
 
 ## Deploy
 
-- **Vercel**: connect repo; set Convex + Clerk + `OPENAI_API_KEY` on the whole project. `vercel.json` deploys Next (`web`) and eve as two services. After a cache-cleared deploy, `/eve/v1/health` must be 200.
+- **Vercel**: connect repo; set Convex + Clerk + `OPENAI_API_KEY` on the whole project. Framework **Next.js** + `withEve()` (`eve@0.27.6`). Do not use `vercel.json` `services` (breaks Edge OG / Clerk). After deploy, `/eve/v1/health` must be 200.
 - **Convex**: `npx convex deploy`
 
 ## Rate limit
