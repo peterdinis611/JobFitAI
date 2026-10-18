@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "web": {
+      "framework": "nextjs",
+      "root": "."
+    },
+    "eve": {
+      "framework": "eve",
+      "root": ".",
+      "buildCommand": "node ./node_modules/eve/bin/eve.js build"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/eve/v1/(.*)",
+      "destination": { "service": "eve" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "web" }
+    }
+  ]
+}

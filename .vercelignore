@@ -1,8 +1,11 @@
+# Do not ignore `.eve` — withEve writes the Vercel eve service to
+# `.eve/vercel-services/eve`. Ignoring it makes /eve/v1/health return
+# FUNCTION_INVOCATION_FAILED.
 node_modules
 .env*
-.eve
 .workflow-data
 .next
 .output
 .nitro
 dist
+

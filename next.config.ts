@@ -74,6 +74,6 @@ const nextConfig: NextConfig = {
 }
 
 export default withEve(nextConfig, {
-  // Repo root owns `agent/` — Vercel Build Output then mounts `/eve/v1/*`.
+  // Local `next dev` proxies /eve/v1/* here. Vercel routing is vercel.json services.
   eveRoot: ".",
 })
