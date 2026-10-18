@@ -67,7 +67,8 @@ function OnboardTitlebar({
 
 function ProgressSegments({ completed }: { completed: number }) {
   return (
-    <div className="dash-onboard-segments" aria-label={`${completed} of 3 steps complete`}>
+    <div className="dash-onboard-segments">
+      <span className="sr-only">{completed} of 3 steps complete</span>
       {steps.map((step, index) => (
         <span
           key={step.n}
@@ -233,8 +234,14 @@ export function HistoryEmptyState({
               <li key={step.n}>
                 <Link
                   href={step.href}
-                  className={cn("dash-onboard-step group block h-full", active && "dash-onboard-step-active")}
-                  style={{ ["--step-accent" as string]: step.accent, animationDelay: `${index * 80}ms` }}
+                  className={cn(
+                    "dash-onboard-step group block h-full",
+                    active && "dash-onboard-step-active",
+                  )}
+                  style={{
+                    ["--step-accent" as string]: step.accent,
+                    animationDelay: `${index * 80}ms`,
+                  }}
                 >
                   <span aria-hidden className="dash-onboard-step-ghost">
                     {step.n}

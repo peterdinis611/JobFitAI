@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { useRunAnalysis } from "@/hooks/use-run-analysis"
-import { SAMPLE_JOB_POSTING } from "@/lib/sample-job-posting"
 import { extractJobTitle, looksLikeJobPaste, normalizeJobUrl } from "@/lib/extract-job-title"
+import { SAMPLE_JOB_POSTING } from "@/lib/sample-job-posting"
 import { cn } from "@/lib/utils"
 
 export function HistoryQuickStart({
@@ -27,9 +27,7 @@ export function HistoryQuickStart({
 
   const normalizedUrl = useMemo(() => normalizeJobUrl(jobUrl), [jobUrl])
   const canRun =
-    hasResume &&
-    !isBusy &&
-    (tab === "text" ? jobText.trim().length > 0 : Boolean(normalizedUrl))
+    hasResume && !isBusy && (tab === "text" ? jobText.trim().length > 0 : Boolean(normalizedUrl))
 
   function notifyNoResume() {
     toast.error("No resume found", {

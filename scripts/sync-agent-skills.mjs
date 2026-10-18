@@ -3,7 +3,7 @@
  * Mirror .cursor/skills → .claude/skills and jobfit-* → .agents/skills
  * Run after adding or editing project agent skills.
  */
-import { cpSync, mkdirSync, readdirSync, statSync } from "node:fs"
+import { cpSync, mkdirSync, readdirSync } from "node:fs"
 import { join } from "node:path"
 
 const root = join(import.meta.dirname, "..")

@@ -47,14 +47,7 @@ export function OnboardPreview({
             )
           })}
 
-          <circle
-            cx="160"
-            cy="160"
-            r="112"
-            fill="none"
-            stroke="var(--border)"
-            strokeWidth="1"
-          />
+          <circle cx="160" cy="160" r="112" fill="none" stroke="var(--border)" strokeWidth="1" />
           <circle
             cx="160"
             cy="160"
@@ -109,10 +102,7 @@ export function OnboardPreview({
             className={score === null ? "dash-onboard-needle-idle" : undefined}
             style={{
               transformOrigin: "160px 160px",
-              transform:
-                score !== null
-                  ? `rotate(${-120 + (score / 100) * 240}deg)`
-                  : undefined,
+              transform: score !== null ? `rotate(${-120 + (score / 100) * 240}deg)` : undefined,
             }}
           >
             <line

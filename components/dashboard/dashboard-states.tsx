@@ -65,7 +65,8 @@ function OnboardTitlebar({
 
 function ProgressSegments({ completed }: { completed: number }) {
   return (
-    <div className="dash-onboard-segments" aria-label={`${completed} of 3 steps complete`}>
+    <div className="dash-onboard-segments">
+      <span className="sr-only">{completed} of 3 steps complete</span>
       {steps.map((step, index) => (
         <span
           key={step.n}
@@ -102,7 +103,9 @@ export function DashboardGettingStarted({
                 {hasResume ? "Signal locked" : "Protocol"}
               </p>
               <h2 className="font-[family-name:var(--font-auth-display)] text-[clamp(1.75rem,4vw,2.65rem)] leading-[1.05] font-bold tracking-[-0.04em]">
-                {hasResume ? "Resume parsed — add a job to calibrate" : "Let’s set up your first match"}
+                {hasResume
+                  ? "Resume parsed — add a job to calibrate"
+                  : "Let’s set up your first match"}
               </h2>
               <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground sm:text-base">
                 {hasResume
@@ -125,7 +128,9 @@ export function DashboardGettingStarted({
             </div>
 
             <p className="font-[family-name:var(--font-auth-mono)] text-[10px] tracking-[0.18em] text-muted-foreground uppercase">
-              {hasResume ? "1 signal captured · 2 inputs remaining" : "0 signals · 3 steps to first report"}
+              {hasResume
+                ? "1 signal captured · 2 inputs remaining"
+                : "0 signals · 3 steps to first report"}
             </p>
           </div>
 
@@ -147,7 +152,10 @@ export function DashboardGettingStarted({
                   done && "dash-onboard-step-done",
                   active && "dash-onboard-step-active",
                 )}
-                style={{ ["--step-accent" as string]: step.accent, animationDelay: `${index * 80}ms` }}
+                style={{
+                  ["--step-accent" as string]: step.accent,
+                  animationDelay: `${index * 80}ms`,
+                }}
               >
                 <span aria-hidden className="dash-onboard-step-ghost">
                   {step.n}
@@ -224,8 +232,9 @@ export function DashboardEmptyHistory({ className }: { className?: string }) {
               Your match timeline is waiting
             </h3>
             <p className="text-[15px] leading-relaxed text-muted-foreground">
-              Completed analyses land here after the <strong className="font-medium text-foreground">Save report</strong>{" "}
-              step succeeds. If you already ran one, check Analyze — a failed save won&apos;t show up here.
+              Completed analyses land here after the{" "}
+              <strong className="font-medium text-foreground">Save report</strong> step succeeds. If
+              you already ran one, check Analyze — a failed save won&apos;t show up here.
             </p>
           </div>
 
