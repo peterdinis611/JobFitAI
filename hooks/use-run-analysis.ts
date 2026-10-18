@@ -1,11 +1,11 @@
 "use client"
 
 import { useMutation, useQuery } from "convex/react"
-import { useEveAgent } from "eve/react"
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
 import { api } from "@/convex/_generated/api"
 import type { Doc } from "@/convex/_generated/dataModel"
+import { useJobFitAgent } from "@/hooks/use-jobfit-agent"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
 import { extractJobTitle, normalizeJobUrl } from "@/lib/extract-job-title"
@@ -21,13 +21,10 @@ export function useRunAnalysis() {
   const resumes = useQuery(api.resumes.listByUser, ready ? {} : "skip")
   const createJob = useMutation(api.jobPostings.create)
   const checkRate = useMutation(api.rateLimits.checkAndIncrement)
-  const agent = useEveAgent()
+  const agent = useJobFitAgent()
   const [running, setRunning] = useState(false)
 
-  const activeResume = useMemo(
-    () => resumes?.find((r: Doc<"resumes">) => r.isActive),
-    [resumes],
-  )
+  const activeResume = useMemo(() => resumes?.find((r: Doc<"resumes">) => r.isActive), [resumes])
 
   const isBusy = agent.status === "submitted" || agent.status === "streaming" || running
 

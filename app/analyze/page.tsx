@@ -1,7 +1,6 @@
 "use client"
 
 import { useMutation, useQuery } from "convex/react"
-import { useEveAgent } from "eve/react"
 import { useRouter } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "sonner"
@@ -15,6 +14,7 @@ import { DashboardGettingStarted } from "@/components/dashboard/dashboard-states
 import { PageHeader } from "@/components/ui/page-header"
 import { api } from "@/convex/_generated/api"
 import type { Doc } from "@/convex/_generated/dataModel"
+import { useJobFitAgent } from "@/hooks/use-jobfit-agent"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
 import { parseAnalysisStream } from "@/lib/analyze-stream"
@@ -43,7 +43,7 @@ export default function AnalyzePage() {
   const seenAnalysisIds = useRef(new Set<string>())
   const startNextQueuedRef = useRef<(fromIndex: number) => Promise<void>>(async () => {})
 
-  const agent = useEveAgent()
+  const agent = useJobFitAgent()
   const activeResume = useMemo(() => resumes?.find((r: Doc<"resumes">) => r.isActive), [resumes])
   const isBusy = agent.status === "submitted" || agent.status === "streaming" || running
   const stream = useMemo(() => parseAnalysisStream(agent.data.messages), [agent.data.messages])

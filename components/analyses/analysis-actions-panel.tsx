@@ -1,7 +1,6 @@
 "use client"
 
 import { useMutation, useQuery } from "convex/react"
-import { useEveAgent } from "eve/react"
 import {
   ArrowRight,
   BookOpen,
@@ -34,6 +33,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { api } from "@/convex/_generated/api"
 import type { Doc, Id } from "@/convex/_generated/dataModel"
+import { useJobFitAgent } from "@/hooks/use-jobfit-agent"
 import { useJobFitUser } from "@/hooks/use-jobfit-user"
 import { formatAgentSkillMessage } from "@/lib/agent-message"
 import { parseAnalysisStream } from "@/lib/analyze-stream"
@@ -70,7 +70,7 @@ function buildContextJson({ analysis, resume, jobPosting }: AnalysisContext, use
 
 export function AnalysisActionsPanel({ data }: { data: AnalysisContext }) {
   const { userId } = useJobFitUser()
-  const agent = useEveAgent()
+  const agent = useJobFitAgent()
   const [activeTab, setActiveTab] = useState("tailored_bullets")
   const [running, setRunning] = useState<string | null>(null)
   const [rescoreUploading, setRescoreUploading] = useState(false)

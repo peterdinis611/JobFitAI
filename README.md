@@ -55,7 +55,7 @@ lib/schemas/    # shared Zod schemas
 
 ## Deploy
 
-- **Vercel**: connect repo; set `NEXT_PUBLIC_CONVEX_URL` / `CONVEX_URL`; eve deploys with `withEve()` in `next.config.ts`.
+- **Vercel**: connect repo; set Convex + Clerk + `OPENAI_API_KEY` on the whole project; eve deploys with `withEve()` (`eve@0.24.5`). After deploy, `/eve/v1/health` must be 200.
 - **Convex**: `npx convex deploy`
 
 ## Rate limit

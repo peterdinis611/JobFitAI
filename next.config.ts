@@ -73,4 +73,7 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default withEve(nextConfig)
+export default withEve(nextConfig, {
+  // Repo root owns `agent/` — Vercel Build Output then mounts `/eve/v1/*`.
+  eveRoot: ".",
+})

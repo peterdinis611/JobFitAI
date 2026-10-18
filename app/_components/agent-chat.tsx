@@ -1,6 +1,5 @@
 "use client"
 
-import { useEveAgent } from "eve/react"
 import { AlertCircleIcon } from "lucide-react"
 import {
   Conversation,
@@ -13,15 +12,16 @@ import {
   PromptInputSubmit,
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input"
+import { useJobFitAgent } from "@/hooks/use-jobfit-agent"
 import { cn } from "@/lib/utils"
 import { AgentMessage } from "./agent-message"
 
 const AGENT_NAME = "jobfit-ai"
 
-type AgentStatus = ReturnType<typeof useEveAgent>["status"]
+type AgentStatus = ReturnType<typeof useJobFitAgent>["status"]
 
 export function AgentChat() {
-  const agent = useEveAgent()
+  const agent = useJobFitAgent()
   const isBusy = agent.status === "submitted" || agent.status === "streaming"
   const isEmpty = agent.data.messages.length === 0
 

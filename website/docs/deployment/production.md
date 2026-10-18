@@ -25,8 +25,9 @@ Ensure production env vars match your Vercel (or host) deployment.
    - `CLERK_SECRET_KEY`
    - `NEXT_PUBLIC_CLERK_SIGN_IN_URL` — `/sign-in`
    - `NEXT_PUBLIC_CLERK_SIGN_UP_URL` — `/sign-up`
-5. `withEve()` in `next.config.ts` mounts eve at `/eve/v1/*` (requires **eve 0.24.5+** — older versions wrote rejected `experimentalServices` and `/eve/v1/session` returned 500)
-6. eve channel auth is Clerk (signed-in cookie) + `vercelOidc()` + `localDev()`. Do not add `none()` in production.
+5. `withEve(nextConfig, { eveRoot: "." })` mounts eve at `/eve/v1/*` (requires **eve 0.24.5+** — older versions wrote rejected `experimentalServices` and `/eve/v1/session` returned 500). Do **not** add a `vercel.json` `services` / `experimentalServices` block — `withEve()` writes the eve service into the Next.js Build Output.
+6. Browser calls send the Clerk session JWT (`Authorization: Bearer`) via `useJobFitAgent`. The eve channel accepts that token or the `__session` cookie, then `vercelOidc()`, then `localDev()`. Do not add `none()` in production.
+7. After deploy, **Redeploy with cleared build cache**, then `curl -i https://<app>/eve/v1/health` must return **200**. Session without login is **401** (expected). **500** means the eve service did not mount.
 
 On Convex **production**, set `CLERK_JWT_ISSUER_DOMAIN`. Add the Vercel URL to Clerk allowed origins / redirect URLs.
 
@@ -52,7 +53,8 @@ No separate Docusaurus server in production.
 - [ ] Convex deployed with latest schema
 - [ ] Auth working on production URL
 - [ ] Convex env vars on Vercel
-- [ ] `OPENAI_API_KEY` set on the host running eve/Next
+- [ ] `OPENAI_API_KEY`, Clerk keys, and `NEXT_PUBLIC_SITE_URL` set on the whole Vercel project
+- [ ] `/eve/v1/health` returns 200 after a cache-cleared redeploy
 - [ ] `npm run build` succeeds locally
 - [ ] `/docs` loads after deploy
 - [ ] Analysis run completes end-to-end (History + Tracker populated)
